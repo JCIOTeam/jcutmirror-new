@@ -53,11 +53,11 @@
     "ipv6": "已检测到 IPv6 连接，可使用 IPv6 镜像源"
   },
   "footer": {
-    "description": "由 JCut 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。",
+    "description": "由 JCIOT 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。",
     "links": "友情链接",
     "contact": "联系我们",
     "github": "GitHub",
-    "copyright": "© {{year}} JCut Mirror. All rights reserved.",
+    "copyright": "© {{year}} JCUT Mirror. All rights reserved.",
     "poweredBy": "Powered by tunasync & Nginx FancyIndex"
   },
   "theme": {

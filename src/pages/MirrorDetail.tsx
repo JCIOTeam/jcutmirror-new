@@ -203,7 +203,7 @@ const MirrorDetail: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{mirror.name[locale]} - JCut Mirror</title>
+        <title>{mirror.name[locale]} - JCUT Mirror</title>
         <meta name="description" content={mirror.desc[locale]} />
       </Helmet>
 

@@ -83,7 +83,7 @@ const Header: React.FC = () => {
                 display: { xs: 'none', sm: 'block' },
               }}
             >
-              JCut
+              JCUT
               <Typography
                 component="span"
                 sx={{ color: 'primary.main', fontWeight: 800 }}
@@ -145,7 +145,7 @@ const Header: React.FC = () => {
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" fontWeight={800} fontFamily='"JetBrains Mono", monospace'>
-            JCutMirror
+            JCUT Mirror
           </Typography>
         </Box>
         <Divider />

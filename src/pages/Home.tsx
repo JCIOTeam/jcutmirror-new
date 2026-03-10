@@ -58,33 +58,12 @@ const Home: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>JCut Mirror - 开源软件镜像站</title>
+        <title>JCUT Mirror - 开源软件镜像站</title>
         <meta
           name="description"
           content="JCUT Mirror - 高校开源软件镜像站，提供快速稳定的Linux发行版及开发工具镜像"
         />
       </Helmet>
-
-      {/* 校园网检测提示 - 只显示校内或 IPv6 状态 */}
-      {(campusStatus === '1' || campusStatus === '6') && (
-        <Container maxWidth="lg">
-          <Box sx={{ py: 1 }}>
-            <Alert
-              severity={campusStatus === '1' ? 'success' : 'info'}
-              sx={{ py: 0.5 }}
-            >
-              {t(`network.${campusStatus === '1' ? 'campus' : 'ipv6'}`)}
-            </Alert>
-          </Box>
-        </Container>
-      )}
-
-      {/* 公告/通知横幅 —— 从 public/announcements.json 读取，无需重新构建即可更新 */}
-      <Container maxWidth="lg">
-        <Box sx={{ pt: 1.5 }}>
-          <AnnouncementBanner />
-        </Box>
-      </Container>
 
       {/* Hero 区域 */}
       <Box
@@ -93,7 +72,8 @@ const Home: React.FC = () => {
             theme.palette.mode === 'dark'
               ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)'
               : 'linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 50%, #FFF7ED 100%)',
-          py: { xs: 5, md: 8 },
+          pt: { xs: 5, md: 8 },
+          pb: { xs: 5, md: 8 },
           position: 'relative',
           overflow: 'hidden',
           // 装饰背景网格
@@ -108,6 +88,22 @@ const Home: React.FC = () => {
         }}
       >
         <Container maxWidth="lg" sx={{ position: 'relative' }}>
+          {/* 校园网检测提示 - 只显示校内或 IPv6 状态 */}
+          {(campusStatus === '1' || campusStatus === '6') && (
+            <Box sx={{ mb: 2 }}>
+              <Alert
+                severity={campusStatus === '1' ? 'success' : 'info'}
+                sx={{ py: 0.5 }}
+              >
+                {t(`network.${campusStatus === '1' ? 'campus' : 'ipv6'}`)}
+              </Alert>
+            </Box>
+          )}
+
+          {/* 公告/通知横幅 —— 从 public/announcements.json 读取，无需重新构建即可更新 */}
+          <Box sx={{ mb: 3 }}>
+            <AnnouncementBanner />
+          </Box>
           <Box sx={{ maxWidth: 640 }}>
             {/* 标签 */}
             <Chip

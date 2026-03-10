@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
                 fontFamily='"JetBrains Mono", monospace'
                 fontSize="1rem"
               >
-                JCut
+                JCUT
                 <Typography component="span" color="primary.main" fontWeight={800} fontSize="1rem">
                   Mirror
                 </Typography>
