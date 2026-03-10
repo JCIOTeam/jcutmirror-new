@@ -53,12 +53,12 @@
     "ipv6": "IPv6 connection detected, IPv6 mirrors are available"
   },
   "footer": {
-    "description": "An open source software mirror maintained by the JCut team, providing fast software downloads for campus users.",
+    "description": "An open source software mirror maintained by the JCIOT team, providing fast software downloads for campus users.",
     "links": "Links",
     "contact": "Contact",
     "github": "GitHub",
-    "copyright": "© {{year}} JCut Mirror. All rights reserved.",
-    "poweredBy": "Powered by tunasync & Nginx FancyIndex"
+    "copyright": "© {{year}} JCUT Mirror. All rights reserved.",
+    "poweredBy": "Powered by tunasync"
   },
   "theme": {
     "light": "Light Mode",

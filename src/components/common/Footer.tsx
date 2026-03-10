@@ -30,7 +30,6 @@ const Footer: React.FC = () => {
     { name: 'TUNA Mirror', url: 'https://mirrors.tuna.tsinghua.edu.cn' },
     { name: 'USTC Mirror', url: 'https://mirrors.ustc.edu.cn' },
     { name: 'NJU Mirror', url: 'https://mirror.nju.edu.cn' },
-    { name: 'SJTU Mirror', url: 'https://mirror.sjtu.edu.cn' },
   ];
 
   return (
@@ -72,7 +71,7 @@ const Footer: React.FC = () => {
                 <IconButton
                   size="small"
                   component="a"
-                  href="https://github.com/jcut"
+                  href="https://github.com/JCIOTeam"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"
@@ -84,7 +83,7 @@ const Footer: React.FC = () => {
                 <IconButton
                   size="small"
                   component="a"
-                  href="mailto:mirror@jcut.edu.cn"
+                  href="mailto:stucloud@jcut.edu.cn"
                   aria-label="联系邮箱"
                 >
                   <EmailIcon fontSize="small" />
@@ -123,12 +122,12 @@ const Footer: React.FC = () => {
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
               <Link
-                href="mailto:mirror@jcut.edu.cn"
+                href="mailto:stucloud@jcut.edu.cn"
                 variant="body2"
                 color="text.secondary"
                 underline="hover"
               >
-                mirror@jcut.edu.cn
+                stucloud@jcut.edu.cn
               </Link>
               <Link
                 href="/status"
@@ -139,7 +138,7 @@ const Footer: React.FC = () => {
                 系统状态 / Status
               </Link>
               <Link
-                href="https://github.com/jcut/mirror-site"
+                href="https://github.com/JCIOTeam/jcutmirror-new"
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="body2"

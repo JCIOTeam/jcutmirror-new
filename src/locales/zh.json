@@ -58,7 +58,7 @@
     "contact": "联系我们",
     "github": "GitHub",
     "copyright": "© {{year}} JCUT Mirror. All rights reserved.",
-    "poweredBy": "Powered by tunasync & Nginx FancyIndex"
+    "poweredBy": "Powered by tunasync"
   },
   "theme": {
     "light": "浅色模式",
