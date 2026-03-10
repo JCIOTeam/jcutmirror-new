@@ -143,4 +143,4 @@ export const helpDocs: Record<string, string> = {
 
 ## 许可证
 
-MIT
+GPLv3
