@@ -175,10 +175,10 @@
             <circle cx="12" cy="12" r="3"/>
             <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-11.3 2.1 2.1M15.3 15.3l2.1 2.1"/>
           </svg>
-          <span class="footer-logo-text">JCut<span>Mirror</span></span>
+          <span class="footer-logo-text">JCUT<span>Mirror</span></span>
         </a>
         <p class="footer-desc" data-i18n-desc>
-          由 JCut 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。
+          由 JCUT 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。
         </p>
         <div class="footer-socials">
           <!-- GitHub -->
@@ -195,7 +195,7 @@
           </a>
           <!-- Email -->
           <a
-            href="mailto:mirror@jcut.edu.cn"
+            href="mailto:stucloud@jcut.edu.cn"
             class="social-btn"
             aria-label="发送邮件"
           >
@@ -214,7 +214,6 @@
           <li><a href="https://mirrors.tuna.tsinghua.edu.cn" target="_blank" rel="noopener noreferrer">TUNA Mirror</a></li>
           <li><a href="https://mirrors.ustc.edu.cn" target="_blank" rel="noopener noreferrer">USTC Mirror</a></li>
           <li><a href="https://mirror.nju.edu.cn" target="_blank" rel="noopener noreferrer">NJU Mirror</a></li>
-          <li><a href="https://mirror.sjtu.edu.cn" target="_blank" rel="noopener noreferrer">SJTU Mirror</a></li>
         </ul>
       </div>
 
@@ -222,11 +221,11 @@
       <div>
         <div class="footer-col-title" data-i18n-contact-title>联系我们</div>
         <ul class="footer-links-list">
-          <li><a href="mailto:mirror@jcut.edu.cn">mirror@jcut.edu.cn</a></li>
-          <li><a href="/">返回主站</a></li>
+          <li><a href="mailto:stucloud@jcut.edu.cn">stucloud@jcut.edu.cn</a></li>
+          <li><a href="/status">系统状态 / Status</a></li>
           <li>
             <a
-              href="https://github.com/jcut/mirror-site"
+              href="https://github.com/jciot/mirror-site"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -242,10 +241,10 @@
     <!-- 版权信息 -->
     <div class="footer-bottom">
       <span class="footer-copyright" id="footer-copyright">
-        © 2024 JCut Mirror. All rights reserved.
+        © 2024 JCUT Mirror. All rights reserved.
       </span>
       <span class="footer-powered">
-        Powered by tunasync &amp; Nginx FancyIndex
+        Powered by tunasync & Nginx FancyIndex
       </span>
     </div>
   </div>
@@ -258,19 +257,19 @@
   (function updateCopyright() {
     const el = document.getElementById('footer-copyright');
     if (el) {
-      el.textContent = `© ${new Date().getFullYear()} JCut Mirror. All rights reserved.`;
+      el.textContent = `© ${new Date().getFullYear()} JCUT Mirror. All rights reserved.`;
     }
   })();
 
   // 页脚国际化
   const footerI18n = {
     zh: {
-      desc: '由 JCut 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。',
+      desc: '由 JCUT 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。',
       linksTitle: '友情链接',
       contactTitle: '联系我们',
     },
     en: {
-      desc: 'An open source software mirror maintained by the JCut team, providing fast downloads for campus users.',
+      desc: 'An open source software mirror maintained by the JCUT team, providing fast downloads for campus users.',
       linksTitle: 'Links',
       contactTitle: 'Contact',
     }
