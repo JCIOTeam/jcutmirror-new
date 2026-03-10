@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文件目录 - JCut Mirror</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== CSS 变量系统 - 与主站共享 ===== */
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --accent: #3B82F6;
+      --accent-hover: #1D4ED8;
+      --accent-light: rgba(59,130,246,0.08);
+      --border: #E2E8F0;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --radius: 8px;
+      --header-bg: rgba(255,255,255,0.92);
+      --success: #10B981;
+      --code-bg: rgba(0,0,0,0.05);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0F172A;
+      --bg-secondary: #1E293B;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --accent: #60A5FA;
+      --accent-hover: #93C5FD;
+      --accent-light: rgba(96,165,250,0.1);
+      --border: #334155;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --header-bg: rgba(30,41,59,0.95);
+      --success: #34D399;
+      --code-bg: rgba(255,255,255,0.07);
+    }
+
+    /* ===== 全局重置 ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 15px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* ===== 顶部导航栏 ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      width: 26px;
+      height: 26px;
+      color: var(--accent);
+    }
+
+    .logo-text {
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    /* 导航链接 */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .nav-link {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.15s, background-color 0.15s;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      background-color: var(--accent-light);
+    }
+
+    .spacer { flex: 1; }
+
+    /* 工具栏按钮组 */
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 返回主页按钮 */
+    .btn-home {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: "Inter", sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-home:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* 语言切换按钮 */
+    .btn-locale {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: "Inter", sans-serif;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-locale:hover {
+      background: var(--accent-light);
+      color: var(--text-primary);
+    }
+
+    /* 主题切换按钮 */
+    .btn-theme {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-theme:hover {
+      background: var(--accent-light);
+      color: var(--text-primary);
+      transform: rotate(15deg);
+    }
+
+    .btn-theme svg { width: 18px; height: 18px; }
+
+    /* ===== 面包屑导航 ===== */
+    .breadcrumb-bar {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb-item {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .breadcrumb-item a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .breadcrumb-item a:hover { text-decoration: underline; }
+
+    .breadcrumb-sep {
+      color: var(--border);
+      font-size: 0.75rem;
+    }
+
+    .breadcrumb-current {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    /* ===== 主内容区开始标记 ===== */
+    .content-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 0;
+    }
+
+    /* 当前路径显示 */
+    .current-path-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .current-path-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .current-path-text {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .current-path-text strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* ===== FancyIndex 表格美化 ===== */
+    /* 注：FancyIndex 自带表格，通过 CSS 覆盖样式 */
+    #list {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin: 0 0 24px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #list thead { background: var(--bg-secondary); }
+
+    #list thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #list tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.12s;
+    }
+
+    #list tbody tr:last-child { border-bottom: none; }
+
+    #list tbody tr:hover { background: var(--accent-light); }
+
+    #list tbody td {
+      padding: 10px 16px;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+
+    #list tbody td a {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    #list tbody td a:hover { text-decoration: underline; }
+
+    /* 目录条目特殊样式 */
+    #list .dir a::before { content: "📁 "; }
+    #list .file a::before { content: "📄 "; }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .logo-text { font-size: 0.9rem; }
+      .breadcrumb-inner { padding: 8px 16px; }
+      .content-wrapper { padding: 16px 12px 0; }
+      #list thead th:nth-child(3),
+      #list tbody td:nth-child(3) { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .btn-home span { display: none; }
+      .header-inner { padding: 0 12px; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== 顶部导航栏 ===== -->
+<header class="site-header" role="banner">
+  <div class="header-inner">
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="JCut Mirror 首页">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-11.3 2.1 2.1M15.3 15.3l2.1 2.1"/>
+      </svg>
+      <span class="logo-text">JCut<span>Mirror</span></span>
+    </a>
+
+    <!-- 导航链接 -->
+    <nav class="nav-links" aria-label="主导航">
+      <a href="/" class="nav-link" data-i18n="nav.home">首页</a>
+      <a href="/#mirrors" class="nav-link" data-i18n="nav.mirrors">镜像列表</a>
+    </nav>
+
+    <div class="spacer"></div>
+
+    <div class="toolbar-actions">
+      <!-- 返回主页 -->
+      <a href="/" class="btn-home" aria-label="返回主站首页">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          <polyline points="9,22 9,12 15,12 15,22"/>
+        </svg>
+        <span data-i18n="nav.home">首页</span>
+      </a>
+
+      <!-- 语言切换 -->
+      <button class="btn-locale" id="locale-btn" onclick="toggleLocale()" aria-label="切换语言">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        </svg>
+        <span id="locale-label">EN</span>
+      </button>
+
+      <!-- 主题切换 -->
+      <button class="btn-theme" id="theme-btn" onclick="toggleTheme()" aria-label="切换深色/浅色模式">
+        <svg id="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        <svg id="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 面包屑导航 ===== -->
+<nav class="breadcrumb-bar" aria-label="面包屑">
+  <div class="breadcrumb-inner">
+    <span class="breadcrumb-item">
+      <a href="/" data-i18n="nav.home">首页</a>
+    </span>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <span class="breadcrumb-item">
+      <a href="/mirrors" data-i18n="nav.mirrors">镜像</a>
+    </span>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <span class="breadcrumb-current" id="breadcrumb-current">...</span>
+  </div>
+</nav>
+
+<!-- ===== 主内容区 ===== -->
+<div class="content-wrapper">
+  <!-- 当前路径提示卡 -->
+  <div class="current-path-card" role="status" aria-live="polite">
+    <svg class="current-path-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+    </svg>
+    <div class="current-path-text">
+      <span data-i18n-prefix="当前目录: ">当前目录: </span>
+      <strong id="current-path-display">加载中...</strong>
+    </div>
+  </div>
+</div>
+
+<!-- FancyIndex 将在此处插入文件列表表格 -->
+
+<script>
+  // ===== 工具函数 =====
+
+  // 翻译字典
+  const i18nDict = {
+    zh: {
+      'nav.home': '首页',
+      'nav.mirrors': '镜像列表',
+      'current-dir': '当前目录: ',
+      'locale-label': 'EN',
+    },
+    en: {
+      'nav.home': 'Home',
+      'nav.mirrors': 'Mirrors',
+      'current-dir': 'Current directory: ',
+      'locale-label': '中文',
+    }
+  };
+
+  // ===== 主题初始化 =====
+  function initTheme() {
+    const saved = localStorage.getItem('theme') || 'light';
+    applyTheme(saved);
+  }
+
+  function applyTheme(mode) {
+    document.documentElement.setAttribute('data-theme', mode);
+    document.getElementById('icon-dark').style.display = mode === 'light' ? 'block' : 'none';
+    document.getElementById('icon-light').style.display = mode === 'dark' ? 'block' : 'none';
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', next);
+    applyTheme(next);
+  }
+
+  // ===== 语言初始化 =====
+  function initLocale() {
+    const saved = localStorage.getItem('locale') || 'zh';
+    applyLocale(saved);
+  }
+
+  function applyLocale(locale) {
+    const dict = i18nDict[locale] || i18nDict.zh;
+    // 更新所有带 data-i18n 属性的元素
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) el.textContent = dict[key];
+    });
+    // 更新语言按钮标签
+    const localeLabel = document.getElementById('locale-label');
+    if (localeLabel) localeLabel.textContent = dict['locale-label'];
+  }
+
+  function toggleLocale() {
+    const current = localStorage.getItem('locale') || 'zh';
+    const next = current === 'zh' ? 'en' : 'zh';
+    localStorage.setItem('locale', next);
+    applyLocale(next);
+  }
+
+  // ===== 面包屑和路径显示 =====
+  function initBreadcrumb() {
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(Boolean);
+
+    // 当前目录名
+    const currentDir = parts[parts.length - 1] || '/';
+    const crumbEl = document.getElementById('breadcrumb-current');
+    if (crumbEl) crumbEl.textContent = currentDir || 'root';
+
+    const pathEl = document.getElementById('current-path-display');
+    if (pathEl) pathEl.textContent = path;
+  }
+
+  // ===== 初始化执行 =====
+  (function init() {
+    initTheme();
+    initLocale();
+    initBreadcrumb();
+  })();
+
+  // 监听 storage 变化（与主站同步）
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'theme') applyTheme(e.newValue || 'light');
+    if (e.key === 'locale') applyLocale(e.newValue || 'zh');
+  });
+</script>

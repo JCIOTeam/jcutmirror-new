@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "Home",
+    "mirrors": "Mirrors",
+    "help": "Help",
+    "about": "About",
+    "backHome": "Back to Home"
+  },
+  "search": {
+    "placeholder": "Search mirrors...",
+    "noResults": "No mirrors found",
+    "results": "Found {{count}} mirrors"
+  },
+  "mirror": {
+    "status": {
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "syncing": "Syncing",
+      "cached": "Cached"
+    },
+    "lastUpdated": "Last Updated",
+    "nextScheduled": "Next Sync",
+    "lastSuccess": "Last Success",
+    "size": "Size",
+    "upstream": "Upstream",
+    "type": "Type",
+    "viewHelp": "Help",
+    "download": "Downloads",
+    "noFiles": "No files available",
+    "copyUrl": "Copy URL",
+    "copied": "Copied!",
+    "copyScript": "Copy Script",
+    "quickStart": "Quick Setup",
+    "usingCurl": "Using curl",
+    "usingWget": "Using wget"
+  },
+  "home": {
+    "hero": {
+      "title": "JCUT Mirror",
+      "subtitle": "University Open Source Mirror",
+      "description": "Fast and reliable open source software mirror service, covering major Linux distributions and development tools"
+    },
+    "popularMirrors": "Popular Mirrors",
+    "allMirrors": "All Mirrors",
+    "recentUpdates": "Recent Updates",
+    "groupBy": "Group by alphabet",
+    "totalMirrors": "{{count}} mirrors total",
+    "syncedToday": "{{count}} syncs today"
+  },
+  "network": {
+    "campus": "You are on the campus network, use the internal mirror for faster speed",
+    "outside": "You are not on the campus network",
+    "ipv6": "IPv6 connection detected, IPv6 mirrors are available"
+  },
+  "footer": {
+    "description": "An open source software mirror maintained by the JCut team, providing fast software downloads for campus users.",
+    "links": "Links",
+    "contact": "Contact",
+    "github": "GitHub",
+    "copyright": "© {{year}} JCut Mirror. All rights reserved.",
+    "poweredBy": "Powered by tunasync & Nginx FancyIndex"
+  },
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "toggle": "Toggle Theme"
+  },
+  "locale": {
+    "zh": "中文",
+    "en": "English",
+    "toggle": "Toggle Language"
+  },
+  "detail": {
+    "basicInfo": "Basic Info",
+    "syncStatus": "Sync Status",
+    "files": "File List",
+    "helpDoc": "Documentation",
+    "quickSetup": "Quick Setup",
+    "fileName": "File Name",
+    "fileUrl": "Download URL",
+    "noHelp": "No documentation available"
+  },
+  "error": {
+    "notFound": "Page Not Found",
+    "notFoundDesc": "The mirror or page you are looking for does not exist.",
+    "loadFailed": "Load Failed",
+    "retry": "Retry",
+    "backHome": "Back to Home"
+  }
+}

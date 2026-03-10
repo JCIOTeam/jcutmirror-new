@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  # ===== 前端服务（Nginx + React SPA）=====
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: mirror-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # 镜像数据目录（只读挂载，供 FancyIndex 使用）
+      - /data/mirrors:/data/mirrors:ro
+      # TLS 证书
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Nginx 日志
+      - ./logs/nginx:/var/log/nginx
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - mirror-net
+    depends_on:
+      - backend
+    labels:
+      - "com.mirror.service=frontend"
+
+  # ===== 后端服务（Node.js + Express）=====
+  backend:
+    image: mirror-backend:latest  # 使用现有后端镜像
+    container_name: mirror-backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"  # 仅暴露给 Nginx 代理
+    volumes:
+      # 后端配置
+      - ./backend/config:/app/config:ro
+      # tunasync 状态文件
+      - /var/run/tunasync:/var/run/tunasync:ro
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - TZ=Asia/Shanghai
+    networks:
+      - mirror-net
+    labels:
+      - "com.mirror.service=backend"
+
+networks:
+  mirror-net:
+    driver: bridge
+    name: mirror-network
+
+# ===== 开发模式覆盖（使用 docker-compose.dev.yml）=====
+# docker-compose -f docker-compose.yml -f docker-compose.dev.yml up

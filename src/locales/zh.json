@@ -1,0 +1,90 @@
+{
+  "nav": {
+    "home": "首页",
+    "mirrors": "镜像列表",
+    "help": "使用帮助",
+    "about": "关于我们",
+    "backHome": "返回主页"
+  },
+  "search": {
+    "placeholder": "搜索镜像...",
+    "noResults": "未找到匹配的镜像",
+    "results": "找到 {{count}} 个镜像"
+  },
+  "mirror": {
+    "status": {
+      "succeeded": "同步成功",
+      "failed": "同步失败",
+      "syncing": "同步中",
+      "cached": "已缓存"
+    },
+    "lastUpdated": "最后更新",
+    "nextScheduled": "下次同步",
+    "lastSuccess": "上次成功",
+    "size": "存储大小",
+    "upstream": "上游源",
+    "type": "镜像类型",
+    "viewHelp": "使用帮助",
+    "download": "文件下载",
+    "noFiles": "暂无可下载文件",
+    "copyUrl": "复制地址",
+    "copied": "已复制！",
+    "copyScript": "复制脚本",
+    "quickStart": "快速换源",
+    "usingCurl": "使用 curl",
+    "usingWget": "使用 wget"
+  },
+  "home": {
+    "hero": {
+      "title": "荆楚理工学院开源镜像站",
+      "subtitle": "JCUT Mirror",
+      "description": "提供快速、稳定的开源软件镜像服务，覆盖主流 Linux 发行版及常用开发工具"
+    },
+    "popularMirrors": "常用镜像",
+    "allMirrors": "所有镜像",
+    "recentUpdates": "最近更新",
+    "groupBy": "按字母分组",
+    "totalMirrors": "共 {{count}} 个镜像",
+    "syncedToday": "今日同步 {{count}} 次"
+  },
+  "network": {
+    "campus": "您正在使用校园网，可使用内网镜像源获得更快速度",
+    "outside": "您当前不在校园网内",
+    "ipv6": "已检测到 IPv6 连接，可使用 IPv6 镜像源"
+  },
+  "footer": {
+    "description": "由 JCut 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。",
+    "links": "友情链接",
+    "contact": "联系我们",
+    "github": "GitHub",
+    "copyright": "© {{year}} JCut Mirror. All rights reserved.",
+    "poweredBy": "Powered by tunasync & Nginx FancyIndex"
+  },
+  "theme": {
+    "light": "浅色模式",
+    "dark": "深色模式",
+    "toggle": "切换主题"
+  },
+  "locale": {
+    "zh": "中文",
+    "en": "English",
+    "toggle": "切换语言"
+  },
+  "detail": {
+    "basicInfo": "基本信息",
+    "syncStatus": "同步状态",
+    "files": "文件列表",
+    "helpDoc": "使用说明",
+    "quickSetup": "快速配置",
+    "fileName": "文件名",
+    "fileUrl": "下载地址",
+    "noHelp": "暂无使用说明"
+  },
+  "error": {
+    "notFound": "页面不存在",
+    "notFoundDesc": "您访问的镜像或页面不存在，请返回首页。",
+    "loadFailed": "加载失败",
+    "retry": "重试",
+    "backHome": "返回首页"
+  }
+}

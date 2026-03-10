@@ -1,0 +1,95 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const ubuntuVersionList = [
+  "24.04 LTS",
+  "23.04",
+  "22.10",
+  "22.04 LTS",
+  "20.04 LTS",
+  "18.04 LTS",
+  "16.04 LTS",
+  "14.04 LTS",
+];
+
+export const ubuntuVersionMap = {
+  "24.04 LTS": "noble",
+  "23.04": "lunar",
+  "22.10": "kinetic",
+  "22.04 LTS": "jammy",
+  "20.04 LTS": "focal",
+  "18.04 LTS": "bionic",
+  "16.04 LTS": "xenial",
+  "14.04 LTS": "trusty",
+};
+
+export const defaultVersion = "24.04 LTS";
+
+export const GenUbuntuConfig = (version) => {
+  const ubuntuName = ubuntuVersionMap[version] || "noble";
+  return `# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName} main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName} main restricted universe multiverse
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-updates main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-updates main restricted universe multiverse
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-backports main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-backports main restricted universe multiverse
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-security main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-security main restricted universe multiverse
+# 预发布软件源，不建议启用
+# deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-proposed main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-proposed main restricted universe multiverse`;
+};
+
+## Ubuntu 源使用帮助
+
+### 地址
+
+[https://mirrors.jcut.edu.cn/ubuntu/](https://mirrors.jcut.edu.cn/ubuntu/)
+
+### 说明
+
+*Ubuntu* 软件源
+
+### 收录架构
+
+amd64(X86_64), i386
+
+### 收录版本
+
+所有 *Ubuntu* 当前支持的版本，包括开发版，具体版本见 [https://wiki.ubuntu.com/Releases](https://wiki.ubuntu.com/Releases)
+
+---
+
+### 使用方法
+
+#### 方法一
+
+一般情况下，将 `/etc/apt/sources.list` 文件中 *Ubuntu* 默认的源地址 `http://archive.ubuntu.com/` 替换为 `http://mirrors.jcut.edu.cn/` 即可。
+
+可以使用如下命令：
+
+```shell
+sudo sed -i 's|archive.ubuntu.com|mirrors.jcut.edu.cn|g' /etc/apt/sources.list
+```
+
+从 *Ubuntu 24.04 LTS* 开始使用 DEB822 格式，而非上文使用的传统的 One-Line-Style 格式。对应需要修改的文件为 `/etc/apt/sources.list.d/ubuntu.sources`。同样可以使用如下命令：
+
+```shell
+sudo sed -i 's/archive.ubuntu.com/mirrors.jcut.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources
+```
+
+#### 方法二
+
+直接编辑 `/etc/apt/sources.list`（需要使用 `sudo`）。
+
+<ConfigGenerator promptString="请选择您的 Ubuntu 版本：" versionList={ubuntuVersionList} defaultVersion={defaultVersion} configGen={GenUbuntuConfig} language="bash" />
+
+#### 方法三 (一键脚本)
+
+```bash
+# 使用 curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# 使用 wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## 以上使用任一方式均可

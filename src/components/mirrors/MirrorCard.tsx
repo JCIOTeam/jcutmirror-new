@@ -1,0 +1,131 @@
+// src/components/mirrors/MirrorCard.tsx
+// 镜像卡片组件 - 首页展示用
+
+import { Storage as StorageIcon } from '@mui/icons-material';
+import {
+  Card,
+  CardContent,
+  CardActionArea,
+  Typography,
+  Box,
+  Tooltip,
+} from '@mui/material';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+
+import { useLocaleStore } from '../../stores/mirrorStore';
+import type { Mirror } from '../../types';
+import { formatRelativeTime } from '../../utils/time';
+
+import StatusChip from './StatusChip';
+
+interface MirrorCardProps {
+  mirror: Mirror;
+}
+
+/**
+ * 单个镜像卡片，点击跳转到详情页
+ */
+const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { locale } = useLocaleStore();
+
+  // 格式化最后更新时间（兼容 Unix 秒时间戳）
+  const lastUpdatedText = formatRelativeTime(mirror.lastUpdated, locale);
+
+  return (
+    <Card
+      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      role="article"
+      aria-label={`${mirror.name[locale]} 镜像`}
+    >
+      <CardActionArea
+        onClick={() => navigate(`/mirrors/${mirror.id}`)}
+        sx={{ flexGrow: 1, alignItems: 'flex-start', display: 'flex', flexDirection: 'column' }}
+      >
+        <CardContent sx={{ width: '100%', p: 2.5 }}>
+          {/* 顶部：ID + 状态 */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              mb: 1,
+              gap: 1,
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: '0.95rem',
+                fontWeight: 700,
+                color: 'primary.main',
+                lineHeight: 1.3,
+              }}
+            >
+              {mirror.id}
+            </Typography>
+            <StatusChip status={mirror.status} size="small" />
+          </Box>
+
+          {/* 镜像名称 */}
+          <Typography
+            variant="subtitle2"
+            color="text.primary"
+            sx={{ mb: 0.5, fontWeight: 500 }}
+          >
+            {mirror.name[locale]}
+          </Typography>
+
+          {/* 描述 */}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mb: 1.5,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              lineHeight: 1.5,
+              minHeight: '3em',
+            }}
+          >
+            {mirror.desc[locale]}
+          </Typography>
+
+          {/* 底部：大小 + 更新时间 */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              pt: 1,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Tooltip title={t('mirror.size')} placement="bottom">
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}
+              >
+                <StorageIcon sx={{ fontSize: 14 }} />
+                <Typography variant="caption" fontWeight={500}>
+                  {mirror.size || '-'}
+                </Typography>
+              </Box>
+            </Tooltip>
+            <Typography variant="caption" color="text.secondary">
+              {lastUpdatedText}
+            </Typography>
+          </Box>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+  );
+};
+
+export default MirrorCard;

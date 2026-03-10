@@ -1,0 +1,299 @@
+<!-- FancyIndex footer.html -->
+<!-- 注意：此文件插入在文件列表表格之后 -->
+
+<style>
+  /* ===== 页脚样式 ===== */
+  .site-footer {
+    background: var(--bg-primary);
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+    padding: 32px 0 20px;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 24px;
+  }
+
+  /* 页脚 Logo */
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .footer-logo-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+  }
+
+  .footer-logo-text {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .footer-logo-text span { color: var(--accent); }
+
+  .footer-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  /* 社交图标 */
+  .footer-socials {
+    display: flex;
+    gap: 6px;
+  }
+
+  .social-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .social-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .social-btn svg { width: 15px; height: 15px; }
+
+  /* 页脚链接组 */
+  .footer-col-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  .footer-links-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer-links-list a {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .footer-links-list a:hover { color: var(--accent); }
+
+  /* 分割线 */
+  .footer-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  /* 版权栏 */
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-copyright {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .footer-powered {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .footer-grid > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  /* FancyIndex 底部表格间距修正 */
+  .content-wrapper + * { margin-top: 0 !important; }
+</style>
+
+<!-- ===== 站点页脚 ===== -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <!-- 左列：Logo + 描述 -->
+      <div>
+        <a href="/" class="footer-logo" aria-label="JCut Mirror 首页">
+          <svg class="footer-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-11.3 2.1 2.1M15.3 15.3l2.1 2.1"/>
+          </svg>
+          <span class="footer-logo-text">JCut<span>Mirror</span></span>
+        </a>
+        <p class="footer-desc" data-i18n-desc>
+          由 JCut 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。
+        </p>
+        <div class="footer-socials">
+          <!-- GitHub -->
+          <a
+            href="https://github.com/jcut"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-btn"
+            aria-label="GitHub"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+            </svg>
+          </a>
+          <!-- Email -->
+          <a
+            href="mailto:mirror@jcut.edu.cn"
+            class="social-btn"
+            aria-label="发送邮件"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 中列：友情链接 -->
+      <div>
+        <div class="footer-col-title" data-i18n-links-title>友情链接</div>
+        <ul class="footer-links-list">
+          <li><a href="https://mirrors.tuna.tsinghua.edu.cn" target="_blank" rel="noopener noreferrer">TUNA Mirror</a></li>
+          <li><a href="https://mirrors.ustc.edu.cn" target="_blank" rel="noopener noreferrer">USTC Mirror</a></li>
+          <li><a href="https://mirror.nju.edu.cn" target="_blank" rel="noopener noreferrer">NJU Mirror</a></li>
+          <li><a href="https://mirror.sjtu.edu.cn" target="_blank" rel="noopener noreferrer">SJTU Mirror</a></li>
+        </ul>
+      </div>
+
+      <!-- 右列：联系方式 -->
+      <div>
+        <div class="footer-col-title" data-i18n-contact-title>联系我们</div>
+        <ul class="footer-links-list">
+          <li><a href="mailto:mirror@jcut.edu.cn">mirror@jcut.edu.cn</a></li>
+          <li><a href="/">返回主站</a></li>
+          <li>
+            <a
+              href="https://github.com/jcut/mirror-site"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              源代码 / Source Code
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="footer-divider" />
+
+    <!-- 版权信息 -->
+    <div class="footer-bottom">
+      <span class="footer-copyright" id="footer-copyright">
+        © 2024 JCut Mirror. All rights reserved.
+      </span>
+      <span class="footer-powered">
+        Powered by tunasync &amp; Nginx FancyIndex
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ===== 页脚初始化脚本 =====
+
+  // 更新版权年份
+  (function updateCopyright() {
+    const el = document.getElementById('footer-copyright');
+    if (el) {
+      el.textContent = `© ${new Date().getFullYear()} JCut Mirror. All rights reserved.`;
+    }
+  })();
+
+  // 页脚国际化
+  const footerI18n = {
+    zh: {
+      desc: '由 JCut 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。',
+      linksTitle: '友情链接',
+      contactTitle: '联系我们',
+    },
+    en: {
+      desc: 'An open source software mirror maintained by the JCut team, providing fast downloads for campus users.',
+      linksTitle: 'Links',
+      contactTitle: 'Contact',
+    }
+  };
+
+  function applyFooterLocale() {
+    const locale = localStorage.getItem('locale') || 'zh';
+    const dict = footerI18n[locale] || footerI18n.zh;
+
+    const descEl = document.querySelector('[data-i18n-desc]');
+    if (descEl) descEl.textContent = dict.desc;
+
+    const linksTitleEl = document.querySelector('[data-i18n-links-title]');
+    if (linksTitleEl) linksTitleEl.textContent = dict.linksTitle;
+
+    const contactTitleEl = document.querySelector('[data-i18n-contact-title]');
+    if (contactTitleEl) contactTitleEl.textContent = dict.contactTitle;
+  }
+
+  applyFooterLocale();
+
+  // 监听 storage 变化（与主站语言同步）
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'locale') applyFooterLocale();
+  });
+</script>
