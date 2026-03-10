@@ -18,7 +18,7 @@ const NotFound: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>404 - JCut Mirror</title>
+        <title>404 - JCUT Mirror</title>
       </Helmet>
 
       <Container maxWidth="sm">

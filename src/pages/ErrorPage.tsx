@@ -89,7 +89,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
   return (
     <>
       <Helmet>
-        <title>{code} - JCut Mirror</title>
+        <title>{code} - JCUT Mirror</title>
       </Helmet>
 
       <Container maxWidth="sm">
