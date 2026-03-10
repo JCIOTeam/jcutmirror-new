@@ -3,7 +3,6 @@
 
 import {
   GitHub as GitHubIcon,
-  Hub as HubIcon,
   Email as EmailIcon,
 } from '@mui/icons-material';
 import {
@@ -49,7 +48,14 @@ const Footer: React.FC = () => {
           {/* 左列：Logo + 简介 */}
           <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-              <HubIcon sx={{ color: 'primary.main', fontSize: 22 }} />
+              <img
+                src="/favicon.svg"
+                alt="JCUT Mirror Logo"
+                style={{
+                  width: 22,
+                  height: 22,
+                }}
+              />
               <Typography
                 variant="h6"
                 fontWeight={800}
