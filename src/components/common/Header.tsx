@@ -1,10 +1,7 @@
 // src/components/common/Header.tsx
 // 顶部导航栏组件
 
-import {
-  Menu as MenuIcon,
-  Hub as HubIcon,
-} from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -67,12 +64,14 @@ const Header: React.FC = () => {
             role="link"
             aria-label="返回首页"
           >
-            <HubIcon
-              sx={{
-                color: 'primary.main',
-                fontSize: 26,
-              }}
-            />
+          <img
+            src="/favicon.svg"
+            alt="JCUT Mirror Logo"
+            style={{
+              width: 26,
+              height: 26,
+            }}
+          />
             <Typography
               variant="h6"
               sx={{
