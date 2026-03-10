@@ -1,7 +1,8 @@
 // src/components/config-generator/ConfigGenerator.tsx
 // 配置生成器组件 - 用于在 MDX 文档中动态生成配置
 
-import React, { useState, useMemo } from 'react';
+import CheckCircle from '@mui/icons-material/CheckCircle';
+import ContentCopy from '@mui/icons-material/ContentCopy';
 import {
   Box,
   FormControl,
@@ -12,8 +13,8 @@ import {
   Typography,
   IconButton,
 } from '@mui/material';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import CheckCircle from '@mui/icons-material/CheckCircle';
+import React, { useState, useMemo } from 'react';
+
 import CodeBlock from '../docs/CodeBlock';
 
 interface ConfigGeneratorProps {

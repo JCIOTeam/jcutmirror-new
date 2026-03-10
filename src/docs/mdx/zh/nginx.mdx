@@ -1,0 +1,379 @@
+## Nginx 软件包镜像使用帮助
+
+### 地址
+
+[https://mirrors.jcut.edu.cn/nginx/](https://mirrors.jcut.edu.cn/nginx/)
+
+### 收录版本
+
+#### RHEL 及其衍生版
+
+| 版本 | 支持的平台 |
+| --- | --- |
+| 8.x | x86_64, aarch64/arm64 |
+| 9.x | x86_64, aarch64/arm64 |
+
+#### Debian
+
+| 版本 | 支持的平台 |
+| --- | --- |
+| 11.x “bullseye” | x86_64, aarch64/arm64 |
+| 12.x “bookworm” | x86_64, aarch64/arm64 |
+
+#### Ubuntu
+
+| 版本 | 支持的平台 |
+| --- | --- |
+| 20.04 “focal” | x86_64, aarch64/arm64 |
+| 22.04 “jammy” | x86_64, aarch64/arm64 |
+| 24.04 “noble” | x86_64, aarch64/arm64 |
+
+#### SLES
+
+| 版本 | 支持的平台 |
+| --- | --- |
+| 12 SP5+ | x86_64 |
+| 15 SP2+ | x86_64 |
+
+#### Alpine
+
+| 版本 | 支持的平台 |
+| --- | --- |
+| 3.17 | x86_64, aarch64/arm64 |
+| 3.18 | x86_64, aarch64/arm64 |
+| 3.19 | x86_64, aarch64/arm64 |
+| 3.20 | x86_64, aarch64/arm64 |
+
+#### Amazon Linux
+
+| 版本 | 支持的平台 |
+| --- | --- |
+| 2 (LTS) | x86_64, aarch64/arm64 |
+| 2023 | x86_64, aarch64/arm64 |
+
+对于 SLES 12 的软件包，由于使用的 OpenSSL 不支持 TLSv1.3，因此没有构建 HTTP/3 支持。
+
+### 安装说明
+
+在首次在新机器上安装 nginx 之前，您需要设置 nginx 软件包仓库。之后，您可以从仓库安装和更新 nginx。
+
+#### RHEL 及其衍生版
+
+本节适用于 Red Hat Enterprise Linux 及其衍生版，如 CentOS、Oracle Linux、Rocky Linux、AlmaLinux。
+
+安装先决条件：
+
+```bash
+sudo yum install yum-utils
+```
+
+要设置 yum 仓库，请创建名为 `/etc/yum.repos.d/nginx.repo` 的文件，并包含以下内容：
+
+```text
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/mainline/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+```
+
+默认情况下，使用稳定版 nginx 软件包仓库。如果您想使用主线 nginx 软件包，请运行以下命令：
+
+```bash
+sudo yum-config-manager --enable nginx-mainline
+```
+
+要安装 nginx，请运行以下命令：
+
+```bash
+sudo yum install nginx
+```
+
+当提示接受 GPG 密钥时，验证指纹是否匹配 `573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62`，如果是，请接受。
+
+#### Ubuntu
+
+安装先决条件：
+
+```bash
+sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring
+```
+
+导入官方 nginx 签名密钥，以便 `apt` 可以验证软件包的真实性。获取密钥：
+
+```bash
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+| sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+```
+
+验证下载的文件是否包含正确的密钥：
+
+```bash
+gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+```
+
+输出应包含完整的指纹 `573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62`，如下所示：
+
+```text
+pub   rsa2048 2011-08-19 [SC] [expires: 2027-05-24]
+    573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+uid                      nginx signing key <signing-key@nginx.com>
+```
+
+注意，输出可能包含用于签名软件包的其他密钥。
+
+要设置 apt 仓库以使用稳定版 nginx 软件包，请运行以下命令：
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://mirrors.jcut.edu.cn/nginx/ubuntu `lsb_release -cs` nginx" \
+| sudo tee /etc/apt/sources.list.d/nginx.list
+```
+
+如果您想使用主线 nginx 软件包，请运行以下命令：
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://mirrors.jcut.edu.cn/nginx/mainline/ubuntu `lsb_release -cs` nginx" \
+| sudo tee /etc/apt/sources.list.d/nginx.list
+```
+
+设置仓库固定，优先选择我们的软件包而不是发行版提供的：
+
+```bash
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+| sudo tee /etc/apt/preferences.d/99nginx
+```
+
+要安装 `nginx`，请运行以下命令：
+
+```bash
+sudo apt update
+sudo apt install nginx
+```
+
+#### SLES
+
+安装先决条件：
+
+```bash
+sudo zypper install curl ca-certificates gpg2
+```
+
+要设置 zypper 仓库以使用稳定版 nginx 软件包，请运行以下命令：
+
+```bash
+sudo zypper addrepo --gpgcheck --type yum --refresh --check \
+    'http://mirrors.jcut.edu.cn/nginx/sles/$releasever_major' nginx-stable
+```
+
+如果您想使用主线 nginx 软件包，请运行以下命令：
+
+```bash
+sudo zypper addrepo --gpgcheck --type yum --refresh --check \
+    'http://mirrors.jcut.edu.cn/nginx/mainline/sles/$releasever_major' nginx-mainline
+```
+
+接下来，导入官方 nginx 签名密钥，以便 zypper/rpm 可以验证软件包的真实性。获取密钥：
+
+```bash
+curl -o /tmp/nginx_signing.key https://nginx.org/keys/nginx_signing.key
+```
+
+验证下载的文件是否包含正确的密钥：
+
+```bash
+gpg --with-fingerprint /tmp/nginx_signing.key
+```
+
+输出应包含完整的指纹 `573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62`，如下所示：
+
+```text
+pub  2048R/7BD9BF62 2011-08-19 [expires: 2027-05-24]
+       Key fingerprint = 573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62
+uid nginx signing key <signing-key@nginx.com>
+```
+
+最后，将密钥导入 rpm 数据库：
+
+```bash
+sudo rpmkeys --import /tmp/nginx_signing.key
+```
+
+要安装 nginx，请运行以下命令：
+
+```bash
+sudo zypper install nginx
+```
+
+#### Alpine
+
+安装先决条件：
+
+```bash
+sudo apk add openssl curl ca-certificates
+```
+
+要设置 apk 仓库以使用稳定版 nginx 软件包，请运行以下命令：
+
+```bash
+printf "%s%s%s%s\n" \
+    "@nginx " \
+    "http://mirrors.jcut.edu.cn/nginx/alpine/v" \
+    `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
+    "/main" \
+    | sudo tee -a /etc/apk/repositories
+```
+
+如果您想使用主线 nginx 软件包，请运行以下命令：
+
+```bash
+printf "%s%s%s%s\n" \
+    "@nginx " \
+    "http://mirrors.jcut.edu.cn/nginx/mainline/alpine/v" \
+    `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
+    "/main" \
+    | sudo tee -a /etc/apk/repositories
+```
+
+接下来，导入官方 nginx 签名密钥，以便 apk 可以验证软件包的真实性。获取密钥：
+
+```bash
+curl -o /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub
+```
+
+验证下载的文件是否包含正确的密钥：
+
+```bash
+openssl rsa -pubin -in /tmp/nginx_signing.rsa.pub -text -noout
+```
+
+输出应包含以下：
+
+```text
+Public-Key: (2048 bit)
+Modulus:
+     00:fe:14:f6:0a:1a:b8:86:19:fe:cd:ab:02:9f:58:
+     2f:37:70:15:74:d6:06:9b:81:55:90:99:96:cc:70:
+     5c:de:5b:e8:4c:b2:0c:47:5b:a8:a2:98:3d:11:b1:
+     f6:7d:a0:46:df:24:23:c6:d0:24:52:67:ba:69:ab:
+     9a:4a:6a:66:2c:db:e1:09:f1:0d:b2:b0:e1:47:1f:
+     0a:46:ac:0d:82:f3:3c:8d:02:ce:08:43:19:d9:64:
+     86:c4:4e:07:12:c0:5b:43:ba:7d:17:8a:a3:f0:3d:
+     98:32:b9:75:66:f4:f0:1b:2d:94:5b:7c:1c:e6:f3:
+     04:7f:dd:25:b2:82:a6:41:04:b7:50:93:94:c4:7c:
+     34:7e:12:7c:bf:33:54:55:47:8c:42:94:40:8e:34:
+     5f:54:04:1d:9e:8c:57:48:d4:b0:f8:e4:03:db:3f:
+     68:6c:37:fa:62:14:1c:94:d6:de:f2:2b:68:29:17:
+     24:6d:f7:b5:b3:18:79:fd:31:5e:7f:4c:be:c0:99:
+     13:cc:e2:97:2b:dc:96:9c:9a:d0:a7:c5:77:82:67:
+     c9:cb:a9:e7:68:4a:e1:c5:ba:1c:32:0e:79:40:6e:
+     ef:08:d7:a3:b9:5d:1a:df:ce:1a:c7:44:91:4c:d4:
+     99:c8:88:69:b3:66:2e:b3:06:f1:f4:22:d7:f2:5f:
+     ab:6d
+Exponent: 65537 (0x10001)
+```
+
+最后，将密钥移动到 apk 信任的密钥存储：
+
+```bash
+sudo mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/
+```
+
+要安装 nginx，请运行以下命令：
+
+```bash
+sudo apk add nginx@nginx
+```
+
+安装带有动态模块的软件包时，也应指定 @nginx 标签：
+
+```bash
+sudo apk add nginx-module-image-filter@nginx nginx-module-njs@nginx
+```
+
+#### Amazon Linux
+
+安装先决条件：
+
+```bash
+sudo yum install yum-utils
+```
+
+要为 Amazon Linux 2 设置 yum 仓库，请创建名为 `/etc/yum.repos.d/nginx.repo` 的文件，并包含以下内容：
+
+```text
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/amzn2/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/mainline/amzn2/$releasever/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+```
+
+要为 Amazon Linux 2023 设置 yum 仓库，请创建名为 `/etc/yum.repos.d/nginx.repo` 的文件，并包含以下内容：
+
+```text
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/amzn/2023/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/mainline/amzn/2023/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+```
+
+默认情况下，使用稳定版 nginx 软件包仓库。如果您想使用主线 nginx 软件包，请运行以下命令：
+
+```bash
+sudo yum-config-manager --enable nginx-mainline
+```
+
+要安装 nginx，请运行以下命令：
+
+```bash
+sudo yum install nginx
+```
+
+当提示接受 GPG 密钥时，验证指纹是否匹配 `573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62`，如果是，请接受。
+
+> #### 注意
+> 自 1.9.11 版本起，nginx 支持动态模块，以下模块作为动态模块构建并作为单独的软件包分发：
+> ```text
+> nginx-module-geoip
+> nginx-module-image-filter
+> nginx-module-njs
+> nginx-module-perl
+> nginx-module-xslt
+> ```

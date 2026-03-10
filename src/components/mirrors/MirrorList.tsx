@@ -141,22 +141,35 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                     role="link"
                     aria-label={`查看 ${mirror.name[locale]} 详情`}
                   >
-                    {/* 镜像名 */}
+                    {/* 镜像名 - name 作主文字，id 作小标签 */}
                     <TableCell>
                       <Box>
                         <Typography
                           variant="body2"
+                          sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.88rem', mb: 0.3 }}
+                        >
+                          {mirror.name[locale]}
+                        </Typography>
+                        <Typography
+                          component="span"
+                          variant="caption"
                           sx={{
                             fontFamily: '"JetBrains Mono", monospace',
-                            fontWeight: 700,
+                            fontSize: '0.68rem',
+                            fontWeight: 600,
                             color: 'primary.main',
-                            fontSize: '0.85rem',
+                            bgcolor: (theme) =>
+                              theme.palette.mode === 'dark'
+                                ? 'rgba(96,165,250,0.12)'
+                                : 'rgba(59,130,246,0.08)',
+                            border: '1px solid',
+                            borderColor: 'primary.main',
+                            px: 0.6,
+                            py: 0.1,
+                            borderRadius: 0.6,
                           }}
                         >
                           {mirror.id}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {mirror.name[locale]}
                         </Typography>
                       </Box>
                     </TableCell>

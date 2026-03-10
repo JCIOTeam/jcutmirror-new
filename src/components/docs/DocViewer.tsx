@@ -20,9 +20,10 @@ import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import CodeBlock from './CodeBlock';
 import { loadHelpDoc, hasMdxDoc } from '../../docs';
 import { useLocaleStore } from '../../stores/mirrorStore';
+
+import CodeBlock from './CodeBlock';
 
 // MDX 组件的 MUI 映射，与 ReactMarkdown 保持一致
 const mdxComponents = {

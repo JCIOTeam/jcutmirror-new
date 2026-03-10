@@ -3,12 +3,7 @@
 
 import { Storage as StorageIcon } from '@mui/icons-material';
 import {
-  Card,
-  CardContent,
-  CardActionArea,
-  Typography,
-  Box,
-  Tooltip,
+  Card, CardContent, CardActionArea, Typography, Box, Tooltip,
 } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,67 +15,53 @@ import { formatRelativeTime } from '../../utils/time';
 
 import StatusChip from './StatusChip';
 
-interface MirrorCardProps {
-  mirror: Mirror;
-}
+interface MirrorCardProps { mirror: Mirror; }
 
-/**
- * 单个镜像卡片，点击跳转到详情页
- */
 const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
-
-  // 格式化最后更新时间（兼容 Unix 秒时间戳）
   const lastUpdatedText = formatRelativeTime(mirror.lastUpdated, locale);
 
   return (
-    <Card
-      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      role="article"
-      aria-label={`${mirror.name[locale]} 镜像`}
-    >
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} role="article">
       <CardActionArea
         onClick={() => navigate(`/mirrors/${mirror.id}`)}
         sx={{ flexGrow: 1, alignItems: 'flex-start', display: 'flex', flexDirection: 'column' }}
       >
         <CardContent sx={{ width: '100%', p: 2.5 }}>
-          {/* 顶部：ID + 状态 */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              mb: 1,
-              gap: 1,
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '0.95rem',
-                fontWeight: 700,
-                color: 'primary.main',
-                lineHeight: 1.3,
-              }}
-            >
-              {mirror.id}
+          {/* name 作主标题 + 状态 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5, gap: 1 }}>
+            <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.3 }}>
+              {mirror.name[locale]}
             </Typography>
             <StatusChip status={mirror.status} size="small" />
           </Box>
 
-          {/* 镜像名称 */}
-          <Typography
-            variant="subtitle2"
-            color="text.primary"
-            sx={{ mb: 0.5, fontWeight: 500 }}
-          >
-            {mirror.name[locale]}
-          </Typography>
+          {/* id 作小标签 */}
+          <Box sx={{ mb: 1 }}>
+            <Typography
+              component="span"
+              variant="caption"
+              sx={{
+                fontFamily: '"JetBrains Mono", monospace',
+                fontSize: '0.7rem',
+                fontWeight: 600,
+                color: 'primary.main',
+                bgcolor: (theme) =>
+                  theme.palette.mode === 'dark' ? 'rgba(96,165,250,0.12)' : 'rgba(59,130,246,0.08)',
+                border: '1px solid',
+                borderColor: 'primary.main',
+                px: 0.7,
+                py: 0.15,
+                borderRadius: 0.8,
+              }}
+            >
+              {mirror.id}
+            </Typography>
+          </Box>
 
-          {/* 描述 */}
+          {/* 描述作副标题 */}
           <Typography
             variant="body2"
             color="text.secondary"
@@ -98,29 +79,14 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
           </Typography>
 
           {/* 底部：大小 + 更新时间 */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              pt: 1,
-              borderTop: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
             <Tooltip title={t('mirror.size')} placement="bottom">
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}
-              >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
                 <StorageIcon sx={{ fontSize: 14 }} />
-                <Typography variant="caption" fontWeight={500}>
-                  {mirror.size || '-'}
-                </Typography>
+                <Typography variant="caption" fontWeight={500}>{mirror.size || '-'}</Typography>
               </Box>
             </Tooltip>
-            <Typography variant="caption" color="text.secondary">
-              {lastUpdatedText}
-            </Typography>
+            <Typography variant="caption" color="text.secondary">{lastUpdatedText}</Typography>
           </Box>
         </CardContent>
       </CardActionArea>

@@ -1,0 +1,72 @@
+## Node 源使用帮助
+
+### 地址
+
+[https://mirrors.jcut.edu.cn/nodejs-release/](https://mirrors.jcut.edu.cn/nodejs-release/)
+
+### 说明
+
+Node.js 仓库镜像，包含了 https://nodejs.org/dist/ 中的内容
+
+### 使用说明
+
+可以手工选择下载所需的版本，也可以搭配 `n` 、 `nvm` 或者 `fnm` 等版本管理器使用，方法如下：
+
+#### n
+
+```bash
+# 设定环境变量
+
+export NODE_MIRROR=https://mirrors.jcut.edu.cn/nodejs-release/
+
+# 然后正常使用 n 即可
+
+sudo n stable
+```
+
+#### nvm
+
+```bash
+# 设定环境变量
+
+export NVM_NODEJS_ORG_MIRROR=https://mirrors.jcut.edu.cn/nodejs-release/
+
+# 然后正常使用 nvm 即可
+
+sudo nvm install <version>
+```
+
+#### fnm
+
+```bash
+# 设定环境变量
+
+export FNM_NODE_DIST_MIRROR=https://mirrors.jcut.edu.cn/nodejs-release/
+
+# 然后正常使用 fnm 即可
+
+fnm install <version>
+```
+
+#### volta
+
+创建或编辑 `~/.volta/hooks.json` (Linux/MacOS)，或 `%LOCALAPPDATA%\Volta\hooks.json` (Windows)，将内容替换如下：
+
+```json
+{
+    "node": {
+        "index": {
+            "template": "https://mirrors.jcut.edu.cn/nodejs-release/index.json"
+        },
+        "distro": {
+            "template": "https://mirrors.jcut.edu.cn/nodejs-release/v{{version}}/node-v{{version}}-{{os}}-{{arch}}.tar.gz"
+        }
+    }
+}
+```
+
+之后即可正常使用 `volta`
+
+```bash
+volta install node@<version>
+```
