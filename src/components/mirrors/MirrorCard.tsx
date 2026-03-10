@@ -2,9 +2,7 @@
 // 镜像卡片组件 - 首页展示用
 
 import { Storage as StorageIcon } from '@mui/icons-material';
-import {
-  Card, CardContent, CardActionArea, Typography, Box, Tooltip,
-} from '@mui/material';
+import { Card, CardContent, CardActionArea, Typography, Box, Tooltip } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { useLocaleStore } from '../../stores/mirrorStore';
 import type { Mirror } from '../../types';
 import { formatRelativeTime } from '../../utils/time';
-
 import StatusChip from './StatusChip';
 
 interface MirrorCardProps { mirror: Mirror; }
@@ -31,34 +28,14 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
       >
         <CardContent sx={{ width: '100%', p: 2.5 }}>
           {/* name 作主标题 + 状态 */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5, gap: 1 }}>
-            <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1, gap: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{ fontSize: '1rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.3 }}
+            >
               {mirror.name[locale]}
             </Typography>
             <StatusChip status={mirror.status} size="small" />
-          </Box>
-
-          {/* id 作小标签 */}
-          <Box sx={{ mb: 1 }}>
-            <Typography
-              component="span"
-              variant="caption"
-              sx={{
-                fontFamily: '"JetBrains Mono", monospace',
-                fontSize: '0.7rem',
-                fontWeight: 600,
-                color: 'primary.main',
-                bgcolor: (theme) =>
-                  theme.palette.mode === 'dark' ? 'rgba(96,165,250,0.12)' : 'rgba(59,130,246,0.08)',
-                border: '1px solid',
-                borderColor: 'primary.main',
-                px: 0.7,
-                py: 0.15,
-                borderRadius: 0.8,
-              }}
-            >
-              {mirror.id}
-            </Typography>
           </Box>
 
           {/* 描述作副标题 */}

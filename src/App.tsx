@@ -13,6 +13,7 @@ import Header from './components/common/Header';
 import { useTheme } from './hooks/useTheme';
 import Home from './pages/Home';
 import MirrorDetail from './pages/MirrorDetail';
+import ErrorPage from './pages/ErrorPage';
 import NotFound from './pages/NotFound';
 import { useThemeStore } from './stores/mirrorStore';
 
@@ -73,6 +74,11 @@ const ThemedApp: React.FC = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/mirrors/:name" element={<MirrorDetail />} />
+              {/* 明确的错误码路由 —— Nginx error_page 可将 403/500 等重定向到此处 */}
+              <Route path="/403" element={<ErrorPage code={403} />} />
+              <Route path="/500" element={<ErrorPage code={500} />} />
+              <Route path="/502" element={<ErrorPage code={502} />} />
+              <Route path="/503" element={<ErrorPage code={503} />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Box>

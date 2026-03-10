@@ -1,0 +1,37 @@
+[
+  {
+    "id": "2025-001",
+    "type": "warning",
+    "pinned": true,
+    "dismissible": true,
+    "date": "2025-03-10",
+    "title": {
+      "zh": "ubuntu-releases 镜像暂停同步",
+      "en": "ubuntu-releases mirror sync paused"
+    },
+    "content": {
+      "zh": "由于上游服务器维护，ubuntu-releases 镜像将于 3月12日 00:00–06:00 暂停同步，请临时使用官方源或其他镜像站。",
+      "en": "Due to upstream server maintenance, the ubuntu-releases mirror will pause syncing on March 12, 00:00–06:00. Please use the official source or another mirror temporarily."
+    },
+    "link": {
+      "url": "/mirrors/ubuntu-releases",
+      "label": { "zh": "查看详情", "en": "View details" }
+    }
+  },
+  {
+    "id": "2025-002",
+    "type": "info",
+    "pinned": false,
+    "dismissible": true,
+    "date": "2025-03-01",
+    "title": {
+      "zh": "新增 openEuler 镜像",
+      "en": "openEuler mirror added"
+    },
+    "content": {
+      "zh": "镜像站现已提供华为 openEuler 操作系统的完整镜像，欢迎使用。",
+      "en": "The mirror now provides a full mirror of Huawei's openEuler OS. Welcome to use it."
+    },
+    "link": null
+  }
+]

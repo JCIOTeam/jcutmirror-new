@@ -2,18 +2,8 @@
 // 镜像列表组件 - 按字母A-Z分组展示
 
 import {
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Link,
-  Skeleton,
-  Alert,
+  Box, Typography, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Paper, Skeleton, Alert, Button,
 } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { useLocaleStore } from '../../stores/mirrorStore';
 import type { GroupedMirrors } from '../../types';
 import { formatRelativeTime } from '../../utils/time';
-
 import StatusChip from './StatusChip';
 
 interface MirrorListProps {
@@ -31,14 +20,10 @@ interface MirrorListProps {
   error?: string;
 }
 
-/**
- * 按字母分组的镜像列表
- */
 const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
-  // dateFnsLocale 已由 formatRelativeTime 工具内部处理
 
   if (loading) {
     return (
@@ -54,19 +39,13 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
   }
 
   if (error) {
-    return (
-      <Alert severity="error" sx={{ mb: 2 }}>
-        {error}
-      </Alert>
-    );
+    return <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>;
   }
 
   const letters = Object.keys(grouped).sort();
 
   if (letters.length === 0) {
-    return (
-      <Alert severity="info">{t('search.noResults')}</Alert>
-    );
+    return <Alert severity="info">{t('search.noResults')}</Alert>;
   }
 
   return (
@@ -74,14 +53,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
       {letters.map((letter) => (
         <Box key={letter} sx={{ mb: 4 }} id={`group-${letter}`}>
           {/* 字母索引标题 */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              mb: 1.5,
-              gap: 1.5,
-            }}
-          >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5, gap: 1.5 }}>
             <Typography
               variant="h5"
               sx={{
@@ -98,16 +70,11 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
             <Box sx={{ flex: 1, height: 1, bgcolor: 'divider' }} />
           </Box>
 
-          {/* 镜像表格 */}
-          <TableContainer
-            component={Paper}
-            variant="outlined"
-            sx={{ borderRadius: 2, overflow: 'hidden' }}
-          >
+          <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
             <Table size="small" aria-label={`${letter} 组镜像列表`}>
               <TableHead>
                 <TableRow sx={{ bgcolor: 'action.hover' }}>
-                  <TableCell sx={{ fontWeight: 700, width: '20%' }}>
+                  <TableCell sx={{ fontWeight: 700, width: '22%' }}>
                     {locale === 'zh' ? '镜像名称' : 'Mirror'}
                   </TableCell>
                   <TableCell sx={{ fontWeight: 700, width: '30%', display: { xs: 'none', sm: 'table-cell' } }}>
@@ -122,7 +89,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                   <TableCell sx={{ fontWeight: 700, width: '18%', display: { xs: 'none', md: 'table-cell' } }}>
                     {t('mirror.lastUpdated')}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 700, width: '10%' }}>
+                  <TableCell sx={{ fontWeight: 700, width: '8%' }}>
                     {locale === 'zh' ? '帮助' : 'Help'}
                   </TableCell>
                 </TableRow>
@@ -141,47 +108,18 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                     role="link"
                     aria-label={`查看 ${mirror.name[locale]} 详情`}
                   >
-                    {/* 镜像名 - name 作主文字，id 作小标签 */}
+                    {/* 镜像名 - name 作主文字，不带 id 标签 */}
                     <TableCell>
-                      <Box>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.88rem', mb: 0.3 }}
-                        >
-                          {mirror.name[locale]}
-                        </Typography>
-                        <Typography
-                          component="span"
-                          variant="caption"
-                          sx={{
-                            fontFamily: '"JetBrains Mono", monospace',
-                            fontSize: '0.68rem',
-                            fontWeight: 600,
-                            color: 'primary.main',
-                            bgcolor: (theme) =>
-                              theme.palette.mode === 'dark'
-                                ? 'rgba(96,165,250,0.12)'
-                                : 'rgba(59,130,246,0.08)',
-                            border: '1px solid',
-                            borderColor: 'primary.main',
-                            px: 0.6,
-                            py: 0.1,
-                            borderRadius: 0.6,
-                          }}
-                        >
-                          {mirror.id}
-                        </Typography>
-                      </Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.88rem' }}
+                      >
+                        {mirror.name[locale]}
+                      </Typography>
                     </TableCell>
 
                     {/* 描述 */}
-                    <TableCell
-                      sx={{
-                        display: { xs: 'none', sm: 'table-cell' },
-                        color: 'text.secondary',
-                        fontSize: '0.82rem',
-                      }}
-                    >
+                    <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' }, color: 'text.secondary', fontSize: '0.82rem' }}>
                       <Typography
                         variant="caption"
                         sx={{
@@ -214,21 +152,20 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                       </Typography>
                     </TableCell>
 
-                    {/* 帮助链接 */}
+                    {/* 帮助链接 —— 导航到详情页帮助 Tab，避免外链 /docs/ 路由缺失 */}
                     <TableCell onClick={(e) => e.stopPropagation()}>
-                      {mirror.helpUrl && (
-                        <Link
-                          href={mirror.helpUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          variant="caption"
-                          underline="hover"
-                          color="primary"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {t('mirror.viewHelp')}
-                        </Link>
-                      )}
+                      <Button
+                        size="small"
+                        variant="text"
+                        sx={{ fontSize: '0.75rem', p: '2px 6px', minWidth: 0 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // 传递 ?tab=help，MirrorDetail 页面会读取并预选帮助 Tab
+                          navigate(`/mirrors/${mirror.id}?tab=help`);
+                        }}
+                      >
+                        {t('mirror.viewHelp')}
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}

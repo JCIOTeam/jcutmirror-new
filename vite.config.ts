@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
 import path from 'path';
 import { fileURLToPath, URL } from 'node:url';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 // 代理配置复用（dev 和 preview 均需要）
 const MIRROR_ORIGIN = 'https://mirrors.jcut.edu.cn';
@@ -39,6 +40,15 @@ export default defineConfig({
     react(),
     mdx({
       providerImportSource: '@mdx-js/react',
+    }),
+    // 提供 Node.js 模块的浏览器兼容实现，解决 MDX 等插件依赖的问题
+    nodePolyfills({
+      include: ['url', 'path', 'buffer', 'process'],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
     }),
   ],
   resolve: {

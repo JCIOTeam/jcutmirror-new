@@ -22,6 +22,7 @@ import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
+import AnnouncementBanner from '../components/home/AnnouncementBanner';
 import MirrorCard from '../components/mirrors/MirrorCard';
 import MirrorList from '../components/mirrors/MirrorList';
 import {
@@ -77,6 +78,13 @@ const Home: React.FC = () => {
           </Box>
         </Container>
       )}
+
+      {/* 公告/通知横幅 —— 从 public/announcements.json 读取，无需重新构建即可更新 */}
+      <Container maxWidth="lg">
+        <Box sx={{ pt: 1.5 }}>
+          <AnnouncementBanner />
+        </Box>
+      </Container>
 
       {/* Hero 区域 */}
       <Box
