@@ -232,7 +232,7 @@ const MirrorDetail: React.FC = () => {
 
               {/* 左侧：名称 / 描述 / URL */}
               {/* 若没有文件，左侧占满 12 列；有文件时占 8 列，右侧 4 列给侧栏 */}
-              <Grid size={{ xs: 12, md: hasFiles ? 8 : 12 }}>
+              <Grid size={{ xs: 12 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5, flexWrap: 'wrap' }}>
                   <Typography variant="h4" fontWeight={800} fontSize={{ xs: '1.5rem', md: '2rem' }}>
                     {mirror.name[locale]}
@@ -281,12 +281,7 @@ const MirrorDetail: React.FC = () => {
                 </Box>
               </Grid>
 
-              {/* 右侧：ISO 文件侧栏 —— 仅当 API 返回 files 数组时才渲染 */}
-              {hasFiles && (
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <IsoFilesCard files={mirror.files} mirrorUrl={mirror.url} locale={locale} />
-                  </Grid>
-              )}
+
             </Grid>
           </Paper>
 
@@ -304,6 +299,7 @@ const MirrorDetail: React.FC = () => {
                   sx={{ borderBottom: 1, borderColor: 'divider', '& .MuiTab-root': { fontWeight: 600 } }}>
               <Tab label={t('detail.helpDoc')} />
               <Tab label={locale === 'zh' ? '文件列表' : 'File List'} />
+              {hasFiles && <Tab label={locale === 'zh' ? '安装镜像' : 'Downloads'} />}
             </Tabs>
 
             <TabPanel value={tabValue} index={0}>
@@ -313,6 +309,12 @@ const MirrorDetail: React.FC = () => {
             <TabPanel value={tabValue} index={1}>
               <DirectoryListing mirrorUrl={mirror.url} mirrorName={mirror.name[locale]} />
             </TabPanel>
+
+            {hasFiles && (
+                <TabPanel value={tabValue} index={2}>
+                  <IsoFilesCard files={mirror.files} mirrorUrl={mirror.url} locale={locale} />
+                </TabPanel>
+            )}
           </Box>
         </Container>
       </>
