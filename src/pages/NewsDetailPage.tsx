@@ -5,6 +5,7 @@ import { ArrowBack as BackIcon } from '@mui/icons-material';
 import {
     Box, Container, Typography, Chip, Divider,
     Breadcrumbs, Link, Button, CircularProgress, Alert,
+    Table, TableHead, TableBody, TableRow, TableCell,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -15,7 +16,8 @@ import CodeBlock from '../components/docs/CodeBlock';
 import { loadNewsArticle, getNewsItem } from '@/news';
 import { useLocaleStore } from '../stores/mirrorStore';
 
-// MUI 组件映射（与 DocViewer 保持一致）
+// MUI 组件映射
+// 表格使用 MUI Table 组件，保证主题色正确、暗色模式正常
 const mdxComponents = {
     h1: ({ children }: { children: React.ReactNode }) => (
         <Typography variant="h4" sx={{ mt: 3, mb: 1.5, fontWeight: 700 }}>{children}</Typography>
@@ -43,16 +45,28 @@ const mdxComponents = {
             </CodeBlock>
         );
     },
+    // 表格：用 MUI Table 系列组件，颜色跟随主题，不会在暗色模式下显示白底
     table: ({ children }: { children: React.ReactNode }) => (
-        <Box sx={{ overflowX: 'auto', mb: 2 }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%' }}>{children}</table>
+        <Box sx={{ overflowX: 'auto', mb: 2.5, borderRadius: 1.5, border: '1px solid', borderColor: 'divider' }}>
+            <Table size="small" sx={{ minWidth: 400 }}>{children}</Table>
         </Box>
     ),
+    thead: ({ children }: { children: React.ReactNode }) => (
+        <TableHead sx={{ bgcolor: 'action.hover' }}>{children}</TableHead>
+    ),
+    tbody: ({ children }: { children: React.ReactNode }) => (
+        <TableBody>{children}</TableBody>
+    ),
+    tr: ({ children }: { children: React.ReactNode }) => (
+        <TableRow sx={{ '&:last-child td': { borderBottom: 0 } }}>{children}</TableRow>
+    ),
     th: ({ children }: { children: React.ReactNode }) => (
-        <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid', fontWeight: 700 }}>{children}</th>
+        <TableCell component="th" sx={{ fontWeight: 700, fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+            {children}
+        </TableCell>
     ),
     td: ({ children }: { children: React.ReactNode }) => (
-        <td style={{ padding: '8px 12px', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>{children}</td>
+        <TableCell sx={{ fontSize: '0.85rem' }}>{children}</TableCell>
     ),
     hr: () => <Divider sx={{ my: 3 }} />,
     blockquote: ({ children }: { children: React.ReactNode }) => (
@@ -71,15 +85,32 @@ const NewsDetailPage: React.FC = () => {
     const [ArticleComponent, setArticleComponent] = useState<React.FC | null>(null);
     const [loading, setLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
+    const [loadError, setLoadError] = useState(false);
 
     useEffect(() => {
         if (!slug) { setNotFound(true); setLoading(false); return; }
         setLoading(true);
-        loadNewsArticle(slug).then(comp => {
-            if (comp) setArticleComponent(() => comp);
-            else setNotFound(true);
-            setLoading(false);
-        });
+        setLoadError(false);
+
+        // 最多重试 3 次（间隔 1s），应对偶发 503 / 网络抖动导致 JS chunk 加载失败
+        const tryLoad = async (attempts = 3): Promise<void> => {
+            try {
+                const comp = await loadNewsArticle(slug);
+                if (comp) setArticleComponent(() => comp);
+                else setNotFound(true);
+            } catch {
+                if (attempts > 1) {
+                    await new Promise(r => setTimeout(r, 1000));
+                    return tryLoad(attempts - 1);
+                }
+                // 三次均失败 —— 告知用户网络问题，而不是显示"文章不存在"
+                setLoadError(true);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        tryLoad();
     }, [slug]);
 
     const displayTitle = meta
@@ -88,15 +119,24 @@ const NewsDetailPage: React.FC = () => {
 
     const pageTitle = `${displayTitle} - JCUT Mirror`;
 
-    if (notFound) {
+    if (notFound || loadError) {
         return (
             <Container maxWidth="md" sx={{ py: 5 }}>
-                <Alert severity="error" action={
-                    <Button color="inherit" size="small" onClick={() => navigate('/news')}>
-                        {locale === 'zh' ? '返回列表' : 'Back'}
-                    </Button>
-                }>
-                    {locale === 'zh' ? '新闻不存在' : 'News article not found'}
+                <Alert
+                    severity={loadError ? 'warning' : 'error'}
+                    action={
+                        loadError
+                            ? <Button color="inherit" size="small" onClick={() => window.location.reload()}>
+                                {locale === 'zh' ? '重试' : 'Retry'}
+                            </Button>
+                            : <Button color="inherit" size="small" onClick={() => navigate('/news')}>
+                                {locale === 'zh' ? '返回列表' : 'Back'}
+                            </Button>
+                    }
+                >
+                    {loadError
+                        ? (locale === 'zh' ? '文章加载失败，可能是网络问题，请稍后重试' : 'Failed to load article. Please try again later.')
+                        : (locale === 'zh' ? '新闻不存在' : 'News article not found')}
                 </Alert>
             </Container>
         );
