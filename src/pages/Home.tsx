@@ -6,6 +6,8 @@ import {
     Storage as StorageIcon,
     Speed as SpeedIcon,
     Security as SecurityIcon,
+    Wifi as WifiIcon,
+    WifiTethering as Ipv6Icon,
 } from '@mui/icons-material';
 import {
     Box,
@@ -17,6 +19,7 @@ import {
     Chip,
     Skeleton,
     Paper,
+    Tooltip,
 } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -56,6 +59,14 @@ const Home: React.FC = () => {
     // 统计数据
     const totalCount = mirrors.length;
     const succeededCount = mirrors.filter((m) => m.status === 'succeeded').length;
+
+    // 校园网/IPv6 状态指示
+    const networkStat =
+        campusStatus === '1'
+            ? { icon: <WifiIcon />, label: locale === 'zh' ? '校园网加速' : 'Campus Network', dot: '#22C55E', tooltip: t('network.campus') }
+            : campusStatus === '6'
+                ? { icon: <Ipv6Icon />, label: 'IPv6', dot: '#3B82F6', tooltip: t('network.ipv6') }
+                : null;
 
     return (
         <>
@@ -146,40 +157,38 @@ const Home: React.FC = () => {
                             {t('home.hero.description')}
                         </Typography>
 
-                        {/* 统计数据 */}
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                            {[
-                                {
-                                    icon: <StorageIcon fontSize="small" />,
-                                    label: t('home.totalMirrors', { count: totalCount }),
-                                },
-                                {
-                                    icon: <SpeedIcon fontSize="small" />,
-                                    label: t('home.syncedToday', { count: succeededCount }),
-                                },
-                                // 仅当用户通过 HTTPS 访问时才显示加密传输项
-                                ...(window.location.protocol === 'https:' ? [{
-                                    icon: <SecurityIcon fontSize="small" />,
-                                    label: locale === 'zh' ? 'HTTPS 加密传输' : 'HTTPS Encrypted',
-                                }] : []),
-                            ].map((item, i) => (
-                                <Box
-                                    key={i}
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 0.5,
-                                        color: 'text.secondary',
-                                        fontSize: '0.85rem',
-                                    }}
-                                >
-                                    {item.icon}
-                                    <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                                        {item.label}
-                                    </Typography>
+                        {/* 统计数据 —— 桌面显示图标+文字，移动端折叠成图标徽章 */}
+                        {(() => {
+                            const stats = [
+                                { icon: <StorageIcon />, label: t('home.totalMirrors', { count: totalCount }) },
+                                { icon: <SpeedIcon />, label: t('home.syncedToday', { count: succeededCount }) },
+                                ...(window.location.protocol === 'https:' ? [{ icon: <SecurityIcon />, label: locale === 'zh' ? 'HTTPS 加密传输' : 'HTTPS Encrypted' }] : []),
+                                ...(networkStat ? [{ icon: networkStat.icon, label: networkStat.label, dot: networkStat.dot, tooltip: networkStat.tooltip }] : []),
+                            ];
+                            return (
+                                <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, flexWrap: 'wrap', alignItems: 'center' }}>
+                                    {stats.map((item, i) => (
+                                        <Tooltip key={i} title={item.label} placement="top">
+                                            <Box sx={{
+                                                display: 'flex', alignItems: 'center', gap: 0.6,
+                                                px: { xs: 1.2, sm: 0 },
+                                                py: { xs: 0.6, sm: 0 },
+                                                bgcolor: { xs: 'action.hover', sm: 'transparent' },
+                                                borderRadius: { xs: 6, sm: 0 },
+                                                color: 'text.secondary',
+                                                cursor: 'default',
+                                            }}>
+                                                {React.cloneElement(item.icon as React.ReactElement, { sx: { fontSize: { xs: 16, sm: 18 } } })}
+                                                <Typography variant="body2" color="text.secondary" fontWeight={500}
+                                                            sx={{ display: { xs: 'none', sm: 'block' } }}>
+                                                    {item.label}
+                                                </Typography>
+                                            </Box>
+                                        </Tooltip>
+                                    ))}
                                 </Box>
-                            ))}
-                        </Box>
+                            );
+                        })()}
                     </Box>
                 </Container>
             </Box>
