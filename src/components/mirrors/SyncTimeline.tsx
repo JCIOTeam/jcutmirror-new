@@ -141,7 +141,7 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
             {/* 四列同行，alignItems="stretch" 保证等高 */}
             <Grid container spacing={2} alignItems="stretch">
 
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+                <Grid size={{ xs: 6, md: 3 }} sx={{ display: 'flex' }}>
                     <TimeCard
                         icon={<SyncIcon fontSize="small" />}
                         label={t('mirror.lastUpdated')}
@@ -150,7 +150,7 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+                <Grid size={{ xs: 6, md: 3 }} sx={{ display: 'flex' }}>
                     <TimeCard
                         icon={<SuccessIcon fontSize="small" />}
                         label={t('mirror.lastSuccess')}
@@ -159,7 +159,7 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
                     />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+                <Grid size={{ xs: 6, md: 3 }} sx={{ display: 'flex' }}>
                     <TimeCard
                         icon={<ScheduleIcon fontSize="small" />}
                         label={t('mirror.nextScheduled')}
@@ -169,7 +169,7 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
                 </Grid>
 
                 {/* 上游地址：同行第四列，单行截断 + hover Tooltip */}
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ display: 'flex' }}>
+                <Grid size={{ xs: 6, md: 3 }} sx={{ display: 'flex' }}>
                     <UpstreamCard
                         label={t('mirror.upstream')}
                         value={mirror.upstream || '-'}
