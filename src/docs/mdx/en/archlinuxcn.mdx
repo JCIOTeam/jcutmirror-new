@@ -1,0 +1,36 @@
+## Arch Linux CN Mirror Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/archlinuxcn/](https://mirrors.jcut.edu.cn/archlinuxcn/)
+
+### Description
+
+Arch Linux CN software repository.
+
+### Introduction
+
+> The Arch Linux Chinese Community Repository is an unofficial software repository driven by the Arch Linux Chinese Community, containing many additional packages not provided by the official repositories, as well as variants such as git versions of existing software.
+>
+> \- [Arch Linux Chinese Community Repository](https://www.archlinuxcn.org/archlinux-cn-repo-and-mirror/)
+
+Repository URL: [http://repo.archlinuxcn.org](http://repo.archlinuxcn.org)
+
+---
+
+### Usage Instructions
+
+Add the following two lines at the end of the `/etc/pacman.conf` file:
+
+```toml
+[archlinuxcn]
+Server = https://mirrors.jcut.edu.cn/archlinuxcn/$arch
+```
+
+Then please install the `archlinuxcn-keyring` package to import the GPG key:
+
+```shell
+sudo pacman -Sy archlinuxcn-keyring
+```
+
+The GPG signature will be automatically performed.

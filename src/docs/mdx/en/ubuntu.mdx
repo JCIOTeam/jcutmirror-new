@@ -1,0 +1,95 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const ubuntuVersionList = [
+  "24.04 LTS",
+  "23.04",
+  "22.10",
+  "22.04 LTS",
+  "20.04 LTS",
+  "18.04 LTS",
+  "16.04 LTS",
+  "14.04 LTS",
+];
+
+export const ubuntuVersionMap = {
+  "24.04 LTS": "noble",
+  "23.04": "lunar",
+  "22.10": "kinetic",
+  "22.04 LTS": "jammy",
+  "20.04 LTS": "focal",
+  "18.04 LTS": "bionic",
+  "16.04 LTS": "xenial",
+  "14.04 LTS": "trusty",
+};
+
+export const defaultVersion = "24.04 LTS";
+
+export const GenUbuntuConfig = (version) => {
+  const ubuntuName = ubuntuVersionMap[version] || "noble";
+  return `# Source mirrors are commented out by default to improve apt update speed. Uncomment if needed.
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName} main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName} main restricted universe multiverse
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-updates main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-updates main restricted universe multiverse
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-backports main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-backports main restricted universe multiverse
+deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-security main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-security main restricted universe multiverse
+# Proposed repository, not recommended to enable
+# deb https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-proposed main restricted universe multiverse
+# deb-src https://mirrors.jcut.edu.cn/ubuntu/ ${ubuntuName}-proposed main restricted universe multiverse`;
+};
+
+## Ubuntu Repository Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/ubuntu/](https://mirrors.jcut.edu.cn/ubuntu/)
+
+### Description
+
+*Ubuntu* software repository.
+
+### Supported Architectures
+
+amd64 (X86_64), i386
+
+### Supported Versions
+
+All currently supported versions of *Ubuntu*, including development versions. For specific versions, see [https://wiki.ubuntu.com/Releases](https://wiki.ubuntu.com/Releases)
+
+---
+
+### Usage Instructions
+
+#### Method 1
+
+Generally, it is sufficient to replace the default repository address `http://archive.ubuntu.com/` with `http://mirrors.jcut.edu.cn/` in the `/etc/apt/sources.list` file.
+
+You can use the following command:
+
+```shell
+sudo sed -i 's|archive.ubuntu.com|mirrors.jcut.edu.cn|g' /etc/apt/sources.list
+```
+
+Starting from *Ubuntu 24.04 LTS*, DEB822 format is used instead of the traditional One-Line-Style format. The corresponding file to modify is `/etc/apt/sources.list.d/ubuntu.sources`. You can also use the following command:
+
+```shell
+sudo sed -i 's/archive.ubuntu.com/mirrors.jcut.edu.cn/g' /etc/apt/sources.list.d/ubuntu.sources
+```
+
+#### Method 2
+
+Directly edit `/etc/apt/sources.list` (requires `sudo`).
+
+<ConfigGenerator promptString="Please select your Ubuntu version:" versionList={ubuntuVersionList} defaultVersion={defaultVersion} configGen={GenUbuntuConfig} language="bash" />
+
+#### Method 3 (One-click Script)
+
+```bash
+# Using curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# Using wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## Either method above works

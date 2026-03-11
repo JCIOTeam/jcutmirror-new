@@ -1,0 +1,37 @@
+This folder provides earlier versions of CentOS, such as CentOS 6; it also provides archives of historical minor versions for the current CentOS major version; it also provides source code and debug symbols for various CentOS versions.
+
+It is recommended to back up files in `/etc/yum.repos.d/` first.
+
+You need to determine the minor version you need. If there are no special requirements, use the last minor version of that major version, such as 6.10, 5.11. We mark it as `$minorver`, which you need to replace in the commands below.
+
+Then edit the corresponding file in `/etc/yum.repos.d/`, add `#` to comment out lines starting with `mirrorlist=`; and uncomment lines starting with `baseurl=` (if they are commented).
+
+- For versions before CentOS 8, replace the domain and path in that line (e.g., `mirror.centos.org/centos/$releasever`) with `{{mirror}}/$minorver`.
+- For CentOS 8, note that the domain and path have changed, so the field to replace is `http://mirror.centos.org/$contentdir/$releasever`.
+
+The above steps can be completed by the commands below:
+
+```shell
+# Before CentOS 8
+minorver=6.10
+sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=https://mirrors.jcut.edu.cn/$minorver|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+
+# After CentOS 8
+minorver=8.5.2111
+sed -e "s|^mirrorlist=|#mirrorlist=|g" \
+         -e "s|^#baseurl=http://mirror.centos.org/\$contentdir/\$releasever|baseurl=https://mirrors.jcut.edu.cn/$minorver|g" \
+         -i.bak \
+         /etc/yum.repos.d/CentOS-*.repo
+```
+
+Note the `*` wildcard above. If you only need to replace sources in some files, please add or delete as needed.
+
+Note that if you need to enable some of these repos, you need to change `enabled=0` to `enabled=1`.
+
+Finally, update the package cache:
+
+```shell
+yum makecache

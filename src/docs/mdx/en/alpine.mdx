@@ -1,0 +1,54 @@
+## Alpine Mirror Usage Guide
+
+### URL
+
+https://mirrors.jcut.edu.cn/alpine/
+
+### Description
+
+Alpine Linux software repository.
+
+### Supported Architectures
+
+x86_64
+
+### Usage Instructions
+
+Generally, it is sufficient to replace the default repository address `http://dl-cdn.alpinelinux.org/` with `http://mirrors.jcut.edu.cn/` in the `/etc/apk/repositories` file.
+
+You can use the following commands:
+
+#### Method 1
+
+```shell
+sed -i 's/dl-cdn.alpinelinux.org/mirrors.jcut.edu.cn/g' /etc/apk/repositories
+```
+
+#### Method 2 (One-click Script)
+
+```bash
+# Using curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# Using wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## Either method above works
+```
+
+You can also directly edit the `/etc/apk/repositories` file. Here is a reference configuration for v3.20:
+
+```text
+https://mirrors.jcut.edu.cn/alpine/v3.20/main
+https://mirrors.jcut.edu.cn/alpine/v3.20/community
+```
+
+You can also use `latest-stable` to point to the latest stable version:
+
+```text
+https://mirrors.jcut.edu.cn/alpine/latest-stable/main
+https://mirrors.jcut.edu.cn/alpine/latest-stable/community
+```
+
+### Note
+
+After modifying the `/etc/apk/repositories` file, please run `apk update` to update the index for the changes to take effect.

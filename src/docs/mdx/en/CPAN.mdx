@@ -1,0 +1,56 @@
+[CPAN](https://www.cpan.org/) (The Comprehensive Perl Archive Network) mirror configuration file is `MyConfig.pm` (usually located at `$HOME/.cpan/CPAN/MyConfig.pm`), which can be modified using the package management script `cpan`.
+
+First, ensure the `MyConfig.pm` configuration file exists by executing in the command line:
+
+```bash
+# Ensure MyConfig.pm configuration file exists, auto-generate if not
+PERL_MM_USE_DEFAULT=1 perl -MCPAN -e 'mkmyconfig'
+
+# Without using default configuration, manually confirm each configuration option
+perl -MCPAN -e 'mkmyconfig'
+```
+
+### Manually Configure Mirror in CPAN Shell
+
+Execute `cpan` in the command line to enter the cpan shell:
+
+```bash
+cpan shell -- CPAN exploration and modules installation
+Enter 'h' for help.
+
+# List current mirror settings
+cpan[1]> o conf urllist
+
+# Add this mirror to the top of the list
+# Note: If already in list, skip this step and exit directly; modifying list won't auto-deduplicate
+cpan[2]> o conf urllist unshift https://mirrors.jcut.edu.cn/CPAN/
+
+# Or add this mirror to the end of the list
+# Note: Execute either this command or the one above; modifying list won't auto-deduplicate
+cpan[3]> o conf urllist push https://mirrors.jcut.edu.cn/CPAN/
+
+# Or clear the list and keep only this mirror
+cpan[4]> o conf urllist https://mirrors.jcut.edu.cn/CPAN/
+
+# Save the modified configuration to MyConfig.pm
+cpan[5]> o conf commit
+
+# Exit cpan shell
+cpan[6]> quit
+```
+
+### Configure Mirror Using Script in Command Line
+
+Execute in the command line:
+
+```bash
+# Add this mirror to the top of the list if not already present
+if ! (
+    perl -MCPAN -e 'CPAN::HandleConfig->load();' \
+        -e 'CPAN::HandleConfig->prettyprint("urllist")' |
+    grep -qF 'https://mirrors.jcut.edu.cn/CPAN/'
+); then
+    perl -MCPAN -e 'CPAN::HandleConfig->load();' \
+        -e 'CPAN::HandleConfig->edit("urllist", "unshift", "https://mirrors.jcut.edu.cn/CPAN/");' \
+        -e 'CPAN::HandleConfig->commit()'
+fi

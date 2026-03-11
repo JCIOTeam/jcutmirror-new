@@ -1,0 +1,57 @@
+## Arch Linux Mirror Usage Guide
+
+### URL
+
+https://mirrors.jcut.edu.cn/archlinux/
+
+### Description
+
+Arch Linux software repository.
+
+### Supported Architectures
+
+i686, x86_64
+
+---
+
+### Usage Instructions
+
+Pacman uses the order of servers in `mirrorlist` as priority, so adding a mirror requires adding it at the top of the file; you can comment out all other mirrors simultaneously.
+
+For detailed information on using Arch Linux mirrors, please see the [official documentation](https://wiki.archlinux.org/title/mirrors).
+
+#### Method 1
+
+Edit `/etc/pacman.d/mirrorlist` and add at the top of the file:
+
+```text
+Server = https://mirrors.jcut.edu.cn/archlinux/$repo/os/$arch
+```
+
+#### Method 2 (One-click Script)
+
+```bash
+# Using curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# Using wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## Either method above works
+```
+
+It is recommended to also enable the `archlinuxcn` repository. For an introduction to the `archlinuxcn` repository, please see [Arch Linux CN Mirror Usage Guide](#/doc/archlinuxcn).
+
+### Note
+
+After modifying `mirrorlist`, please update the package cache:
+
+```bash
+sudo pacman -Syyu
+```
+
+Two `y`s can avoid problems that may occur when switching from a corrupted mirror to a working one.
+
+If you switch from a newer mirror to an older one, the following command can downgrade some packages to avoid partial system updates.
+
+```bash
+sudo pacman -Syyuu

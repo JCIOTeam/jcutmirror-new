@@ -1,0 +1,57 @@
+## Kali Linux Mirror Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/kali/](https://mirrors.jcut.edu.cn/kali/)
+
+### Description
+
+*Kali Linux* software repository.
+
+### Supported Architectures
+
+amd64, armel, armhf, i386
+
+---
+
+### Usage Instructions
+
+#### Method 1
+
+Edit the `/etc/apt/sources.list` file and add the following entry at the top:
+
+```shell
+deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
+deb-src https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
+```
+
+#### Method 2
+
+Use sed command to replace:
+
+```shell
+sudo sed -i "s@http://http.kali.org/kali@https://mirrors.jcut.edu.cn/kali@g" /etc/apt/sources.list
+```
+
+#### Method 3 (One-click Script)
+
+```bash
+# Using curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# Using wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## Either method above works
+```
+
+### Note
+
+> After modifying the `sources.list` file, please run `sudo apt-get update` to update the index for the changes to take effect.
+
+Since Kali repositories do not use the by-hash mechanism, consistency cannot be guaranteed during synchronization. If you execute `apt update` during synchronization, you may see the following error:
+
+```text
+E: Failed to fetch https://mirrors.jcut.edu.cn/kali/dists/kali-rolling/main/source/Sources.gz size mismatch (14593053 != 14592993). Is the mirror you are using being synchronized?
+```
+
+If the above error occurs, you need to wait for the synchronization to complete before executing `apt update`.

@@ -1,0 +1,58 @@
+CTAN (The Comprehensive TeX Archive Network) is the collection of all materials related to the TeX typesetting system, including source code and documentation for compilation engines, packages, and fonts. Currently, the vast majority of LaTeX packages are uploaded to the CTAN core site and then synchronized to mirrors around the world.
+
+- CTAN Homepage: https://www.ctan.org/
+- Jingchu University of Technology Mirror: https://mirrors.jcut.edu.cn/CTAN/
+
+This article provides configuration methods for the two major distributions: TeX Live and MiKTeX.
+
+### TeX Live
+
+TeX Live is the most widely used TeX distribution, supporting Windows, Linux, and macOS. On macOS, the distribution is called MacTeX.
+
+#### Installation
+
+For common installation methods of TeX Live, please refer to [this document](https://mirrors.jcut.edu.cn/CTAN/info/install-latex-guide-zh-cn/install-latex-guide-zh-cn.pdf).
+
+In addition to the complete ISO mirror updated annually, CTAN mirrors also contain an online installer. This method ensures all installed packages are the latest versions, but is affected by network connection status. The operation method is (*administrator privileges may be required*):
+
+1. Download [`install-tl.zip`](https://mirrors.jcut.edu.cn/CTAN/systems/texlive/tlnet/install-tl.zip) and extract it
+2. On Windows, double-click to run `install-tl.bat`. If there is a graphical interface, you can specify the mirror source in the bottom-right corner button before entering the installer.
+On Linux, use the following command:
+```bash
+perl install-tl --repository https://mirrors.jcut.edu.cn/CTAN/systems/texlive/tlnet
+```
+
+#### Switching Mirror
+
+The CTAN mirror used by TeX Live can be changed via the built-in package manager `tlmgr` (*administrator privileges may be required*).
+
+Execute in the command line:
+
+```bash
+tlmgr option repository https://mirrors.jcut.edu.cn/CTAN/systems/texlive/tlnet
+```
+
+This will permanently change the mirror source.
+
+If you only need to switch temporarily, use the following command:
+
+```bash
+tlmgr update --all --repository https://mirrors.jcut.edu.cn/CTAN/systems/texlive/tlnet
+```
+
+The `update --all` command can be modified according to your needs.
+
+### MiKTeX
+
+MiKTeX distribution features installing only the packages you need, saving disk space, but has some differences in implementation details compared to TeX Live. This distribution supports Windows, Linux, and macOS.
+
+#### Installation
+
+MiKTeX only provides standalone installers for Windows and macOS; go to the TeX typesetting system download page. For installation on Linux, please refer to the [official documentation](https://miktex.org/howto/install-miktex-unx).
+
+#### Switching Mirror
+
+The CTAN mirror used by MiKTeX can be switched from the built-in MiKTeX Console graphical application, or use the following command:
+
+```bash
+mpm --set-repository=https://mirrors.jcut.edu.cn/CTAN/systems/win32/miktex/tm/packages/

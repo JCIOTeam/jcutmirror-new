@@ -1,0 +1,19 @@
+[CRAN](https://cran.r-project.org/) (The Comprehensive R Archive Network) mirror configuration file is `.Rprofile` (located at `$HOME/.Rprofile` on Linux).
+
+Add the following statement at the end of the file:
+
+```bash
+options("repos" = c(CRAN="https://mirrors.jcut.edu.cn/CRAN/"))
+```
+
+Open R to use this CRAN mirror to install R packages.
+
+### Adding CRAN Mirror to Install R on Ubuntu
+
+Refer to [the steps in README](https://mirrors.jcut.edu.cn/CRAN/bin/linux/ubuntu), run:
+
+```bash
+sudo apt update -qq
+sudo apt install --no-install-recommends software-properties-common dirmngr
+wget -qO- https://mirrors.jcut.edu.cn/misc/cran/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+sudo add-apt-repository "deb https://mirrors.jcut.edu.cn/CRAN/bin/linux/ubuntu $(lsb_release -cs)-cran40/"

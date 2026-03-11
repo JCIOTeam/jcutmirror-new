@@ -1,0 +1,378 @@
+## Nginx Package Mirror Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/nginx/](https://mirrors.jcut.edu.cn/nginx/)
+
+### Supported Versions
+
+#### RHEL and Derivatives
+
+| Version | Supported Platforms |
+| --- | --- |
+| 8.x | x86_64, aarch64/arm64 |
+| 9.x | x86_64, aarch64/arm64 |
+
+#### Debian
+
+| Version | Supported Platforms |
+| --- | --- |
+| 11.x "bullseye" | x86_64, aarch64/arm64 |
+| 12.x "bookworm" | x86_64, aarch64/arm64 |
+
+#### Ubuntu
+
+| Version | Supported Platforms |
+| --- | --- |
+| 20.04 "focal" | x86_64, aarch64/arm64 |
+| 22.04 "jammy" | x86_64, aarch64/arm64 |
+| 24.04 "noble" | x86_64, aarch64/arm64 |
+
+#### SLES
+
+| Version | Supported Platforms |
+| --- | --- |
+| 12 SP5+ | x86_64 |
+| 15 SP2+ | x86_64 |
+
+#### Alpine
+
+| Version | Supported Platforms |
+| --- | --- |
+| 3.17 | x86_64, aarch64/arm64 |
+| 3.18 | x86_64, aarch64/arm64 |
+| 3.19 | x86_64, aarch64/arm64 |
+| 3.20 | x86_64, aarch64/arm64 |
+
+#### Amazon Linux
+
+| Version | Supported Platforms |
+| --- | --- |
+| 2 (LTS) | x86_64, aarch64/arm64 |
+| 2023 | x86_64, aarch64/arm64 |
+
+For SLES 12 packages, HTTP/3 support is not built because the OpenSSL used does not support TLSv1.3.
+
+### Installation Instructions
+
+Before installing nginx on a new machine for the first time, you need to set up the nginx package repository. After that, you can install and update nginx from the repository.
+
+#### RHEL and Derivatives
+
+This section applies to Red Hat Enterprise Linux and its derivatives, such as CentOS, Oracle Linux, Rocky Linux, and AlmaLinux.
+
+Install prerequisites:
+
+```bash
+sudo yum install yum-utils
+```
+
+To set up the yum repository, create a file named `/etc/yum.repos.d/nginx.repo` with the following content:
+
+```text
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/mainline/centos/$releasever/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+```
+
+By default, the stable nginx repository is used. If you want to use the mainline nginx packages, run the following command:
+
+```bash
+sudo yum-config-manager --enable nginx-mainline
+```
+
+To install nginx, run the following command:
+
+```bash
+sudo yum install nginx
+```
+
+When prompted to accept the GPG key, verify that the fingerprint matches `573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62`, and if so, accept it.
+
+#### Ubuntu
+
+Install prerequisites:
+
+```bash
+sudo apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring
+```
+
+Import the official nginx signing key so that `apt` can verify the authenticity of the packages. Get the key:
+
+```bash
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
+| sudo tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+```
+
+Verify that the downloaded file contains the correct key:
+
+```bash
+gpg --dry-run --quiet --no-keyring --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg
+```
+
+The output should contain the full fingerprint `573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62`, as shown below:
+
+```text
+pub   rsa2048 2011-08-19 [SC] [expires: 2027-05-24]
+    573BFD6B3D8FBC641079A6ABABF5BD827BD9BF62
+uid                      nginx signing key <signing-key@nginx.com>
+```
+
+Note that the output may contain other keys used to sign packages.
+
+To set up the apt repository to use stable nginx packages, run the following command:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://mirrors.jcut.edu.cn/nginx/ubuntu `lsb_release -cs` nginx" \
+| sudo tee /etc/apt/sources.list.d/nginx.list
+```
+
+If you want to use mainline nginx packages, run the following command:
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
+http://mirrors.jcut.edu.cn/nginx/mainline/ubuntu `lsb_release -cs` nginx" \
+| sudo tee /etc/apt/sources.list.d/nginx.list
+```
+
+Set up repository pinning to prefer our packages over those provided by the distribution:
+
+```bash
+echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
+| sudo tee /etc/apt/preferences.d/99nginx
+```
+
+To install `nginx`, run the following command:
+
+```bash
+sudo apt update
+sudo apt install nginx
+```
+
+#### SLES
+
+Install prerequisites:
+
+```bash
+sudo zypper install curl ca-certificates gpg2
+```
+
+To set up the zypper repository to use stable nginx packages, run the following command:
+
+```bash
+sudo zypper addrepo --gpgcheck --type yum --refresh --check \
+    'http://mirrors.jcut.edu.cn/nginx/sles/$releasever_major' nginx-stable
+```
+
+If you want to use mainline nginx packages, run the following command:
+
+```bash
+sudo zypper addrepo --gpgcheck --type yum --refresh --check \
+    'http://mirrors.jcut.edu.cn/nginx/mainline/sles/$releasever_major' nginx-mainline
+```
+
+Next, import the official nginx signing key so that zypper/rpm can verify the authenticity of the packages. Get the key:
+
+```bash
+curl -o /tmp/nginx_signing.key https://nginx.org/keys/nginx_signing.key
+```
+
+Verify that the downloaded file contains the correct key:
+
+```bash
+gpg --with-fingerprint /tmp/nginx_signing.key
+```
+
+The output should contain the full fingerprint `573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62`, as shown below:
+
+```text
+pub  2048R/7BD9BF62 2011-08-19 [expires: 2027-05-24]
+       Key fingerprint = 573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62
+uid nginx signing key <signing-key@nginx.com>
+```
+
+Finally, import the key into the rpm database:
+
+```bash
+sudo rpmkeys --import /tmp/nginx_signing.key
+```
+
+To install nginx, run the following command:
+
+```bash
+sudo zypper install nginx
+```
+
+#### Alpine
+
+Install prerequisites:
+
+```bash
+sudo apk add openssl curl ca-certificates
+```
+
+To set up the apk repository to use stable nginx packages, run the following command:
+
+```bash
+printf "%s%s%s%s\n" \
+    "@nginx " \
+    "http://mirrors.jcut.edu.cn/nginx/alpine/v" \
+    `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
+    "/main" \
+    | sudo tee -a /etc/apk/repositories
+```
+
+If you want to use mainline nginx packages, run the following command:
+
+```bash
+printf "%s%s%s%s\n" \
+    "@nginx " \
+    "http://mirrors.jcut.edu.cn/nginx/mainline/alpine/v" \
+    `egrep -o '^[0-9]+\.[0-9]+' /etc/alpine-release` \
+    "/main" \
+    | sudo tee -a /etc/apk/repositories
+```
+
+Next, import the official nginx signing key so that apk can verify the authenticity of the packages. Get the key:
+
+```bash
+curl -o /tmp/nginx_signing.rsa.pub https://nginx.org/keys/nginx_signing.rsa.pub
+```
+
+Verify that the downloaded file contains the correct key:
+
+```bash
+openssl rsa -pubin -in /tmp/nginx_signing.rsa.pub -text -noout
+```
+
+The output should contain the following:
+
+```text
+Public-Key: (2048 bit)
+Modulus:
+     00:fe:14:f6:0a:1a:b8:86:19:fe:cd:ab:02:9f:58:
+     2f:37:70:15:74:d6:06:9b:81:55:90:99:96:cc:70:
+     5c:de:5b:e8:4c:b2:0c:47:5b:a8:a2:98:3d:11:b1:
+     f6:7d:a0:46:df:24:23:c6:d0:24:52:67:ba:69:ab:
+     9a:4a:6a:66:2c:db:e1:09:f1:0d:b2:b0:e1:47:1f:
+     0a:46:ac:0d:82:f3:3c:8d:02:ce:08:43:19:d9:64:
+     86:c4:4e:07:12:c0:5b:43:ba:7d:17:8a:a3:f0:3d:
+     98:32:b9:75:66:f4:f0:1b:2d:94:5b:7c:1c:e6:f3:
+     04:7f:dd:25:b2:82:a6:41:04:b7:50:93:94:c4:7c:
+     34:7e:12:7c:bf:33:54:55:47:8c:42:94:40:8e:34:
+     5f:54:04:1d:9e:8c:57:48:d4:b0:f8:e4:03:db:3f:
+     68:6c:37:fa:62:14:1c:94:d6:de:f2:2b:68:29:17:
+     24:6d:f7:b5:b3:18:79:fd:31:5e:7f:4c:be:c0:99:
+     13:cc:e2:97:2b:dc:96:9c:9a:d0:a7:c5:77:82:67:
+     c9:cb:a9:e7:68:4a:e1:c5:ba:1c:32:0e:79:40:6e:
+     ef:08:d7:a3:b9:5d:1a:df:ce:1a:c7:44:91:4c:d4:
+     99:c8:88:69:b3:66:2e:b3:06:f1:f4:22:d7:f2:5f:
+     ab:6d
+Exponent: 65537 (0x10001)
+```
+
+Finally, move the key to apk's trusted keys storage:
+
+```bash
+sudo mv /tmp/nginx_signing.rsa.pub /etc/apk/keys/
+```
+
+To install nginx, run the following command:
+
+```bash
+sudo apk add nginx@nginx
+```
+
+When installing packages with dynamic modules, the @nginx tag should also be specified:
+
+```bash
+sudo apk add nginx-module-image-filter@nginx nginx-module-njs@nginx
+```
+
+#### Amazon Linux
+
+Install prerequisites:
+
+```bash
+sudo yum install yum-utils
+```
+
+To set up the yum repository for Amazon Linux 2, create a file named `/etc/yum.repos.d/nginx.repo` with the following content:
+
+```text
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/amzn2/$releasever/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/mainline/amzn2/$releasever/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+```
+
+To set up the yum repository for Amazon Linux 2023, create a file named `/etc/yum.repos.d/nginx.repo` with the following content:
+
+```text
+[nginx-stable]
+name=nginx stable repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/amzn/2023/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+
+[nginx-mainline]
+name=nginx mainline repo
+baseurl=http://mirrors.jcut.edu.cn/nginx/mainline/amzn/2023/$basearch/
+gpgcheck=1
+enabled=0
+gpgkey=https://nginx.org/keys/nginx_signing.key
+module_hotfixes=true
+priority=9
+```
+
+By default, the stable nginx repository is used. If you want to use the mainline nginx packages, run the following command:
+
+```bash
+sudo yum-config-manager --enable nginx-mainline
+```
+
+To install nginx, run the following command:
+
+```bash
+sudo yum install nginx
+```
+
+When prompted to accept the GPG key, verify that the fingerprint matches `573B FD6B 3D8F BC64 1079 A6AB ABF5 BD82 7BD9 BF62`, and if so, accept it.
+
+> #### Note
+> Since version 1.9.11, nginx supports dynamic modules. The following modules are built as dynamic modules and distributed as separate packages:
+> ```text
+> nginx-module-geoip
+> nginx-module-image-filter
+> nginx-module-njs
+> nginx-module-perl
+> nginx-module-xslt

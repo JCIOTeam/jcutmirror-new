@@ -1,0 +1,71 @@
+## Node.js Repository Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/nodejs-release/](https://mirrors.jcut.edu.cn/nodejs-release/)
+
+### Description
+
+Node.js repository mirror, containing contents from https://nodejs.org/dist/
+
+### Usage Instructions
+
+You can manually select and download the version you need, or use it with version managers like `n`, `nvm`, or `fnm`. The methods are as follows:
+
+#### n
+
+```bash
+# Set environment variable
+
+export NODE_MIRROR=https://mirrors.jcut.edu.cn/nodejs-release/
+
+# Then use n normally
+
+sudo n stable
+```
+
+#### nvm
+
+```bash
+# Set environment variable
+
+export NVM_NODEJS_ORG_MIRROR=https://mirrors.jcut.edu.cn/nodejs-release/
+
+# Then use nvm normally
+
+sudo nvm install <version>
+```
+
+#### fnm
+
+```bash
+# Set environment variable
+
+export FNM_NODE_DIST_MIRROR=https://mirrors.jcut.edu.cn/nodejs-release/
+
+# Then use fnm normally
+
+fnm install <version>
+```
+
+#### volta
+
+Create or edit `~/.volta/hooks.json` (Linux/MacOS), or `%LOCALAPPDATA%\Volta\hooks.json` (Windows), and replace the content with:
+
+```json
+{
+    "node": {
+        "index": {
+            "template": "https://mirrors.jcut.edu.cn/nodejs-release/index.json"
+        },
+        "distro": {
+            "template": "https://mirrors.jcut.edu.cn/nodejs-release/v{{version}}/node-v{{version}}-{{os}}-{{arch}}.tar.gz"
+        }
+    }
+}
+```
+
+After that, you can use `volta` normally:
+
+```bash
+volta install node@<version>

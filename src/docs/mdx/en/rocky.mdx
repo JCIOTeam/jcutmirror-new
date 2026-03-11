@@ -1,0 +1,60 @@
+## Rocky Linux Repository Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/rocky/](https://mirrors.jcut.edu.cn/rocky/)
+
+### Description
+
+Rocky Linux software repository.
+
+### Supported Architectures
+
+x86_64, aarch64
+
+### Supported Versions
+
+8, 9
+
+---
+
+### Usage Instructions
+
+#### Method 1
+
+For Rocky Linux 8, use the following commands to replace the default configuration:
+
+```shell
+sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.jcut.edu.cn/rocky|g' \
+    -i.bak \
+    /etc/yum.repos.d/Rocky-AppStream.repo \
+    /etc/yum.repos.d/Rocky-BaseOS.repo \
+    /etc/yum.repos.d/Rocky-Extras.repo \
+    /etc/yum.repos.d/Rocky-PowerTools.repo
+```
+
+For Rocky Linux 9, use the following commands to replace the default configuration:
+
+```shell
+sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.jcut.edu.cn/rocky|g' \
+    -i.bak \
+    /etc/yum.repos.d/rocky-extras.repo \
+    /etc/yum.repos.d/rocky.repo
+```
+
+The above commands only replace the default enabled repositories. After replacement, please run `dnf makecache` to update the cache.
+
+#### Method 2 (One-click Script)
+
+```bash
+# Using curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# Using wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## Either method above works
+```
+
+> This document was written with reference to http://mirrors.ustc.edu.cn/help/rocky.html.

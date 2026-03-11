@@ -1,0 +1,33 @@
+## openEuler Mirror Usage Guide
+
+### URL
+
+[https://mirrors.jcut.edu.cn/openeuler/](https://mirrors.jcut.edu.cn/openeuler/)
+
+### Description
+
+openEuler public mirror software repository.
+
+### Supported Architectures
+
+Officially supported architectures.
+
+### Usage Instructions
+
+#### Method 1
+
+Replace the default repository address `http://repo.openeuler.org/` with `https://mirrors.jcut.edu.cn/openeuler/` in the `/etc/yum.repos.d/openEuler.repo` file:
+
+```bash
+sed -i.bak 's|http://repo.openeuler.org/|https://mirrors.jcut.edu.cn/openeuler/|g' /etc/yum.repos.d/openEuler.repo
+```
+
+#### Method 2 (One-click Script)
+
+```bash
+# Using curl
+bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
+# Using wget
+bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+
+## Either method above works
