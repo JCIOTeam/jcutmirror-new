@@ -6,47 +6,39 @@
 import type React from 'react';
 
 export interface NewsMeta {
-    slug:    string;
-    title:   string;   // 标题（中文）
-    titleEn?: string;  // 可选英文标题，缺省时回退到 title
-    date:    string;   // YYYY-MM-DD
-    summary: string;   // 一行摘要（中文）
+    slug:      string;
+    title:     string;
+    titleEn?:  string;
+    date:      string;   // YYYY-MM-DD
+    summary:   string;
     summaryEn?: string;
-    tags?:   string[];
+    tags?:     string[];
 }
 
-// ── 元数据 —— 同步 eager 加载，用于列表页和首页 widget ─────────────────────
-const metaModules = import.meta.glob<{ meta: Omit<NewsMeta, 'slug'> }>(
-    './mdx/*.mdx',
-    { eager: true }
-);
+// 一次 eager glob，同时拿到 meta（列表/首页）和 default（详情页正文）
+const modules = import.meta.glob<{
+    meta:    Omit<NewsMeta, 'slug'>;
+    default: React.FC;
+}>('./mdx/*.mdx', { eager: true });
 
+// ── 元数据列表（同步，供列表页 / 首页 widget 使用）────────────────────────────
 export const getNewsList = (): NewsMeta[] =>
-    Object.entries(metaModules)
+    Object.entries(modules)
         .map(([path, mod]) => ({
             slug: path.replace('./mdx/', '').replace('.mdx', ''),
-            // meta 是 MDX 文件里 export const meta = {...} 导出的对象
             ...(mod.meta ?? { title: '(未命名)', date: '1970-01-01', summary: '' }),
         }))
-        .sort((a, b) => b.date.localeCompare(a.date)); // 按日期降序
+        .sort((a, b) => b.date.localeCompare(a.date));
 
 export const getNewsItem = (slug: string): NewsMeta | undefined =>
     getNewsList().find(n => n.slug === slug);
 
-// ── 正文组件 —— 懒加载，只在详情页使用 ──────────────────────────────────────
-const componentModules = import.meta.glob<{ default: React.FC }>(
-    './mdx/*.mdx',
-    { eager: false }
-);
-
-export const loadNewsArticle = async (slug: string): Promise<React.FC | null> => {
+// ── 正文组件（同步，详情页直接取，无需 async）────────────────────────────────
+export const getNewsArticle = (slug: string): React.FC | null => {
     const key = `./mdx/${slug}.mdx`;
-    const importFn = componentModules[key];
-    if (!importFn) return null;
-    try {
-        const mod = await importFn();
-        return mod.default ?? null;
-    } catch {
-        return null;
-    }
+    return modules[key]?.default ?? null;
 };
+
+// 保留旧名称兼容性（之前 NewsDetailPage 用的是 loadNewsArticle）
+export const loadNewsArticle = async (slug: string): Promise<React.FC | null> =>
+    Promise.resolve(getNewsArticle(slug));
