@@ -256,108 +256,187 @@
       padding: 24px 20px 0;
     }
 
-    /* 当前路径显示 */
-    .current-path-card {
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      margin-bottom: 16px;
+    /* 当前路径行（左对齐，简洁） */
+    .path-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: var(--shadow);
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 2px 0;
     }
-
-    .current-path-icon {
-      width: 20px;
-      height: 20px;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .current-path-text {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.875rem;
+    .path-label {
+      font-size: 0.82rem;
       color: var(--text-secondary);
-      overflow: hidden;
-      text-overflow: ellipsis;
       white-space: nowrap;
     }
-
-    .current-path-text strong {
+    .path-value {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
       color: var(--text-primary);
-      font-weight: 700;
+      word-break: break-all;
     }
 
-    /* ===== FancyIndex 表格美化 ===== */
+    /* ===== FancyIndex 表格样式（已合并 fancyindex.css） ===== */
     /* 注：FancyIndex 自带表格，通过 CSS 覆盖样式 */
+    
+    /* 整体布局 */
+    body {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    /* 表格容器 */
     #list {
-      background: var(--bg-primary);
+      table-layout: fixed;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
       box-shadow: var(--shadow);
+      background: var(--bg-primary);
       margin: 0 0 24px;
-      width: 100%;
-      border-collapse: collapse;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background .2s, border-color .2s;
     }
 
-    #list thead { background: var(--bg-secondary); }
+    /* 列宽定义（三列：文件名占剩余空间，大小固定，日期固定） */
+    #list thead tr th:nth-child(1) { width: auto; }          /* 文件名：占满剩余 */
+    #list thead tr th:nth-child(2) { width: 110px; }         /* 文件大小 */
+    #list thead tr th:nth-child(3) { width: 160px; }         /* 修改时间 */
 
-    #list thead th {
-      padding: 12px 16px;
+    /* 表头 */
+    #list thead tr {
+      background: var(--bg-secondary);
+    }
+
+    #list thead tr th {
+      padding: 11px 16px;
       text-align: left;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       font-weight: 700;
       color: var(--text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      overflow: hidden;
     }
 
+    #list thead tr th a {
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    #list thead tr th a:hover { color: var(--accent); }
+
+    /* 大小列右对齐 */
+    #list thead tr th:nth-child(2) { text-align: right; }
+
+    /* 表格行 */
     #list tbody tr {
       border-bottom: 1px solid var(--border);
       transition: background-color 0.12s;
     }
 
     #list tbody tr:last-child { border-bottom: none; }
+    #list tbody tr:hover      { background: var(--accent-light); }
 
-    #list tbody tr:hover { background: var(--accent-light); }
-
-    #list tbody td {
-      padding: 10px 16px;
+    /* 单元格通用 */
+    #list tbody tr td {
+      padding: 9px 16px;
       font-size: 0.875rem;
       color: var(--text-primary);
+      /* 单元格内容超出时截断，保证每列宽度固定 */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    #list tbody td a {
+    /* 文件名列 */
+    #list tbody tr td:nth-child(1) {
+      /* 文件名允许换行（路径可能很长） */
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    #list tbody tr td a {
       color: var(--accent);
       text-decoration: none;
-      font-family: "JetBrains Mono", monospace;
-      font-size: 0.85rem;
+      font-family: "JetBrains Mono", "Courier New", Courier, monospace;
+      font-size: 0.84rem;
       font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    #list tbody td a:hover { text-decoration: underline; }
+    #list tbody tr td a:hover {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
 
-    /* 目录条目特殊样式 */
-    #list .dir a::before { content: "📁 "; }
-    #list .file a::before { content: "📄 "; }
+    /* 上级目录 */
+    #list tbody tr.parent td a {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* 文件大小列 */
+    #list tbody tr td.size,
+    #list tbody tr td:nth-child(2) {
+      color: var(--text-secondary);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* 修改时间列 */
+    #list tbody tr td.date,
+    #list tbody tr td:nth-child(3) {
+      color: var(--text-secondary);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
 
     /* ===== 响应式 ===== */
     @media (max-width: 768px) {
+      /* 小屏隐藏日期列 */
+      #list thead tr th:nth-child(3),
+      #list tbody tr td:nth-child(3) { display: none; }
+
+      #list tbody tr td { padding: 8px 12px; }
+      
       .nav-links { display: none; }
       .logo-text { font-size: 0.9rem; }
       .breadcrumb-inner { padding: 8px 16px; }
       .content-wrapper { padding: 16px 12px 0; }
-      #list thead th:nth-child(3),
-      #list tbody td:nth-child(3) { display: none; }
     }
 
     @media (max-width: 480px) {
+      /* 超小屏再隐藏大小列 */
+      #list thead tr th:nth-child(2),
+      #list tbody tr td:nth-child(2) { display: none; }
+      
       .btn-home span { display: none; }
       .header-inner { padding: 0 12px; gap: 8px; }
+    }
+
+    /* ===== 打印样式 ===== */
+    @media print {
+      .site-header, .breadcrumb-bar, .site-footer { display: none; }
+      #list { box-shadow: none; border: 1px solid #ccc; }
     }
   </style>
 </head>
@@ -367,12 +446,9 @@
 <header class="site-header" role="banner">
   <div class="header-inner">
     <!-- Logo -->
-    <a href="/" class="logo" aria-label="JCut Mirror 首页">
-      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-11.3 2.1 2.1M15.3 15.3l2.1 2.1"/>
-      </svg>
-      <span class="logo-text">JCut<span>Mirror</span></span>
+    <a href="/" class="logo" aria-label="JCUT Mirror 首页">
+      <img src="/favicon.svg" alt="JCUT Mirror Logo" style="width: 26px; height: 26px;" />
+      <span class="logo-text">JCUT<span>Mirror</span></span>
     </a>
 
     <!-- 导航链接 -->
@@ -441,18 +517,15 @@
 
 <!-- ===== 主内容区 ===== -->
 <div class="content-wrapper">
-  <!-- 当前路径提示卡 -->
-  <div class="current-path-card" role="status" aria-live="polite">
-    <svg class="current-path-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+  <!-- 当前路径（左对齐内联行，不用浮动卡片） -->
+  <div class="path-row" role="status" aria-live="polite">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);flex-shrink:0;" aria-hidden="true">
       <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
     </svg>
-    <div class="current-path-text">
-      <span data-i18n-prefix="当前目录: ">当前目录: </span>
-      <strong id="current-path-display">加载中...</strong>
-    </div>
+    <span class="path-label">当前目录：</span>
+    <span id="current-path-display" class="path-value">加载中…</span>
   </div>
-</div>
-
+<!-- .content-wrapper stays OPEN — fancyindex injects #list here, footer.html closes it -->
 <!-- FancyIndex 将在此处插入文件列表表格 -->
 
 <script>

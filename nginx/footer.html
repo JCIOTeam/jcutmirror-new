@@ -1,298 +1,66 @@
-<!-- FancyIndex footer.html -->
-<!-- 注意：此文件插入在文件列表表格之后 -->
+</div><!-- /.content-wrapper — opened in header.html -->
 
-<style>
-  /* ===== 页脚样式 ===== */
-  .site-footer {
-    background: var(--bg-primary);
-    border-top: 1px solid var(--border);
-    margin-top: 32px;
-    padding: 32px 0 20px;
-  }
-
-  .footer-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 32px;
-    margin-bottom: 24px;
-  }
-
-  /* 页脚 Logo */
-  .footer-logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .footer-logo-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--accent);
-  }
-
-  .footer-logo-text {
-    font-family: "JetBrains Mono", monospace;
-    font-weight: 800;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-  }
-
-  .footer-logo-text span { color: var(--accent); }
-
-  .footer-desc {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    margin-bottom: 14px;
-  }
-
-  /* 社交图标 */
-  .footer-socials {
-    display: flex;
-    gap: 6px;
-  }
-
-  .social-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
-  }
-
-  .social-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-light);
-  }
-
-  .social-btn svg { width: 15px; height: 15px; }
-
-  /* 页脚链接组 */
-  .footer-col-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 12px;
-  }
-
-  .footer-links-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .footer-links-list a {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-
-  .footer-links-list a:hover { color: var(--accent); }
-
-  /* 分割线 */
-  .footer-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin-bottom: 16px;
-  }
-
-  /* 版权栏 */
-  .footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .footer-copyright {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-  }
-
-  .footer-powered {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    font-family: "JetBrains Mono", monospace;
-  }
-
-  /* 响应式 */
-  @media (max-width: 768px) {
-    .footer-grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .footer-grid > :first-child {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .footer-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .footer-bottom {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  }
-
-  /* FancyIndex 底部表格间距修正 */
-  .content-wrapper + * { margin-top: 0 !important; }
-</style>
-
-<!-- ===== 站点页脚 ===== -->
-<footer class="site-footer" role="contentinfo">
-  <div class="footer-inner">
-    <div class="footer-grid">
-      <!-- 左列：Logo + 描述 -->
-      <div>
-        <a href="/" class="footer-logo" aria-label="JCUT Mirror 首页">
-          <svg class="footer-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 3v3m0 12v3M3 12h3m12 0h3m-2.6-6.4-2.1 2.1M8.7 15.3l-2.1 2.1m0-11.3 2.1 2.1M15.3 15.3l2.1 2.1"/>
-          </svg>
-          <span class="footer-logo-text">JCUT<span>Mirror</span></span>
-        </a>
-        <p class="footer-desc" data-i18n-desc>
-          由 JCUT 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。
-        </p>
-        <div class="footer-socials">
-          <!-- GitHub -->
-          <a
-            href="https://github.com/jcut"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-btn"
-            aria-label="GitHub"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
-            </svg>
-          </a>
-          <!-- Email -->
-          <a
-            href="mailto:stucloud@jcut.edu.cn"
-            class="social-btn"
-            aria-label="发送邮件"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- 中列：友情链接 -->
-      <div>
-        <div class="footer-col-title" data-i18n-links-title>友情链接</div>
-        <ul class="footer-links-list">
-          <li><a href="https://mirrors.tuna.tsinghua.edu.cn" target="_blank" rel="noopener noreferrer">TUNA Mirror</a></li>
-          <li><a href="https://mirrors.ustc.edu.cn" target="_blank" rel="noopener noreferrer">USTC Mirror</a></li>
-          <li><a href="https://mirror.nju.edu.cn" target="_blank" rel="noopener noreferrer">NJU Mirror</a></li>
-        </ul>
-      </div>
-
-      <!-- 右列：联系方式 -->
-      <div>
-        <div class="footer-col-title" data-i18n-contact-title>联系我们</div>
-        <ul class="footer-links-list">
-          <li><a href="mailto:stucloud@jcut.edu.cn">stucloud@jcut.edu.cn</a></li>
-          <li><a href="/status">系统状态 / Status</a></li>
-          <li>
-            <a
-              href="https://github.com/jciot/mirror-site"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              源代码 / Source Code
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <hr class="footer-divider" />
-
-    <!-- 版权信息 -->
-    <div class="footer-bottom">
-      <span class="footer-copyright" id="footer-copyright">
-        © 2026 JCUT Mirror. All rights reserved.
-      </span>
-      <span class="footer-powered">
-        Powered by tunasync & Nginx FancyIndex
-      </span>
-    </div>
+<!-- ── 页脚 ── -->
+<footer style="border-top:1px solid var(--border);background:var(--bg-primary);padding:20px;margin-top:auto;">
+  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <span style="font-size:.82rem;color:var(--text-secondary);">© 2026 JCUT Mirror · 荆楚理工学院开源镜像站</span>
+    <span style="font-size:.78rem;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;">Powered by tunasync &amp; Nginx FancyIndex</span>
   </div>
 </footer>
 
 <script>
-  // ===== 页脚初始化脚本 =====
+// ── 文件类型图标（注入到 #list 每行的文件名链接前）────────────────────────────
+// SVG 字符串按类型分组，颜色使用 CSS 变量近似值
+const ICONS = {
+  parent: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-2px"><path d="M15 18l-6-6 6-6"/></svg>`,
+  folder: `<svg width="15" height="15" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-2px"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>`,
+  image:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+  archive:`<svg width="15" height="15" viewBox="0 0 24 24" fill="#FDE68A" stroke="#B45309" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>`,
+  iso:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="#BFDBFE" stroke="#1D4ED8" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`,
+  code:   `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" style="flex-shrink:0;vertical-align:-2px"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  text:   `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+  video:  `<svg width="15" height="15" viewBox="0 0 24 24" fill="#FECACA" stroke="#DC2626" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`,
+  rpm:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="#E0E7FF" stroke="#4338CA" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+  deb:    `<svg width="15" height="15" viewBox="0 0 24 24" fill="#FCE7F3" stroke="#BE185D" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+  file:   `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+};
 
-  // 更新版权年份
-  (function updateCopyright() {
-    const el = document.getElementById('footer-copyright');
-    if (el) {
-      el.textContent = `© ${new Date().getFullYear()} JCUT Mirror. All rights reserved.`;
-    }
-  })();
+function getIcon(name, isParent) {
+  if (isParent) return ICONS.parent;
+  const lower = name.toLowerCase().replace(/\/$/, '');
+  // 目录
+  if (name.endsWith('/')) return ICONS.folder;
+  const ext = lower.split('.').pop();
+  if (['jpg','jpeg','png','gif','webp','svg','bmp','ico','avif'].includes(ext)) return ICONS.image;
+  if (['iso','img'].includes(ext)) return ICONS.iso;
+  if (['tar','gz','bz2','xz','zst','zip','7z','rar','tgz','txz'].includes(ext)) return ICONS.archive;
+  if (['deb'].includes(ext)) return ICONS.deb;
+  if (['rpm'].includes(ext)) return ICONS.rpm;
+  if (['mp4','mkv','avi','mov','wmv','flv','webm'].includes(ext)) return ICONS.video;
+  if (['sh','py','js','ts','c','cpp','h','go','rs','java','php','rb','pl','lua','yaml','yml','json','toml','conf','cfg','ini','xml','html','css'].includes(ext)) return ICONS.code;
+  if (['txt','md','rst','log','csv','readme','license','changelog','authors','notice'].includes(ext) || name.match(/^(README|LICENSE|CHANGELOG|AUTHORS|NOTICE)$/i)) return ICONS.text;
+  return ICONS.file;
+}
 
-  // 页脚国际化
-  const footerI18n = {
-    zh: {
-      desc: '由 JCUT 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。',
-      linksTitle: '友情链接',
-      contactTitle: '联系我们',
-    },
-    en: {
-      desc: 'An open source software mirror maintained by the JCUT team, providing fast downloads for campus users.',
-      linksTitle: 'Links',
-      contactTitle: 'Contact',
-    }
-  };
-
-  function applyFooterLocale() {
-    const locale = localStorage.getItem('locale') || 'zh';
-    const dict = footerI18n[locale] || footerI18n.zh;
-
-    const descEl = document.querySelector('[data-i18n-desc]');
-    if (descEl) descEl.textContent = dict.desc;
-
-    const linksTitleEl = document.querySelector('[data-i18n-links-title]');
-    if (linksTitleEl) linksTitleEl.textContent = dict.linksTitle;
-
-    const contactTitleEl = document.querySelector('[data-i18n-contact-title]');
-    if (contactTitleEl) contactTitleEl.textContent = dict.contactTitle;
-  }
-
-  applyFooterLocale();
-
-  // 监听 storage 变化（与主站语言同步）
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'locale') applyFooterLocale();
+function injectIcons() {
+  const rows = document.querySelectorAll('#list tbody tr');
+  rows.forEach(function(row) {
+    const link = row.querySelector('td:first-child a');
+    if (!link) return;
+    const name = link.textContent.trim();
+    const isParent = row.classList.contains('parent') || name === 'Parent directory/';
+    const icon = getIcon(name, isParent);
+    // 插入图标到链接文字最前面
+    link.insertAdjacentHTML('afterbegin', icon + ' ');
   });
+}
+
+// 等 DOM 完全加载后执行（fancyindex 在 footer 注入，此时表格已就位）
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectIcons);
+} else {
+  injectIcons();
+}
 </script>
+</body>
+</html>
