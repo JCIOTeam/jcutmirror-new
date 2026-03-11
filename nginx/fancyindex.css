@@ -1,50 +1,66 @@
 /*
- * fancyindex.css
- * Nginx FancyIndex 样式文件
- * 与主站风格保持一致，支持深色模式
+ * fancyindex.css — Nginx FancyIndex 样式
+ * 与主站风格一致，支持深色模式
  */
 
-/* 与 header.html 中的 CSS 变量对应 */
 :root {
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F8FAFC;
-  --text-primary: #1E293B;
-  --text-secondary: #64748B;
-  --accent: #3B82F6;
-  --accent-light: rgba(59,130,246,0.08);
-  --border: #E2E8F0;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --radius: 8px;
-  --header-bg: rgba(255,255,255,0.92);
+  --bg-primary:    #FFFFFF;
+  --bg-secondary:  #F8FAFC;
+  --text-primary:  #1E293B;
+  --text-secondary:#64748B;
+  --accent:        #3B82F6;
+  --accent-light:  rgba(59,130,246,0.08);
+  --border:        #E2E8F0;
+  --shadow:        0 1px 3px rgba(0,0,0,0.08);
+  --radius:        8px;
+  --header-bg:     rgba(255,255,255,0.92);
 }
 
 [data-theme="dark"] {
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --accent: #60A5FA;
-  --accent-light: rgba(96,165,250,0.1);
-  --border: #334155;
-  --shadow: 0 1px 3px rgba(0,0,0,0.3);
-  --header-bg: rgba(30,41,59,0.95);
+  --bg-primary:    #0F172A;
+  --bg-secondary:  #1E293B;
+  --text-primary:  #F1F5F9;
+  --text-secondary:#94A3B8;
+  --accent:        #60A5FA;
+  --accent-light:  rgba(96,165,250,0.1);
+  --border:        #334155;
+  --shadow:        0 1px 3px rgba(0,0,0,0.3);
+  --header-bg:     rgba(30,41,59,0.95);
 }
 
-/* ===== FancyIndex 默认表格覆盖 ===== */
+/* ===== 整体布局 ===== */
+body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+/* ===== 表格容器 ===== */
 #list {
-  background: var(--bg-primary);
+  /* table-layout: fixed 是列宽均匀的关键——宽度由 colgroup/th 控制，不被内容撑开 */
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  background: var(--bg-primary);
   margin: 0 0 16px;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* 表头 */
+/* ── 列宽定义（三列：文件名占剩余空间，大小固定，日期固定）──────────────────
+   依赖 table-layout: fixed，仅需给 th 设置 width 即可 */
+#list thead tr th:nth-child(1) { width: auto; }          /* 文件名：占满剩余 */
+#list thead tr th:nth-child(2) { width: 110px; }         /* 文件大小 */
+#list thead tr th:nth-child(3) { width: 160px; }         /* 修改时间 */
+
+/* ===== 表头 ===== */
 #list thead tr {
   background: var(--bg-secondary);
 }
@@ -59,50 +75,49 @@
   letter-spacing: 0.07em;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  overflow: hidden;
 }
 
-/* 表头排序链接 */
 #list thead tr th a {
   color: inherit;
   text-decoration: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
 }
 
-#list thead tr th a:hover {
-  color: var(--accent);
-}
+#list thead tr th a:hover { color: var(--accent); }
 
-/* 表格行 */
+/* 大小列右对齐 */
+#list thead tr th:nth-child(2) { text-align: right; }
+
+/* ===== 表格行 ===== */
 #list tbody tr {
   border-bottom: 1px solid var(--border);
-  transition: background-color 0.12s ease;
+  transition: background-color 0.12s;
 }
 
-#list tbody tr:last-child {
-  border-bottom: none;
-}
+#list tbody tr:last-child { border-bottom: none; }
+#list tbody tr:hover      { background: var(--accent-light); }
 
-#list tbody tr:hover {
-  background-color: var(--accent-light);
-}
-
-/* 表格单元格 */
+/* ===== 单元格通用 ===== */
 #list tbody tr td {
   padding: 9px 16px;
   font-size: 0.875rem;
   color: var(--text-primary);
+  /* 单元格内容超出时截断，保证每列宽度固定 */
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 文件名列 - 可自动换行 */
-#list tbody tr td:first-child {
+/* ── 文件名列 ─────────────────────────────────────────────────────────────── */
+#list tbody tr td:nth-child(1) {
+  /* 文件名允许换行（路径可能很长） */
   white-space: normal;
   word-break: break-all;
 }
 
-/* 文件/目录链接 */
 #list tbody tr td a {
   color: var(--accent);
   text-decoration: none;
@@ -119,70 +134,48 @@
   text-underline-offset: 2px;
 }
 
-/* 上级目录链接 */
+/* 上级目录 */
 #list tbody tr.parent td a {
   color: var(--text-secondary);
   font-style: italic;
 }
 
-/* 文件大小列 */
-#list tbody tr td.size {
+/* ── 文件大小列 ───────────────────────────────────────────────────────────── */
+#list tbody tr td.size,
+#list tbody tr td:nth-child(2) {
   color: var(--text-secondary);
   font-family: "JetBrains Mono", monospace;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   text-align: right;
+  white-space: nowrap;
 }
 
-/* 修改时间列 */
-#list tbody tr td.date {
+/* ── 修改时间列 ───────────────────────────────────────────────────────────── */
+#list tbody tr td.date,
+#list tbody tr td:nth-child(3) {
   color: var(--text-secondary);
   font-family: "JetBrains Mono", monospace;
-  font-size: 0.8rem;
-}
-
-/* ===== 整体布局 ===== */
-body {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* FancyIndex 注入的 table 容器，需要外边距 */
-.content-wrapper ~ table,
-.content-wrapper ~ #list {
-  max-width: 1200px;
-  margin: 0 auto 0;
-  padding: 0 20px;
-  display: block;
+  font-size: 0.82rem;
+  white-space: nowrap;
 }
 
 /* ===== 响应式 ===== */
 @media (max-width: 768px) {
+  /* 小屏隐藏日期列 */
   #list thead tr th:nth-child(3),
-  #list tbody tr td:nth-child(3) {
-    display: none;
-  }
+  #list tbody tr td:nth-child(3) { display: none; }
 
-  #list tbody tr td {
-    padding: 8px 12px;
-    font-size: 0.82rem;
-  }
+  #list tbody tr td { padding: 8px 12px; }
 }
 
 @media (max-width: 480px) {
+  /* 超小屏再隐藏大小列 */
   #list thead tr th:nth-child(2),
-  #list tbody tr td:nth-child(2) {
-    display: none;
-  }
+  #list tbody tr td:nth-child(2) { display: none; }
 }
 
-/* ===== 打印样式 ===== */
+/* ===== 打印 ===== */
 @media print {
-  .site-header,
-  .breadcrumb-bar,
-  .site-footer { display: none; }
-
+  .site-header, .breadcrumb-bar, .site-footer { display: none; }
   #list { box-shadow: none; border: 1px solid #ccc; }
 }
