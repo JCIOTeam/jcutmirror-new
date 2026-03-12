@@ -118,14 +118,65 @@ const Home: React.FC = () => {
                         <AnnouncementBanner />
                     </Box>
                     <Box sx={{ maxWidth: 640 }}>
-                        {/* 标签 */}
-                        <Chip
-                            label={locale === 'zh' ? '高校镜像站' : 'University Mirror'}
-                            color="primary"
-                            size="small"
-                            variant="outlined"
-                            sx={{ mb: 2, fontWeight: 700 }}
-                        />
+                        {/* 网络状态胶囊 — 从 API 实时获取用户网络类型 */}
+                        {(() => {
+                            if (campusStatus === undefined) {
+                                return (
+                                    <Skeleton
+                                        variant="rounded"
+                                        width={110}
+                                        height={24}
+                                        sx={{ mb: 2, borderRadius: 6 }}
+                                    />
+                                );
+                            }
+                            const netConfig =
+                                campusStatus === '1'
+                                    ? { icon: <WifiIcon sx={{ fontSize: 14 }} />, label: locale === 'zh' ? '校园网' : 'Campus Network', color: 'success' as const, dot: '#22C55E' }
+                                    : campusStatus === '6'
+                                        ? { icon: <Ipv6Icon sx={{ fontSize: 14 }} />, label: 'IPv6', color: 'info' as const, dot: '#3B82F6' }
+                                        : { icon: <WifiIcon sx={{ fontSize: 14 }} />, label: locale === 'zh' ? '校外网络' : 'External Network', color: 'default' as const, dot: '#94A3B8' };
+
+                            return (
+                                <Tooltip
+                                    title={
+                                        campusStatus === '1' ? t('network.campus')
+                                            : campusStatus === '6' ? t('network.ipv6')
+                                                : (locale === 'zh' ? '当前为校外网络，速度可能较慢' : 'External network, speed may be limited')
+                                    }
+                                    placement="right"
+                                >
+                                    <Chip
+                                        icon={netConfig.icon}
+                                        label={netConfig.label}
+                                        color={netConfig.color}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{
+                                            mb: 2,
+                                            fontWeight: 700,
+                                            '& .MuiChip-icon': { color: netConfig.dot },
+                                            position: 'relative',
+                                            '& .net-dot': {
+                                                display: 'inline-block',
+                                                width: 7,
+                                                height: 7,
+                                                borderRadius: '50%',
+                                                bgcolor: netConfig.dot,
+                                                ml: 0.5,
+                                                animation: campusStatus !== '0'
+                                                    ? 'net-pulse 2.4s ease-in-out infinite'
+                                                    : 'none',
+                                            },
+                                            '@keyframes net-pulse': {
+                                                '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+                                                '50%': { opacity: 0.4, transform: 'scale(0.75)' },
+                                            },
+                                        }}
+                                    />
+                                </Tooltip>
+                            );
+                        })()}
 
                         {/* 标题 */}
                         <Typography
