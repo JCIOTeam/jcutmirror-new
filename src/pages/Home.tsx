@@ -25,9 +25,10 @@ import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
+import { getNewsList } from '@/news';
+
 import AnnouncementBanner from '../components/home/AnnouncementBanner';
 import NewsWidget from '../components/home/NewsWidget';
-import { getNewsList } from '@/news';
 import MirrorCard from '../components/mirrors/MirrorCard';
 import MirrorList from '../components/mirrors/MirrorList';
 import {

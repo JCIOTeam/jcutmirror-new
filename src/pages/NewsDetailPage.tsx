@@ -1,6 +1,7 @@
 // src/pages/NewsDetailPage.tsx
 // 新闻详情页 /news/:slug
 
+import { MDXProvider } from '@mdx-js/react';
 import { ArrowBack as BackIcon } from '@mui/icons-material';
 import {
     Box, Container, Typography, Chip, Divider,
@@ -11,9 +12,9 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 
-import { MDXProvider } from '@mdx-js/react';
-import CodeBlock from '../components/docs/CodeBlock';
 import { loadNewsArticle, getNewsItem } from '@/news';
+
+import CodeBlock from '../components/docs/CodeBlock';
 import { useLocaleStore } from '../stores/mirrorStore';
 
 // MUI 组件映射

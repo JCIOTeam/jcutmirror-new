@@ -1,6 +1,7 @@
 // src/components/docs/DocViewer.tsx
 // Markdown/MDX 文档渲染组件
 
+import { MDXProvider } from '@mdx-js/react';
 import {
     Box,
     Typography,
@@ -15,7 +16,6 @@ import {
     Alert,
     CircularProgress,
 } from '@mui/material';
-import { MDXProvider } from '@mdx-js/react';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';

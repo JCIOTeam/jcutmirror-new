@@ -11,11 +11,11 @@ import './i18n';
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import { useTheme } from './hooks/useTheme';
-import Home from './pages/Home';
-import NewsListPage from './pages/NewsListPage';
-import NewsDetailPage from './pages/NewsDetailPage';
-import MirrorDetail from './pages/MirrorDetail';
 import ErrorPage from './pages/ErrorPage';
+import Home from './pages/Home';
+import MirrorDetail from './pages/MirrorDetail';
+import NewsDetailPage from './pages/NewsDetailPage';
+import NewsListPage from './pages/NewsListPage';
 import NotFound from './pages/NotFound';
 import { useThemeStore } from './stores/mirrorStore';
 

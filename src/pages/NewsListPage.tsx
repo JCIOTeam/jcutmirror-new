@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import { getNewsList } from '@/news';
+
 import { useLocaleStore } from '../stores/mirrorStore';
 
 const NewsListPage: React.FC = () => {

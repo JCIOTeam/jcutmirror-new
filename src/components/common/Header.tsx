@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { useMirrorSearchStore } from '../../stores/mirrorStore';
+
 import LocaleToggle from './LocaleToggle';
 import SearchBar from './SearchBar';
 import ThemeToggle from './ThemeToggle';

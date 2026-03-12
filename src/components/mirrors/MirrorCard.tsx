@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocaleStore } from '../../stores/mirrorStore';
 import type { Mirror } from '../../types';
 import { formatRelativeTime } from '../../utils/time';
+
 import StatusChip from './StatusChip';
 
 interface MirrorCardProps { mirror: Mirror; }
