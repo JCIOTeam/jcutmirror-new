@@ -50,7 +50,8 @@
   "network": {
     "campus": "You are on the campus network, use the internal mirror for faster speed",
     "outside": "You are not on the campus network",
-    "ipv6": "IPv6 connection detected, IPv6 mirrors are available"
+    "ipv6": "IPv6 connection detected, IPv6 mirrors are available",
+    "external": "External network — speeds may be slower"
   },
   "footer": {
     "description": "An open source software mirror maintained by the JCIOT team, providing fast software downloads for campus users.",
