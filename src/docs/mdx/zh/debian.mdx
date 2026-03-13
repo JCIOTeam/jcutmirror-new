@@ -1,6 +1,7 @@
 import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
 
 export const debianVersionList = [
+  "13 (trixie)",
   "12 (bookworm)",
   "11 (bullseye)",
   "10 (buster)",
@@ -9,6 +10,7 @@ export const debianVersionList = [
 ];
 
 export const debianVersionMap = {
+  "13 (trixie)": "trixie",
   "12 (bookworm)": "bookworm",
   "11 (bullseye)": "bullseye",
   "10 (buster)": "buster",
@@ -16,10 +18,10 @@ export const debianVersionMap = {
   "unstable (sid)": "sid",
 };
 
-export const defaultVersion = "12 (bookworm)";
+export const defaultVersion = "13 (trixie)";
 
 export const GenDebianConfig = (version) => {
-  const debianName = debianVersionMap[version] || "bookworm";
+  const debianName = debianVersionMap[version] || "trixie";
   const isOldStable = version === "10 (buster)";
   const isUnstable = version === "unstable (sid)";
   
@@ -62,6 +64,8 @@ amd64(X86_64), i386, arm
 
 所有 *Debian* 当前支持的版本，包括 Stable、OldStable、Testing 和 Unstable，具体版本见 [https://www.debian.org/releases/](https://www.debian.org/releases/)
 
+当前 Stable 为 Debian 13，代号为 trixie。
+
 ---
 
 ### 使用方法
@@ -88,17 +92,6 @@ sudo sed -i 's/deb.debian.org/mirrors.jcut.edu.cn/g' /etc/apt/sources.list.d/deb
 
 <ConfigGenerator promptString="请选择您的 Debian 版本：" versionList={debianVersionList} defaultVersion={defaultVersion} configGen={GenDebianConfig} language="bash" />
 
-#### 方法三 (一键脚本)
-
-```bash
-# 使用 curl
-bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
-# 使用 wget
-bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
-
-## 以上使用任一方式均可
-```
-
 ---
 
 ### 注意事项
@@ -123,3 +116,4 @@ echo "Acquire::http::Pipeline-Depth \"0\";" > /etc/apt/apt.conf.d/99nopipelining
 
 ```bash
 sudo apt install apt-transport-https ca-certificates
+```

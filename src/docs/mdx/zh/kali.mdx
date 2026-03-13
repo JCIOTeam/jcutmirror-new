@@ -32,17 +32,6 @@ deb-src https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
 sudo sed -i "s@http://http.kali.org/kali@https://mirrors.jcut.edu.cn/kali@g" /etc/apt/sources.list
 ```
 
-#### 方法三(一键脚本)
-
-```bash
-# 使用curl
-bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
-# 使用wget
-bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
-
-## 以上使用任一方式均可
-```
-
 ### 注意
 
 > 更改完 `sources.list` 文件后请运行 `sudo apt-get update` 更新索引以生效。

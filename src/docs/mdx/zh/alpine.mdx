@@ -10,7 +10,7 @@ Alpine Linux 软件源
 
 ### 收录架构
 
-x86_64
+x86_64, aarch64, loongarch64
 
 ### 使用说明
 
@@ -24,22 +24,11 @@ x86_64
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.jcut.edu.cn/g' /etc/apk/repositories
 ```
 
-#### 方法二(一键脚本)
-
-```bash
-# 使用curl
-bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
-# 使用wget
-bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
-
-## 以上使用任一方式均可
-```
-
-也可以直接编辑 `/etc/apk/repositories` 文件。以下是 v3.20 版本的参考配置：
+也可以直接编辑 `/etc/apk/repositories` 文件。以下是 v3.23 版本的参考配置：
 
 ```text
-https://mirrors.jcut.edu.cn/alpine/v3.20/main
-https://mirrors.jcut.edu.cn/alpine/v3.20/community
+https://mirrors.jcut.edu.cn/alpine/v3.23/main
+https://mirrors.jcut.edu.cn/alpine/v3.23/community
 ```
 
 也可以使用 `latest-stable` 指向最新的稳定版本：

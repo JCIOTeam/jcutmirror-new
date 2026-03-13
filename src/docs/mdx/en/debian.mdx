@@ -1,6 +1,7 @@
 import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
 
 export const debianVersionList = [
+  "13 (trixie)",
   "12 (bookworm)",
   "11 (bullseye)",
   "10 (buster)",
@@ -9,6 +10,7 @@ export const debianVersionList = [
 ];
 
 export const debianVersionMap = {
+  "13 (trixie)": "trixie",
   "12 (bookworm)": "bookworm",
   "11 (bullseye)": "bullseye",
   "10 (buster)": "buster",
@@ -16,7 +18,7 @@ export const debianVersionMap = {
   "unstable (sid)": "sid",
 };
 
-export const defaultVersion = "12 (bookworm)";
+export const defaultVersion = "13 (trixie)";
 
 export const GenDebianConfig = (version) => {
   const debianName = debianVersionMap[version] || "bookworm";
@@ -60,7 +62,9 @@ amd64 (X86_64), i386, arm
 
 ### Supported Versions
 
-All currently supported versions of *Debian*, including Stable, OldStable, Testing, and Unstable. For specific versions, see [https://www.debian.org/releases/](https://www.debian.org/releases/)
+All currently supported versions of *Debian*, including Stable, OldStable, Testing, and Unstable, for specific versions see [https://www.debian.org/releases/](https://www.debian.org/releases/)
+
+The current Stable is Debian 13, codenamed trixie.
 
 ---
 
