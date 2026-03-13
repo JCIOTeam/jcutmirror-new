@@ -4,7 +4,8 @@
     "mirrors": "Mirrors",
     "help": "Help",
     "about": "About",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "download": "Download ISO"
   },
   "search": {
     "placeholder": "Search mirrors...",

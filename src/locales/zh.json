@@ -4,7 +4,8 @@
     "mirrors": "镜像列表",
     "help": "使用帮助",
     "about": "关于我们",
-    "backHome": "返回主页"
+    "backHome": "返回主页",
+    "download": "镜像下载"
   },
   "search": {
     "placeholder": "搜索镜像...",
