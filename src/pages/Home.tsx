@@ -21,7 +21,7 @@ import {
     Paper,
     Tooltip,
 } from '@mui/material';
-import React, { useEffect } from 'react';
+import React, { cloneElement } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
@@ -230,7 +230,7 @@ const Home: React.FC = () => {
                                                 color: 'text.secondary',
                                                 cursor: 'default',
                                             }}>
-                                                {React.cloneElement(item.icon as React.ReactElement, { sx: { fontSize: { xs: 16, sm: 18 } } })}
+                                                {cloneElement(item.icon as React.ReactElement, { sx: { fontSize: { xs: 16, sm: 18 } } })}
                                                 <Typography variant="body2" color="text.secondary" fontWeight={500}
                                                             sx={{ display: { xs: 'none', sm: 'block' } }}>
                                                     {item.label}

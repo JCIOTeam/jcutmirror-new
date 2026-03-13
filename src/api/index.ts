@@ -11,6 +11,7 @@
 import axios from 'axios';
 
 import type { Mirror, CampusNetworkStatus } from '../types';
+
 import { transformJobs } from './transform';
 import type { RawJob, LocalMeta } from './transform';
 
@@ -42,7 +43,7 @@ async function getLocalData(): Promise<Record<string, LocalMeta>> {
     console.warn('[API] Failed to load local_data.json, using empty metadata', e);
     _localDataCache = {};
   }
-  return _localDataCache!;
+  return _localDataCache as Record<string, LocalMeta>;
 }
 
 // ── 公开 API ──────────────────────────────────────────────────────────────────

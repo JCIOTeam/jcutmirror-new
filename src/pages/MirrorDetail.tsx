@@ -185,7 +185,7 @@ const MirrorDetail: React.FC = () => {
   };
 
   // 右侧侧栏是否显示：只有 API 返回了 files 且不为空时才渲染
-  const hasFiles = Array.isArray(mirror?.files) && mirror!.files.length > 0;
+  const hasFiles = Array.isArray(mirror?.files) && (mirror?.files.length ?? 0) > 0;
 
   if (isLoading) {
     return (

@@ -21,6 +21,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useMirrorSearchStore } from '../../stores/mirrorStore';
 import DownloadModal from '../mirrors/DownloadModal';
+
 import LocaleToggle from './LocaleToggle';
 import SearchBar from './SearchBar';
 import ThemeToggle from './ThemeToggle';

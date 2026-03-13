@@ -10,7 +10,7 @@ import {
     Check as CheckIcon,
 } from '@mui/icons-material';
 import { Box, Typography, Paper, Grid, Tooltip, IconButton } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocaleStore } from '../../stores/mirrorStore';
@@ -54,7 +54,7 @@ const TimeCard: React.FC<{
 const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value }) => {
     const display = value && value !== '-' ? value : '—';
     const hasValue = display !== '—';
-    const [copied, setCopied] = React.useState(false);
+    const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
         if (!hasValue) return;

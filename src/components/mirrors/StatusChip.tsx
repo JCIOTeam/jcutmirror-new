@@ -4,6 +4,7 @@
 import { Box, Chip, Tooltip } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import type { MirrorStatus } from '../../types';
 
 interface StatusChipProps {
