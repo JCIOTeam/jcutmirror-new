@@ -7,23 +7,34 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// 代理配置复用（dev 和 preview 均需要）
-const MIRROR_ORIGIN = 'https://mirrors.jcut.edu.cn';
+const MIRROR_ORIGIN  = 'https://mirrors.jcut.edu.cn';
+const BACKEND_ORIGIN = 'http://127.0.0.1:12345';
+
+type BypassReq = { url?: string; headers: Record<string, string | string[] | undefined> };
 
 const proxyConfig = {
-  '/api': {
+  // 后端镜像状态数据（nginx 在生产中已将 /jobs 代理至后端，dev 模式也保持同一路径）
+  '/jobs': {
     target: MIRROR_ORIGIN,
     changeOrigin: true,
   },
-  '^/(?!@|__vite|node_modules|src|assets)[a-zA-Z0-9_-]+/': {
+
+  // 校园网检测（生产由 nginx 直接返回，dev 回退到主站）
+  '/api/is_campus_network': {
     target: MIRROR_ORIGIN,
     changeOrigin: true,
-    bypass(req: { url?: string; headers: Record<string, string | string[] | undefined> }) {
+  },
+
+  // 镜像文件目录浏览（FancyIndex）
+  '^/(?!@|__vite|node_modules|src|assets|jobs)[a-zA-Z0-9_-]+/': {
+    target: MIRROR_ORIGIN,
+    changeOrigin: true,
+    bypass(req: BypassReq) {
       const url = req.url ?? '';
       if (url.startsWith('/@') || url.startsWith('/__')) return url;
       const accept = String(req.headers['accept'] ?? '');
       if (!accept.includes('text/html')) return url;
-      return null; // null = 走代理
+      return null;
     },
   },
 };
@@ -35,20 +46,11 @@ export default defineConfig({
   ],
 
   resolve: {
-    alias: {
-      '@': resolve(__dirname, 'src'),
-    },
+    alias: { '@': resolve(__dirname, 'src') },
   },
 
-  server: {
-    port: 3000,
-    proxy: proxyConfig,
-  },
-
-  preview: {
-    port: 4173,
-    proxy: proxyConfig,
-  },
+  server:  { port: 3000, proxy: proxyConfig },
+  preview: { port: 4173, proxy: proxyConfig },
 
   build: {
     outDir: 'dist',
