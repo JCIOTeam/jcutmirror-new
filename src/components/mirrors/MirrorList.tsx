@@ -85,18 +85,18 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                */}
                   <TableHead>
                     <TableRow sx={{ bgcolor: 'action.hover' }}>
-                      <TableCell align="center" sx={{ fontWeight: 700, width: { xs: '42%', sm: '22%', md: '20%' } }}>
+                      <TableCell sx={{ fontWeight: 700, width: { xs: '42%', sm: '22%', md: '20%' } }}>
                         {locale === 'zh' ? '镜像名称' : 'Mirror'}
                       </TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 700, width: '30%', display: { xs: 'none', sm: 'table-cell' } }}>
+                      <TableCell sx={{ fontWeight: 700, width: '30%', display: { xs: 'none', sm: 'table-cell' } }}>
                         {locale === 'zh' ? '描述' : 'Description'}
                       </TableCell>
                       <TableCell align="center" sx={{ fontWeight: 700, width: { xs: '18%', sm: '12%', md: '10%' } }}>
                         {t('mirror.size')}
                       </TableCell>
                       {/* 移动端列名缩短为"态" */}
-                      <TableCell align="center" sx={{ fontWeight: 700, width: { xs: '14%', sm: '22%', md: '14%' } }}>
-                        {isMobile ? (locale === 'zh' ? '态' : 'St.') : (locale === 'zh' ? '状态' : 'Status')}
+                      <TableCell align="center" sx={{ fontWeight: 700, width: { xs: '14%', sm: '22%', md: '14%' }, whiteSpace: 'nowrap' }}>
+                        {locale === 'zh' ? '状态' : 'Status'}
                       </TableCell>
                       <TableCell align="center" sx={{ fontWeight: 700, width: '20%', display: { xs: 'none', md: 'table-cell' } }}>
                         {t('mirror.lastUpdated')}
@@ -122,7 +122,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                             aria-label={`查看 ${mirror.name[locale]} 详情`}
                         >
                           {/* 镜像名称 */}
-                          <TableCell align="center">
+                          <TableCell>
                             <Typography
                                 variant="body2"
                                 sx={{ fontWeight: 700, color: 'text.primary', fontSize: '0.88rem' }}
@@ -132,7 +132,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                           </TableCell>
 
                           {/* 描述 */}
-                          <TableCell align="center" sx={{ display: { xs: 'none', sm: 'table-cell' }, color: 'text.secondary' }}>
+                          <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' }, color: 'text.secondary' }}>
                             <Typography
                                 variant="caption"
                                 sx={{
@@ -170,7 +170,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                             <Button
                                 size="small"
                                 variant="text"
-                                sx={{ fontSize: '0.75rem', p: '2px 6px', minWidth: 0, display: { xs: 'none', sm: 'inline-flex' } }}
+                                sx={{ fontSize: '0.75rem', p: '2px 6px', minWidth: 0, display: { xs: 'none', sm: 'inline-flex' }, whiteSpace: 'nowrap' }}
                                 onClick={(e) => { e.stopPropagation(); navigate(`/mirrors/${mirror.id}?tab=help`); }}
                             >
                               {t('mirror.viewHelp')}
