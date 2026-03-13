@@ -1,62 +1,66 @@
 // src/components/common/Header.tsx
 // 顶部导航栏 —— 响应式
-// 移动端：Logo + 搜索图标（点击展开内联搜索框） + 主题 + 汉堡菜单
-// 桌面端：Logo + 搜索框 + 语言 + 主题
+// 移动端：Logo + 搜索 + 主题 + 汉堡菜单
+// 桌面端：Logo + 搜索框 + 下载按钮 + 语言 + 主题
 
-import { Menu as MenuIcon, Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
 import {
-    AppBar, Toolbar, Typography, Box, IconButton,
-    Drawer, List, ListItem, ListItemButton, ListItemText,
-    Divider, InputBase, useMediaQuery, useTheme as useMuiTheme,
-    Fade,
+    Close as CloseIcon,
+    Download as DownloadIcon,
+    Menu as MenuIcon,
+    Search as SearchIcon,
+} from '@mui/icons-material';
+import {
+    AppBar, Box, Button, Divider, Drawer, Fade, IconButton,
+    InputBase, List, ListItem, ListItemButton, ListItemIcon,
+    ListItemText, Toolbar, Tooltip, Typography,
+    useMediaQuery, useTheme as useMuiTheme,
 } from '@mui/material';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useMirrorSearchStore } from '../../stores/mirrorStore';
-
+import DownloadModal from '../mirrors/DownloadModal';
 import LocaleToggle from './LocaleToggle';
 import SearchBar from './SearchBar';
 import ThemeToggle from './ThemeToggle';
 
 const Header: React.FC = () => {
-    const { t } = useTranslation();
-    const navigate = useNavigate();
-    const location = useLocation();
-    const muiTheme = useMuiTheme();
-    const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
+    const { t }      = useTranslation();
+    const navigate   = useNavigate();
+    const location   = useLocation();
+    const muiTheme   = useMuiTheme();
+    const isMobile   = useMediaQuery(muiTheme.breakpoints.down('md'));
 
-    const [drawerOpen, setDrawerOpen]     = useState(false);
-    const [searchOpen, setSearchOpen]     = useState(false);
+    const [drawerOpen,   setDrawerOpen]   = useState(false);
+    const [searchOpen,   setSearchOpen]   = useState(false);
+    const [downloadOpen, setDownloadOpen] = useState(false);
     const searchInputRef                  = useRef<HTMLInputElement>(null);
 
-    // 使用全局搜索 store，与桌面端 SearchBar 共享状态
     const { searchQuery, setSearchQuery } = useMirrorSearchStore();
 
-    // 搜索框展开时自动聚焦
     useEffect(() => {
-        if (searchOpen) {
-            setTimeout(() => searchInputRef.current?.focus(), 50);
-        }
+        if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50);
     }, [searchOpen]);
 
-    // 关闭搜索时清空查询
     const handleCloseSearch = () => {
         setSearchOpen(false);
         setSearchQuery('');
     };
 
-    // 抽屉导航项
+    // 侧边栏导航项
     const navItems = [
-        { label: t('nav.home'),    action: () => { navigate('/');           setDrawerOpen(false); } },
-        { label: t('nav.mirrors'), action: () => {
-                // 若已在首页直接滚动，否则先导航到首页再滚动
+        {
+            label:  t('nav.home'),
+            action: () => { navigate('/'); setDrawerOpen(false); },
+        },
+        {
+            label: t('nav.mirrors'),
+            action: () => {
                 if (location.pathname === '/') {
                     document.getElementById('mirrors')?.scrollIntoView({ behavior: 'smooth' });
                 } else {
                     navigate('/');
-                    // 导航后稍等 DOM 更新再滚动
                     setTimeout(() => document.getElementById('mirrors')?.scrollIntoView({ behavior: 'smooth' }), 300);
                 }
                 setDrawerOpen(false);
@@ -69,15 +73,15 @@ const Header: React.FC = () => {
             <AppBar position="sticky" elevation={0}>
                 <Toolbar sx={{ gap: 1, minHeight: { xs: 56, sm: 64 } }}>
 
-                    {/* ── Logo —— 搜索展开时隐藏，节省空间 ── */}
+                    {/* Logo */}
                     <Fade in={!searchOpen}>
                         <Box
                             onClick={() => navigate('/')}
                             sx={{
-                                display: searchOpen ? 'none' : 'flex',
+                                display:    searchOpen ? 'none' : 'flex',
                                 alignItems: 'center',
-                                gap: 1,
-                                cursor: 'pointer',
+                                gap:        1,
+                                cursor:     'pointer',
                                 flexShrink: 0,
                             }}
                             role="link"
@@ -87,11 +91,11 @@ const Header: React.FC = () => {
                             <Typography
                                 variant="h6"
                                 sx={{
-                                    fontWeight: 800,
-                                    fontSize: { xs: '1rem', sm: '1.1rem' },
-                                    fontFamily: '"JetBrains Mono", monospace',
+                                    fontWeight:    800,
+                                    fontSize:      { xs: '1rem', sm: '1.1rem' },
+                                    fontFamily:    '"JetBrains Mono", monospace',
                                     letterSpacing: '-0.02em',
-                                    display: { xs: 'none', sm: 'block' },
+                                    display:       { xs: 'none', sm: 'block' },
                                 }}
                             >
                                 JCUT
@@ -102,32 +106,32 @@ const Header: React.FC = () => {
                         </Box>
                     </Fade>
 
-                    {/* ── 桌面端搜索框 ── */}
+                    {/* 桌面端搜索框 */}
                     {!isMobile && (
                         <Box sx={{ flex: 1, maxWidth: 400, mx: 2 }}>
                             <SearchBar fullWidth />
                         </Box>
                     )}
 
-                    {/* ── 移动端内联搜索框（展开时占满剩余空间） ── */}
+                    {/* 移动端内联搜索框 */}
                     {isMobile && searchOpen && (
                         <Box
                             sx={{
-                                flex: 1,
-                                display: 'flex',
+                                flex:       1,
+                                display:    'flex',
                                 alignItems: 'center',
-                                bgcolor: 'action.hover',
+                                bgcolor:    'action.hover',
                                 borderRadius: 2,
-                                px: 1.5,
-                                mx: 0.5,
-                                height: 38,
+                                px:         1.5,
+                                mx:         0.5,
+                                height:     38,
                             }}
                         >
                             <SearchIcon sx={{ fontSize: 18, color: 'text.secondary', mr: 1, flexShrink: 0 }} />
                             <InputBase
                                 inputRef={searchInputRef}
                                 value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder={t('search.placeholder')}
                                 fullWidth
                                 inputProps={{ 'aria-label': t('search.placeholder') }}
@@ -138,18 +142,37 @@ const Header: React.FC = () => {
 
                     <Box sx={{ flex: 1 }} />
 
-                    {/* ── 桌面端右侧工具栏 ── */}
+                    {/* 桌面端右侧工具栏 */}
                     {!isMobile && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            {/* 镜像下载按钮 */}
+                            <Tooltip title={t('nav.download', '镜像下载')} placement="bottom">
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    startIcon={<DownloadIcon sx={{ fontSize: 16 }} />}
+                                    onClick={() => setDownloadOpen(true)}
+                                    sx={{
+                                        borderRadius:  6,
+                                        fontSize:      '0.8rem',
+                                        px:            1.5,
+                                        py:            0.4,
+                                        fontWeight:    600,
+                                        textTransform: 'none',
+                                        mr:            0.5,
+                                    }}
+                                >
+                                    {t('nav.download', '镜像下载')}
+                                </Button>
+                            </Tooltip>
                             <LocaleToggle />
                             <ThemeToggle />
                         </Box>
                     )}
 
-                    {/* ── 移动端右侧按钮组 ── */}
+                    {/* 移动端右侧按钮组 */}
                     {isMobile && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
-                            {/* 搜索图标 / 关闭图标 */}
                             <IconButton
                                 color="inherit"
                                 size="small"
@@ -158,9 +181,7 @@ const Header: React.FC = () => {
                             >
                                 {searchOpen ? <CloseIcon fontSize="small" /> : <SearchIcon fontSize="small" />}
                             </IconButton>
-
                             <ThemeToggle />
-
                             <IconButton
                                 color="inherit"
                                 onClick={() => setDrawerOpen(true)}
@@ -174,7 +195,7 @@ const Header: React.FC = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* ── 移动端抽屉菜单 ── */}
+            {/* 移动端抽屉菜单 */}
             <Drawer
                 anchor="right"
                 open={drawerOpen}
@@ -195,12 +216,34 @@ const Header: React.FC = () => {
                             </ListItemButton>
                         </ListItem>
                     ))}
+
+                    {/* 镜像下载入口 */}
+                    <ListItem disablePadding>
+                        <ListItemButton
+                            onClick={() => { setDownloadOpen(true); setDrawerOpen(false); }}
+                            sx={{
+                                color:   'primary.main',
+                                '& .MuiListItemIcon-root': { color: 'primary.main', minWidth: 36 },
+                            }}
+                        >
+                            <ListItemIcon>
+                                <DownloadIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={t('nav.download', '镜像下载')}
+                                primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}
+                            />
+                        </ListItemButton>
+                    </ListItem>
                 </List>
                 <Divider />
                 <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <LocaleToggle />
                 </Box>
             </Drawer>
+
+            {/* 下载弹窗 */}
+            <DownloadModal open={downloadOpen} onClose={() => setDownloadOpen(false)} />
         </>
     );
 };

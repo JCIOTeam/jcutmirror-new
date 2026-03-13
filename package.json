@@ -33,7 +33,8 @@
     "react-syntax-highlighter": "^15.5.0",
     "rehype-highlight": "^7.0.0",
     "remark-gfm": "^4.0.0",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "simple-icons": "^16.11.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",
