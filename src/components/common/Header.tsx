@@ -172,7 +172,15 @@ const Header: React.FC = () => {
               <InputBase
                 inputRef={searchInputRef}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (location.pathname !== '/') {
+                    navigate('/');
+                    setTimeout(() => {
+                      document.getElementById('mirrors')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }
+                }}
                 placeholder={t('search.placeholder')}
                 fullWidth
                 inputProps={{ 'aria-label': t('search.placeholder') }}
