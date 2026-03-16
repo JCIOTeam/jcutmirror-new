@@ -38,7 +38,7 @@ export const parseTimestamp = (value: string | number | null | undefined): Date 
  */
 export const formatRelativeTime = (
   value: string | number | null | undefined,
-  locale: Locale,
+  locale: Locale
 ): string => {
   const date = parseTimestamp(value);
   if (!date) return '-';
@@ -58,7 +58,7 @@ export const formatRelativeTime = (
 export const formatAbsoluteTime = (
   value: string | number | null | undefined,
   locale: Locale,
-  fmt = 'yyyy-MM-dd HH:mm:ss',
+  fmt = 'yyyy-MM-dd HH:mm:ss'
 ): string => {
   const date = parseTimestamp(value);
   if (!date) return '-';

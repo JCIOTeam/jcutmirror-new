@@ -31,7 +31,7 @@ import { useLocaleStore } from '../../stores/mirrorStore';
 
 interface DirEntry {
   name: string;
-  href: string;           // 相对或绝对链接
+  href: string; // 相对或绝对链接
   size: string;
   date: string;
   isDir: boolean;
@@ -87,7 +87,7 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
   // 构造完整 URL（处理相对路径）
   const toAbsoluteUrl = useCallback(
     (rel: string) => (rel.startsWith('http') ? rel : `${window.location.origin}${rel}`),
-    [],
+    []
   );
 
   const loadDirectory = useCallback(
@@ -120,7 +120,7 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
         setLoading(false);
       }
     },
-    [toAbsoluteUrl],
+    [toAbsoluteUrl]
   );
 
   useEffect(() => {
@@ -157,7 +157,11 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
         severity="warning"
         icon={<WarnIcon />}
         action={
-          <Button size="small" startIcon={<RefreshIcon />} onClick={() => loadDirectory(currentUrl)}>
+          <Button
+            size="small"
+            startIcon={<RefreshIcon />}
+            onClick={() => loadDirectory(currentUrl)}
+          >
             {locale === 'zh' ? '重试' : 'Retry'}
           </Button>
         }
@@ -177,7 +181,9 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
   if (error === 'empty' || entries.length === 0) {
     return (
       <Alert severity="info">
-        {locale === 'zh' ? '目录为空或不支持文件列表展示。' : 'Directory is empty or listing is unavailable.'}
+        {locale === 'zh'
+          ? '目录为空或不支持文件列表展示。'
+          : 'Directory is empty or listing is unavailable.'}
         <Box sx={{ mt: 1 }}>
           <Link href={absCurrentUrl} target="_blank" rel="noopener noreferrer">
             {locale === 'zh' ? '在浏览器中查看 →' : 'View in browser →'}
@@ -323,7 +329,11 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                           wordBreak: 'break-all',
                         }}
                       >
-                        {entry.isParent ? (locale === 'zh' ? '上级目录' : 'Parent Directory') : entry.name}
+                        {entry.isParent
+                          ? locale === 'zh'
+                            ? '上级目录'
+                            : 'Parent Directory'
+                          : entry.name}
                       </Typography>
                     ) : (
                       <Link
@@ -346,14 +356,22 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
 
                 {/* 大小列 */}
                 <TableCell>
-                  <Typography variant="caption" color="text.secondary" fontFamily='"JetBrains Mono", monospace'>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    fontFamily='"JetBrains Mono", monospace'
+                  >
                     {entry.isDir || entry.isParent ? '-' : entry.size}
                   </Typography>
                 </TableCell>
 
                 {/* 日期列 */}
                 <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                  <Typography variant="caption" color="text.secondary" fontFamily='"JetBrains Mono", monospace'>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    fontFamily='"JetBrains Mono", monospace'
+                  >
                     {entry.date}
                   </Typography>
                 </TableCell>

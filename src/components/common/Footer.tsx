@@ -1,10 +1,7 @@
 // src/components/common/Footer.tsx
 // 页脚组件
 
-import {
-  GitHub as GitHubIcon,
-  Email as EmailIcon,
-} from '@mui/icons-material';
+import { GitHub as GitHubIcon, Email as EmailIcon } from '@mui/icons-material';
 import {
   Box,
   Container,
@@ -135,12 +132,7 @@ const Footer: React.FC = () => {
               >
                 stucloud@jcut.edu.cn
               </Link>
-              <Link
-                href="/status"
-                variant="body2"
-                color="text.secondary"
-                underline="hover"
-              >
+              <Link href="/status" variant="body2" color="text.secondary" underline="hover">
                 系统状态 / Status
               </Link>
               <Link

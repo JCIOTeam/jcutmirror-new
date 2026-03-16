@@ -1,16 +1,25 @@
 // src/components/docs/CodeBlock.tsx
 // 代码块组件 - 语法高亮 + 一键复制
 
-import {
-  ContentCopy as CopyIcon,
-  CheckCircle as CheckIcon,
-} from '@mui/icons-material';
+import { ContentCopy as CopyIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useTranslation } from 'react-i18next';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
+import { atomOneDark, atomOneLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 import { useThemeStore } from '../../stores/mirrorStore';
+
+// 注册需要的语言（按需导入，减少 bundle 体积）
+SyntaxHighlighter.registerLanguage('bash', bash);
+SyntaxHighlighter.registerLanguage('shell', bash);
+SyntaxHighlighter.registerLanguage('sh', bash);
+SyntaxHighlighter.registerLanguage('yaml', yaml);
+SyntaxHighlighter.registerLanguage('yml', yaml);
+SyntaxHighlighter.registerLanguage('json', json);
 
 interface CodeBlockProps {
   children: string;
@@ -24,6 +33,7 @@ interface CodeBlockProps {
 const CodeBlock: React.FC<CodeBlockProps> = ({ children, language = 'bash', inline = false }) => {
   const [copied, setCopied] = useState(false);
   const { mode } = useThemeStore();
+  const { t } = useTranslation();
 
   const handleCopy = async () => {
     try {
@@ -31,7 +41,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, language = 'bash', inli
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      console.error('复制失败');
+      // ignore
     }
   };
 
@@ -92,19 +102,15 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, language = 'bash', inli
         >
           {language}
         </Typography>
-        <Tooltip title={copied ? '已复制！' : '复制代码'} placement="left">
+        <Tooltip title={copied ? t('mirror.copied') : t('mirror.copyScript')} placement="left">
           <IconButton
             size="small"
             onClick={handleCopy}
             color={copied ? 'success' : 'default'}
             sx={{ p: 0.5 }}
-            aria-label="复制代码"
+            aria-label={t('mirror.copyScript')}
           >
-            {copied ? (
-              <CheckIcon sx={{ fontSize: 16 }} />
-            ) : (
-              <CopyIcon sx={{ fontSize: 16 }} />
-            )}
+            {copied ? <CheckIcon sx={{ fontSize: 16 }} /> : <CopyIcon sx={{ fontSize: 16 }} />}
           </IconButton>
         </Tooltip>
       </Box>
@@ -112,7 +118,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ children, language = 'bash', inli
       {/* 语法高亮代码 */}
       <SyntaxHighlighter
         language={language}
-        style={mode === 'dark' ? oneDark : oneLight}
+        style={mode === 'dark' ? atomOneDark : atomOneLight}
         customStyle={{
           margin: 0,
           padding: '16px',

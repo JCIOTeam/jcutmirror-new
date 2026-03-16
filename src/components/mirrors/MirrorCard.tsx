@@ -13,7 +13,9 @@ import { formatRelativeTime } from '../../utils/time';
 
 import StatusChip from './StatusChip';
 
-interface MirrorCardProps { mirror: Mirror; }
+interface MirrorCardProps {
+  mirror: Mirror;
+}
 
 const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
   const navigate = useNavigate();
@@ -29,7 +31,15 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
       >
         <CardContent sx={{ width: '100%', p: 2.5 }}>
           {/* name 作主标题 + 状态 */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1, gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              mb: 1,
+              gap: 1,
+            }}
+          >
             <Typography
               variant="h6"
               sx={{ fontSize: '1rem', fontWeight: 700, color: 'text.primary', lineHeight: 1.3 }}
@@ -57,14 +67,29 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
           </Typography>
 
           {/* 底部：大小 + 更新时间 */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              pt: 1,
+              borderTop: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
             <Tooltip title={t('mirror.size')} placement="bottom">
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}
+              >
                 <StorageIcon sx={{ fontSize: 14 }} />
-                <Typography variant="caption" fontWeight={500}>{mirror.size || '-'}</Typography>
+                <Typography variant="caption" fontWeight={500}>
+                  {mirror.size || '-'}
+                </Typography>
               </Box>
             </Tooltip>
-            <Typography variant="caption" color="text.secondary">{lastUpdatedText}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {lastUpdatedText}
+            </Typography>
           </Box>
         </CardContent>
       </CardActionArea>

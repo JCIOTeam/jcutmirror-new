@@ -1,10 +1,7 @@
 // src/components/common/ThemeToggle.tsx
 // 主题切换按钮组件
 
-import {
-  DarkMode as DarkIcon,
-  LightMode as LightIcon,
-} from '@mui/icons-material';
+import { DarkMode as DarkIcon, LightMode as LightIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

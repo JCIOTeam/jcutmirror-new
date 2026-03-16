@@ -15,20 +15,21 @@ import type { Mirror, CampusNetworkStatus } from '../types';
 import { transformJobs } from './transform';
 import type { RawJob, LocalMeta } from './transform';
 
-// ── axios 实例（用于 /api/* 接口）────────────────────────────────────────────
+// ── 统一的 axios 实例 ─────────────────────────────────────────────────────────
+// 使用一个实例管理所有请求，通过 baseURL 参数区分不同接口
 const apiClient = axios.create({
-  baseURL: '/api',
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 });
 
-apiClient.interceptors.response.use(
-    (res) => res,
-    (err) => {
-      console.error('[API Error]', err.message);
-      return Promise.reject(err);
-    },
-);
+// 错误拦截器
+const errorInterceptor = (err: unknown) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error('[API Error]', msg);
+  return Promise.reject(err);
+};
+
+apiClient.interceptors.response.use((res) => res, errorInterceptor);
 
 // ── 本地元数据缓存（只需加载一次）────────────────────────────────────────────
 let _localDataCache: Record<string, LocalMeta> | null = null;
@@ -54,7 +55,8 @@ async function getLocalData(): Promise<Record<string, LocalMeta>> {
  */
 export const fetchMirrors = async (): Promise<Mirror[]> => {
   const [{ data: jobs }, localData] = await Promise.all([
-    axios.get<RawJob[]>('/jobs'),   // 直接请求 /jobs，与 nginx proxy_pass 一致
+    // 使用 baseURL='' 覆盖默认配置，直接访问 /jobs
+    apiClient.get<RawJob[]>('/jobs', { baseURL: '' }),
     getLocalData(),
   ]);
   return transformJobs(jobs, localData);
@@ -75,7 +77,9 @@ export const fetchMirrorByName = async (name: string): Promise<Mirror> => {
  * GET /api/is_campus_network → "1"(校内) | "0"(校外) | "6"(IPv6)
  */
 export const fetchCampusNetworkStatus = async (): Promise<CampusNetworkStatus> => {
-  const { data } = await apiClient.get<CampusNetworkStatus>('/is_campus_network');
+  const { data } = await apiClient.get<CampusNetworkStatus>('/is_campus_network', {
+    baseURL: '/api',
+  });
   const val = String(data).trim() as CampusNetworkStatus;
   return (['1', '0', '6'] as const).includes(val) ? val : '0';
 };
