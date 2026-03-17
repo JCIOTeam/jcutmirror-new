@@ -18,7 +18,8 @@
       "failed": "Failed",
       "syncing": "Syncing",
       "cached": "Cached",
-      "paused": "Paused"
+      "paused": "Paused",
+      "unknown": "Unknown"
     },
     "lastUpdated": "Last Updated",
     "nextScheduled": "Next Sync",

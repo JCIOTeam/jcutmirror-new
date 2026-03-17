@@ -4,7 +4,7 @@
 /**
  * 镜像同步状态枚举
  */
-export type MirrorStatus = 'succeeded' | 'failed' | 'syncing' | 'cached' | 'paused';
+export type MirrorStatus = 'succeeded' | 'failed' | 'syncing' | 'cached' | 'paused' | 'unknown';
 
 /**
  * 镜像文件信息

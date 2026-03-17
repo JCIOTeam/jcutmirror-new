@@ -56,7 +56,7 @@ function convertItem(raw: RawJob, local: LocalMeta = {}): Mirror {
     helpUrl: `/docs/${raw.name}`,
     upstream: raw.upstream ?? '',
     size: raw.size ?? '1G',
-    status: STATUS_MAP[raw.status] ?? (raw.status as MirrorStatus),
+    status: STATUS_MAP[raw.status] ?? 'unknown',
     lastUpdated: String(raw.last_ended_ts ?? ''),
     nextScheduled: String(raw.next_schedule_ts ?? ''),
     lastSuccess: String(raw.last_update_ts ?? ''),

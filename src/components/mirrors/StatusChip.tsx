@@ -19,6 +19,7 @@ const statusColorMap: Record<MirrorStatus, 'success' | 'error' | 'info' | 'defau
   syncing: 'info',
   cached: 'default',
   paused: 'warning',
+  unknown: 'default',
 };
 
 // 各状态对应的圆点颜色
@@ -28,6 +29,7 @@ const DOT_COLOR: Record<MirrorStatus, string> = {
   syncing: '#3B82F6',
   cached: '#94A3B8',
   paused: '#F59E0B',
+  unknown: '#6B7280',
 };
 
 const SYNCING_COLOR = '#3B82F6';
