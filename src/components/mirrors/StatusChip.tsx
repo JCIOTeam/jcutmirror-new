@@ -13,11 +13,12 @@ interface StatusChipProps {
   iconOnly?: boolean;
 }
 
-const statusColorMap: Record<MirrorStatus, 'success' | 'error' | 'info' | 'default'> = {
+const statusColorMap: Record<MirrorStatus, 'success' | 'error' | 'info' | 'default' | 'warning'> = {
   succeeded: 'success',
   failed: 'error',
   syncing: 'info',
   cached: 'default',
+  paused: 'warning',
 };
 
 // 各状态对应的圆点颜色
@@ -26,6 +27,7 @@ const DOT_COLOR: Record<MirrorStatus, string> = {
   failed: '#EF4444',
   syncing: '#3B82F6',
   cached: '#94A3B8',
+  paused: '#F59E0B',
 };
 
 const SYNCING_COLOR = '#3B82F6';

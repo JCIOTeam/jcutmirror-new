@@ -36,6 +36,7 @@ const STATUS_MAP: Record<string, MirrorStatus> = {
   failed: 'failed',
   syncing: 'syncing',
   cached: 'cached',
+  paused: 'paused',
 };
 
 /**

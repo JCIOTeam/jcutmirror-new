@@ -17,7 +17,8 @@
       "succeeded": "同步成功",
       "failed": "同步失败",
       "syncing": "同步中",
-      "cached": "已缓存"
+      "cached": "已缓存",
+      "paused": "已暂停"
     },
     "lastUpdated": "最后更新",
     "nextScheduled": "下次同步",
