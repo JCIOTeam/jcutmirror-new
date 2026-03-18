@@ -11,6 +11,8 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 
+import { useLocaleStore } from '../stores/mirrorStore';
+
 interface ErrorPageProps {
   code?: number;
 }
@@ -150,9 +152,10 @@ const ClientInfoPanel: React.FC<{ isZh: boolean }> = ({ isZh }) => {
 // ── 主组件 ────────────────────────────────────────────────────────────────────
 const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
   const navigate = useNavigate();
-  const storedLocale =
-    (typeof localStorage !== 'undefined' && localStorage.getItem('locale')) || 'zh';
-  const isZh = storedLocale !== 'en';
+  // 使用 Zustand store，语言切换时会自动重渲染
+  // 原来的 localStorage.getItem('locale') 是静态读取，切换语言后不会响应
+  const { locale } = useLocaleStore();
+  const isZh = locale !== 'en';
   const meta = ERROR_META[code] ?? FALLBACK_META;
 
   // ⚠️ Helmet <title> 必须是纯字符串子节点，不能是数字或 JSX 表达式
