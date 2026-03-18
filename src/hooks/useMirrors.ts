@@ -60,6 +60,8 @@ export const useGroupedMirrors = (mirrors: Mirror[]): GroupedMirrors =>
       if (!groups[letter]) groups[letter] = [];
       groups[letter].push(m);
     });
+    // 组内按 id 字母升序排列，避免因后端返回顺序不定导致每次刷新乱序
+    Object.values(groups).forEach((group) => group.sort((a, b) => a.id.localeCompare(b.id)));
     return groups;
   }, [mirrors]);
 
