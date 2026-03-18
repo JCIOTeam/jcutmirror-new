@@ -84,6 +84,22 @@
     "fileUrl": "下载地址",
     "noHelp": "暂无使用说明"
   },
+  "favorites": {
+    "title": "我的收藏",
+    "add": "收藏",
+    "remove": "取消收藏",
+    "empty": "暂无收藏，点击镜像卡片右上角的星标即可收藏"
+  },
+  "filter": {
+    "all": "全部",
+    "succeeded": "同步成功",
+    "failed": "同步失败",
+    "syncing": "同步中",
+    "cached": "已缓存"
+  },
+  "configGenerator": {
+    "noVersions": "暂无可用版本"
+  },
   "error": {
     "notFound": "页面不存在",
     "notFoundDesc": "您访问的镜像或页面不存在，请返回首页。",

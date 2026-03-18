@@ -84,6 +84,22 @@
     "fileUrl": "Download URL",
     "noHelp": "No documentation available"
   },
+  "favorites": {
+    "title": "Favorites",
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "empty": "No favorites yet — click the star on any mirror card to save it"
+  },
+  "filter": {
+    "all": "All",
+    "succeeded": "Succeeded",
+    "failed": "Failed",
+    "syncing": "Syncing",
+    "cached": "Cached"
+  },
+  "configGenerator": {
+    "noVersions": "No versions available"
+  },
   "error": {
     "notFound": "Page Not Found",
     "notFoundDesc": "The mirror or page you are looking for does not exist.",
