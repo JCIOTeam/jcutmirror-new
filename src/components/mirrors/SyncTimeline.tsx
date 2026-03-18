@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocaleStore } from '../../stores/mirrorStore';
-import type { Mirror } from '../../types';
+import type { Mirror, MirrorStatus } from '../../types';
 import { formatAbsoluteTime } from '../../utils/time';
 
 interface SyncTimelineProps {
@@ -148,12 +148,16 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
 
-  const statusColor = {
-    succeeded: 'success.main',
-    failed: 'error.main',
-    syncing: 'info.main',
-    cached: 'text.secondary',
-  }[mirror.status];
+  const statusColor = (
+    {
+      succeeded: 'success.main',
+      failed: 'error.main',
+      syncing: 'info.main',
+      cached: 'text.secondary',
+      paused: 'warning.main',
+      unknown: 'text.secondary',
+    } as Record<MirrorStatus, string>
+  )[mirror.status];
 
   return (
     <Box>
