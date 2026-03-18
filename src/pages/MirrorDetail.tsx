@@ -71,7 +71,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale })
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const toFull = (url: string) =>
-    url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    url.startsWith('http') ? url : `${window.location.origin}${sanitizeUrl(url)}`;
 
   const handleCopy = async (url: string, idx: number) => {
     try {
@@ -236,6 +236,15 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale })
   );
 };
 
+// ─── URL 安全校验 ─────────────────────────────────────────────────────────────
+// 仅允许 http / https / 相对路径，防止 javascript: 等危险协议被渲染为 href
+const SAFE_URL_RE = /^(https?:\/\/|\/)/i;
+
+function sanitizeUrl(url: string): string {
+  if (!url) return '#';
+  return SAFE_URL_RE.test(url) ? url : '#';
+}
+
 // ─── 主页面 ───────────────────────────────────────────────────────────────────
 const MirrorDetail: React.FC = () => {
   const { name } = useParams<{ name: string }>();
@@ -262,6 +271,14 @@ const MirrorDetail: React.FC = () => {
 
   const [tabValue, setTabValue] = useState(getInitialTab);
 
+  // 当语言切换导致文档可用性变化时，重置 Tab 到合适的初始值
+  // 例如：某个镜像只有中文文档，切换到英文后帮助 Tab 应退回到文件列表
+  React.useEffect(() => {
+    const nextInitial = getInitialTab();
+    setTabValue(nextInitial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locale, name]);
+
   // Tab 切换时同步到 URL，不产生历史记录（replace）
   const [, setSearchParams] = useSearchParams();
   const handleTabChange = (_: React.SyntheticEvent, v: number) => {
@@ -273,7 +290,7 @@ const MirrorDetail: React.FC = () => {
   const [copiedUrl, setCopiedUrl] = useState(false);
 
   const toFull = (url: string) =>
-    url ? (url.startsWith('http') ? url : `${window.location.origin}${url}`) : '';
+    url ? (url.startsWith('http') ? url : `${window.location.origin}${sanitizeUrl(url)}`) : '';
 
   const fullMirrorUrl = mirror ? toFull(mirror.url) : '';
 
@@ -462,7 +479,14 @@ const MirrorDetail: React.FC = () => {
           <Tabs
             value={tabValue}
             onChange={handleTabChange}
-            sx={{ borderBottom: 1, borderColor: 'divider', '& .MuiTab-root': { fontWeight: 600 } }}
+            variant="scrollable"
+            scrollButtons="auto"
+            allowScrollButtonsMobile
+            sx={{
+              borderBottom: 1,
+              borderColor: 'divider',
+              '& .MuiTab-root': { fontWeight: 600, minWidth: { xs: 80, sm: 120 } },
+            }}
           >
             <Tab label={t('detail.helpDoc')} />
             <Tab label={locale === 'zh' ? '文件列表' : 'File List'} />
