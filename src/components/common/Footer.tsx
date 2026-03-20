@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link as RouterLink } from 'react-router-dom';
 
 /**
  * 站点页脚
@@ -132,8 +133,14 @@ const Footer: React.FC = () => {
               >
                 stucloud@jcut.edu.cn
               </Link>
-              <Link href="/status" variant="body2" color="text.secondary" underline="hover">
-                系统状态 / Status
+              <Link
+                component={RouterLink}
+                to="/status"
+                variant="body2"
+                color="text.secondary"
+                underline="hover"
+              >
+                {t('footer.status')}
               </Link>
               <Link
                 href="https://github.com/JCIOTeam/jcutmirror-new"
