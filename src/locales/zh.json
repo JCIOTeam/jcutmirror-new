@@ -7,6 +7,21 @@
     "backHome": "返回主页",
     "download": "镜像下载"
   },
+  "common": {
+    "refresh": "刷新",
+    "backToList": "返回列表",
+    "backToHome": "返回首页",
+    "openInBrowser": "在浏览器中打开",
+    "openInNewTab": "在新标签页中打开 →",
+    "viewInBrowser": "在浏览器中查看 →",
+    "download": "下载",
+    "copyLink": "复制链接",
+    "copied": "已复制",
+    "fullscreen": "全屏",
+    "noData": "暂无数据",
+    "details": "详情",
+    "actions": "操作"
+  },
   "search": {
     "placeholder": "搜索镜像...",
     "noResults": "未找到匹配的镜像",
@@ -17,9 +32,7 @@
       "succeeded": "同步成功",
       "failed": "同步失败",
       "syncing": "同步中",
-      "cached": "已缓存",
-      "paused": "已暂停",
-      "unknown": "未知"
+      "cached": "已缓存"
     },
     "lastUpdated": "最后更新",
     "nextScheduled": "下次同步",
@@ -35,7 +48,11 @@
     "copyScript": "复制脚本",
     "quickStart": "快速换源",
     "usingCurl": "使用 curl",
-    "usingWget": "使用 wget"
+    "usingWget": "使用 wget",
+    "colName": "镜像名称",
+    "colDesc": "描述",
+    "colStatus": "状态",
+    "colActions": "操作"
   },
   "home": {
     "hero": {
@@ -48,13 +65,118 @@
     "recentUpdates": "最近更新",
     "groupBy": "按字母分组",
     "totalMirrors": "共 {{count}} 个镜像",
-    "syncedToday": "今日同步 {{count}} 次"
+    "syncedToday": "今日同步 {{count}} 次",
+    "news": "最新动态",
+    "failedSnackbar_one": "{{count}} 个镜像同步失败，点击查看 →",
+    "failedSnackbar_other": "{{count}} 个镜像同步失败，点击查看 →"
   },
   "network": {
     "campus": "您正在使用校园网，可使用内网镜像源获得更快速度",
     "outside": "您当前不在校园网内",
     "ipv6": "已检测到 IPv6 连接，可使用 IPv6 镜像源",
-    "external": "当前为校外网络，速度可能较慢"
+    "external": "当前为校外网络，速度可能较慢",
+    "campusLabel": "校园网加速",
+    "campusChip": "校园网",
+    "externalLabel": "校外网络",
+    "https": "HTTPS 加密传输"
+  },
+  "detail": {
+    "basicInfo": "基本信息",
+    "syncStatus": "同步状态",
+    "files": "文件列表",
+    "helpDoc": "使用说明",
+    "quickSetup": "快速配置",
+    "fileName": "文件名",
+    "fileUrl": "下载地址",
+    "noHelp": "暂无使用说明",
+    "downloads": "下载文件",
+    "installImages": "安装镜像",
+    "filesCount": "{{count}} 个文件",
+    "scrollHint": " · 可滚动",
+    "fileList": "文件列表"
+  },
+  "download": {
+    "title": "镜像下载",
+    "distroCount": "共 {{count}} 个发行版",
+    "search": "搜索发行版…",
+    "fileCount": "{{count}} 个文件",
+    "selectDistro": "← 请先选择发行版"
+  },
+  "directory": {
+    "networkError": "无法加载目录列表，请确认在生产环境访问或检查网络。",
+    "emptyDir": "目录为空或不支持文件列表展示。",
+    "dirs": "{{count}} 个目录",
+    "files": "{{count}} 个文件",
+    "parent": "上级目录",
+    "parentDirectory": "上级目录",
+    "colName": "名称",
+    "colSize": "大小",
+    "colModified": "修改日期"
+  },
+  "docs": {
+    "loading": "加载文档中..."
+  },
+  "news": {
+    "title": "新闻动态",
+    "latestNews": "最新动态",
+    "all": "全部",
+    "pinned": "置顶",
+    "noNews": "暂无新闻",
+    "backToList": "返回列表",
+    "notFound": "新闻不存在",
+    "breadcrumb": "新闻动态",
+    "subtitle": "镜像站最新动态、维护通知与服务升级公告"
+  },
+  "sync": {
+    "failedWarning": "该镜像当前同步失败，请暂时使用官方源。上次成功同步：{{time}}"
+  },
+  "status": {
+    "title": "系统状态",
+    "lastChecked": "最后检查：{{time}}",
+    "availableLabel": "可用",
+    "operational": "所有系统运行正常",
+    "degraded": "部分镜像同步异常",
+    "outage": "大量镜像同步失败",
+    "totalMirrors": "镜像总数",
+    "succeeded": "同步成功",
+    "failed": "同步失败",
+    "syncing": "同步中",
+    "syncedToday": "今日同步",
+    "totalStorage": "存储总量",
+    "availability": "镜像可用率",
+    "legendSucceeded": "成功",
+    "legendFailed": "失败",
+    "legendSyncing": "同步中",
+    "legendCached": "已缓存",
+    "failedMirrors": "同步失败的镜像",
+    "colMirror": "镜像名称",
+    "colLastSuccess": "上次成功",
+    "colUpstream": "上游源",
+    "colAction": "操作",
+    "recentSynced": "最近同步",
+    "noData": "暂无数据",
+    "upcomingSyncs": "即将同步",
+    "noUpcoming": "暂无待同步任务",
+    "serverMetrics": "服务器实时指标",
+    "serverMetricsSub": "CPU / 内存 / 网络 / 磁盘 — 由 Grafana 提供，需单独部署监控栈",
+    "openGrafana": "在 Grafana 中打开完整面板",
+    "grafanaNotice": "以下面板通过 iframe 嵌入 Grafana，需确保监控栈已启动（包含 grafana / prometheus / node-exporter 容器）。若面板显示空白，请检查 /grafana/ 是否可访问。",
+    "cpuUsage": "CPU 使用率",
+    "memUsage": "内存使用率",
+    "networkBandwidth": "网络带宽",
+    "diskSpace": "磁盘剩余",
+    "nginxRequests": "Nginx 请求数",
+    "activeConnections": "活跃连接数",
+    "systemLoad": "系统负载（1m / 5m / 15m）"
+  },
+  "favorites": {
+    "title": "我的收藏",
+    "add": "收藏",
+    "remove": "取消收藏",
+    "empty": "暂无收藏，点击镜像列表中的星标即可收藏"
+  },
+  "configGenerator": {
+    "noVersions": "暂无可用版本"
   },
   "footer": {
     "description": "由 JCIOT 团队维护的开源软件镜像站，为校园网用户提供快速的软件下载服务。",
@@ -62,7 +184,8 @@
     "contact": "联系我们",
     "github": "GitHub",
     "copyright": "© {{year}} JCUT Mirror. All rights reserved.",
-    "poweredBy": "Powered by tunasync"
+    "poweredBy": "Powered by tunasync",
+    "status": "系统状态"
   },
   "theme": {
     "light": "浅色模式",
@@ -74,37 +197,14 @@
     "en": "English",
     "toggle": "切换语言"
   },
-  "detail": {
-    "basicInfo": "基本信息",
-    "syncStatus": "同步状态",
-    "files": "文件列表",
-    "helpDoc": "使用说明",
-    "quickSetup": "快速配置",
-    "fileName": "文件名",
-    "fileUrl": "下载地址",
-    "noHelp": "暂无使用说明"
-  },
-  "favorites": {
-    "title": "我的收藏",
-    "add": "收藏",
-    "remove": "取消收藏",
-    "empty": "暂无收藏，点击镜像卡片右上角的星标即可收藏"
-  },
-  "filter": {
-    "all": "全部",
-    "succeeded": "同步成功",
-    "failed": "同步失败",
-    "syncing": "同步中",
-    "cached": "已缓存"
-  },
-  "configGenerator": {
-    "noVersions": "暂无可用版本"
-  },
   "error": {
     "notFound": "页面不存在",
     "notFoundDesc": "您访问的镜像或页面不存在，请返回首页。",
     "loadFailed": "加载失败",
     "retry": "重试",
     "backHome": "返回首页"
+  },
+  "filter": {
+    "ariaLabel": "按状态过滤"
   }
 }

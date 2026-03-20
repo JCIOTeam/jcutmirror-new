@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocaleStore } from '../../stores/mirrorStore';
-import type { Mirror, MirrorStatus } from '../../types';
+import type { Mirror } from '../../types';
 import { formatAbsoluteTime } from '../../utils/time';
 
 interface SyncTimelineProps {
@@ -148,16 +148,14 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
 
-  const statusColor = (
-    {
-      succeeded: 'success.main',
-      failed: 'error.main',
-      syncing: 'info.main',
-      cached: 'text.secondary',
-      paused: 'warning.main',
-      unknown: 'text.secondary',
-    } as Record<MirrorStatus, string>
-  )[mirror.status];
+  const statusColor = {
+    succeeded: 'success.main',
+    failed: 'error.main',
+    syncing: 'info.main',
+    cached: 'text.secondary',
+    paused: 'warning.main',
+    unknown: 'text.secondary',
+  }[mirror.status];
 
   return (
     <Box>
@@ -213,9 +211,7 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
             >
               <ErrorIcon color="error" sx={{ flexShrink: 0 }} />
               <Typography variant="body2" color="error.dark" fontWeight={500}>
-                {locale === 'zh'
-                  ? `该镜像当前同步失败，请暂时使用官方源。上次成功同步：${formatAbsoluteTime(mirror.lastSuccess, locale)}`
-                  : `This mirror is currently failing. Please use the official source. Last success: ${formatAbsoluteTime(mirror.lastSuccess, locale)}`}
+                {t('sync.failedWarning', { time: formatAbsoluteTime(mirror.lastSuccess, locale) })}
               </Typography>
             </Paper>
           </Grid>

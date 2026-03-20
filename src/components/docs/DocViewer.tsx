@@ -171,7 +171,7 @@ const DocViewer: React.FC<DocViewerProps> = ({ mirrorId, content, loading }) => 
       <Box sx={{ py: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress size={24} sx={{ mr: 1 }} />
         <Typography variant="body2" color="text.secondary">
-          {locale === 'zh' ? '加载文档中...' : 'Loading document...'}
+          {t('docs.loading')}
         </Typography>
       </Box>
     );

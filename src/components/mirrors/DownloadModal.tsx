@@ -102,10 +102,10 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <DownloadIcon color="primary" />
           <Typography variant="h6" fontWeight={700}>
-            {locale === 'zh' ? '镜像下载' : 'Download ISO'}
+            {t('download.title')}
           </Typography>
           <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-            {locale === 'zh' ? `共 ${distros.length} 个发行版` : `${distros.length} distros`}
+            {t('download.distroCount', { count: distros.length })}
           </Typography>
         </Box>
         <IconButton size="small" onClick={handleClose} aria-label="关闭">
@@ -130,7 +130,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
             <TextField
               size="small"
               fullWidth
-              placeholder={locale === 'zh' ? '搜索发行版…' : 'Search…'}
+              placeholder={t('download.search')}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -185,7 +185,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                         noWrap: true,
                         fontSize: '0.85rem',
                       }}
-                      secondary={`${m.files.length} ${locale === 'zh' ? '个文件' : 'files'}`}
+                      secondary={t('download.fileCount', { count: m.files.length })}
                       secondaryTypographyProps={{ fontSize: '0.72rem' }}
                     />
                   </ListItemButton>
@@ -267,7 +267,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                           </Typography>
                         }
                       />
-                      <Tooltip title={locale === 'zh' ? '下载' : 'Download'} placement="left">
+                      <Tooltip title={t('common.download')} placement="left">
                         <DownloadIcon
                           className="dl-icon"
                           sx={{
@@ -296,7 +296,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
               }}
             >
               <Typography color="text.secondary" variant="body2">
-                {locale === 'zh' ? '← 请先选择发行版' : '← Select a distro'}
+                {t('download.selectDistro')}
               </Typography>
             </Box>
           )}

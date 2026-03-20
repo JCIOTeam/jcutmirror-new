@@ -7,6 +7,21 @@
     "backHome": "Back to Home",
     "download": "Download ISO"
   },
+  "common": {
+    "refresh": "Refresh",
+    "backToList": "Back to List",
+    "backToHome": "Back to Home",
+    "openInBrowser": "Open in browser",
+    "openInNewTab": "Open in new tab →",
+    "viewInBrowser": "View in browser →",
+    "download": "Download",
+    "copyLink": "Copy URL",
+    "copied": "Copied!",
+    "fullscreen": "Full",
+    "noData": "No data",
+    "details": "Details",
+    "actions": "Actions"
+  },
   "search": {
     "placeholder": "Search mirrors...",
     "noResults": "No mirrors found",
@@ -17,9 +32,7 @@
       "succeeded": "Succeeded",
       "failed": "Failed",
       "syncing": "Syncing",
-      "cached": "Cached",
-      "paused": "Paused",
-      "unknown": "Unknown"
+      "cached": "Cached"
     },
     "lastUpdated": "Last Updated",
     "nextScheduled": "Next Sync",
@@ -35,7 +48,11 @@
     "copyScript": "Copy Script",
     "quickStart": "Quick Setup",
     "usingCurl": "Using curl",
-    "usingWget": "Using wget"
+    "usingWget": "Using wget",
+    "colName": "Mirror",
+    "colDesc": "Description",
+    "colStatus": "Status",
+    "colActions": "Actions"
   },
   "home": {
     "hero": {
@@ -48,13 +65,118 @@
     "recentUpdates": "Recent Updates",
     "groupBy": "Group by alphabet",
     "totalMirrors": "{{count}} mirrors total",
-    "syncedToday": "{{count}} syncs today"
+    "syncedToday": "{{count}} syncs today",
+    "news": "News",
+    "failedSnackbar_one": "{{count}} mirror failed to sync — click to view →",
+    "failedSnackbar_other": "{{count}} mirrors failed to sync — click to view →"
   },
   "network": {
     "campus": "You are on the campus network, use the internal mirror for faster speed",
     "outside": "You are not on the campus network",
     "ipv6": "IPv6 connection detected, IPv6 mirrors are available",
-    "external": "External network — speeds may be slower"
+    "external": "External network — speeds may be slower",
+    "campusLabel": "Campus Network",
+    "campusChip": "Campus Network",
+    "externalLabel": "External Network",
+    "https": "HTTPS Encrypted"
+  },
+  "detail": {
+    "basicInfo": "Basic Info",
+    "syncStatus": "Sync Status",
+    "files": "File List",
+    "helpDoc": "Documentation",
+    "quickSetup": "Quick Setup",
+    "fileName": "File Name",
+    "fileUrl": "Download URL",
+    "noHelp": "No documentation available",
+    "downloads": "Downloads",
+    "installImages": "Install Images",
+    "filesCount": "{{count}} files",
+    "scrollHint": " · scroll",
+    "fileList": "File List"
+  },
+  "download": {
+    "title": "Download ISO",
+    "distroCount": "{{count}} distros",
+    "search": "Search…",
+    "fileCount": "{{count}} files",
+    "selectDistro": "← Select a distro"
+  },
+  "directory": {
+    "networkError": "Cannot load directory listing. Please access in production or check network.",
+    "emptyDir": "Directory is empty or listing is unavailable.",
+    "dirs": "{{count}} dirs",
+    "files": "{{count}} files",
+    "parent": "Parent",
+    "parentDirectory": "Parent Directory",
+    "colName": "Name",
+    "colSize": "Size",
+    "colModified": "Modified"
+  },
+  "docs": {
+    "loading": "Loading document..."
+  },
+  "news": {
+    "title": "News",
+    "latestNews": "Latest News",
+    "all": "All",
+    "pinned": "Pinned",
+    "noNews": "No news yet",
+    "backToList": "Back",
+    "notFound": "News article not found",
+    "breadcrumb": "News",
+    "subtitle": "Mirror service updates, maintenance notices and announcements"
+  },
+  "sync": {
+    "failedWarning": "This mirror is currently failing. Please use the official source. Last success: {{time}}"
+  },
+  "status": {
+    "title": "System Status",
+    "lastChecked": "Last checked: {{time}}",
+    "availableLabel": "healthy",
+    "operational": "All Systems Operational",
+    "degraded": "Partial Degradation",
+    "outage": "Major Outage",
+    "totalMirrors": "Total Mirrors",
+    "succeeded": "Succeeded",
+    "failed": "Failed",
+    "syncing": "Syncing",
+    "syncedToday": "Synced Today",
+    "totalStorage": "Total Storage",
+    "availability": "Mirror Availability",
+    "legendSucceeded": "Succeeded",
+    "legendFailed": "Failed",
+    "legendSyncing": "Syncing",
+    "legendCached": "Cached",
+    "failedMirrors": "Failed Mirrors",
+    "colMirror": "Mirror",
+    "colLastSuccess": "Last Success",
+    "colUpstream": "Upstream",
+    "colAction": "Action",
+    "recentSynced": "Recently Synced",
+    "noData": "No data",
+    "upcomingSyncs": "Upcoming Syncs",
+    "noUpcoming": "No upcoming syncs",
+    "serverMetrics": "Server Metrics",
+    "serverMetricsSub": "CPU / Memory / Network / Disk — powered by Grafana, requires monitoring stack",
+    "openGrafana": "Open full dashboard in Grafana",
+    "grafanaNotice": "Panels below are embedded from Grafana via iframe. Requires the monitoring stack to be running (grafana / prometheus / node-exporter in docker-compose). If blank, verify /grafana/ is accessible.",
+    "cpuUsage": "CPU Usage",
+    "memUsage": "Memory Usage",
+    "networkBandwidth": "Network I/O",
+    "diskSpace": "Disk Space",
+    "nginxRequests": "Nginx Requests",
+    "activeConnections": "Active Connections",
+    "systemLoad": "System Load (1m / 5m / 15m)"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "empty": "No favorites yet — click the star in the mirror list to save one"
+  },
+  "configGenerator": {
+    "noVersions": "No versions available"
   },
   "footer": {
     "description": "An open source software mirror maintained by the JCIOT team, providing fast software downloads for campus users.",
@@ -62,7 +184,8 @@
     "contact": "Contact",
     "github": "GitHub",
     "copyright": "© {{year}} JCUT Mirror. All rights reserved.",
-    "poweredBy": "Powered by tunasync"
+    "poweredBy": "Powered by tunasync",
+    "status": "System Status"
   },
   "theme": {
     "light": "Light Mode",
@@ -74,37 +197,14 @@
     "en": "English",
     "toggle": "Toggle Language"
   },
-  "detail": {
-    "basicInfo": "Basic Info",
-    "syncStatus": "Sync Status",
-    "files": "File List",
-    "helpDoc": "Documentation",
-    "quickSetup": "Quick Setup",
-    "fileName": "File Name",
-    "fileUrl": "Download URL",
-    "noHelp": "No documentation available"
-  },
-  "favorites": {
-    "title": "Favorites",
-    "add": "Add to favorites",
-    "remove": "Remove from favorites",
-    "empty": "No favorites yet — click the star on any mirror card to save it"
-  },
-  "filter": {
-    "all": "All",
-    "succeeded": "Succeeded",
-    "failed": "Failed",
-    "syncing": "Syncing",
-    "cached": "Cached"
-  },
-  "configGenerator": {
-    "noVersions": "No versions available"
-  },
   "error": {
     "notFound": "Page Not Found",
     "notFoundDesc": "The mirror or page you are looking for does not exist.",
     "loadFailed": "Load Failed",
     "retry": "Retry",
     "backHome": "Back to Home"
+  },
+  "filter": {
+    "ariaLabel": "Filter by status"
   }
 }

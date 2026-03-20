@@ -4,6 +4,7 @@
 import { ArrowForward as ArrowIcon, Article as ArticleIcon } from '@mui/icons-material';
 import { Box, Typography, Button, Divider, Chip } from '@mui/material';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { getNewsList } from '../../news';
@@ -13,6 +14,7 @@ const MAX_ITEMS = 3;
 
 const NewsWidget: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { locale } = useLocaleStore();
   const news = useMemo(() => getNewsList().slice(0, MAX_ITEMS), []);
 
@@ -47,7 +49,7 @@ const NewsWidget: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
           <ArticleIcon sx={{ fontSize: 16, color: 'primary.main' }} />
           <Typography variant="subtitle2" fontWeight={700}>
-            {locale === 'zh' ? '最新动态' : 'Latest News'}
+            {t('news.latestNews')}
           </Typography>
         </Box>
         <Button
@@ -56,7 +58,7 @@ const NewsWidget: React.FC = () => {
           onClick={() => navigate('/news')}
           sx={{ fontSize: '0.75rem', p: '2px 6px', minHeight: 0 }}
         >
-          {locale === 'zh' ? '全部' : 'All'}
+          {t('news.all')}
         </Button>
       </Box>
 

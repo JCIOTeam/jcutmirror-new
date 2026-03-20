@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import CodeBlock from '../components/docs/CodeBlock';
@@ -125,6 +126,7 @@ const mdxComponents = {
 const NewsDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { locale } = useLocaleStore();
 
   const meta = slug ? getNewsItem(slug) : undefined;
@@ -148,11 +150,11 @@ const NewsDetailPage: React.FC = () => {
           severity="error"
           action={
             <Button color="inherit" size="small" onClick={() => navigate('/news')}>
-              {locale === 'zh' ? '返回列表' : 'Back'}
+              {t('news.backToList')}
             </Button>
           }
         >
-          {locale === 'zh' ? '新闻不存在' : 'News article not found'}
+          {t('news.notFound')}
         </Alert>
       </Container>
     );
@@ -168,10 +170,10 @@ const NewsDetailPage: React.FC = () => {
         {/* 面包屑 */}
         <Breadcrumbs sx={{ mb: 3 }}>
           <Link component={RouterLink} to="/" underline="hover" color="text.secondary">
-            {locale === 'zh' ? '首页' : 'Home'}
+            {t('nav.home')}
           </Link>
           <Link component={RouterLink} to="/news" underline="hover" color="text.secondary">
-            {locale === 'zh' ? '新闻动态' : 'News'}
+            {t('news.breadcrumb')}
           </Link>
           <Typography color="text.primary" fontWeight={500} noWrap sx={{ maxWidth: 200 }}>
             {displayTitle}
@@ -184,7 +186,7 @@ const NewsDetailPage: React.FC = () => {
           size="small"
           sx={{ mb: 3, color: 'text.secondary' }}
         >
-          {locale === 'zh' ? '返回列表' : 'Back to News'}
+          {t('news.backToList')}
         </Button>
 
         {/* 文章头部元信息 */}

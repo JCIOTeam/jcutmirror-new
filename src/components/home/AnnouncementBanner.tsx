@@ -13,6 +13,7 @@ import {
 } from '@mui/icons-material';
 import { Box, Typography, IconButton, Link, Chip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { useLocaleStore } from '../../stores/mirrorStore';
@@ -88,6 +89,7 @@ const SEVERITY_COLOR: Record<
 };
 
 const AnnouncementBanner: React.FC = () => {
+  const { t } = useTranslation();
   const { locale } = useLocaleStore();
   const navigate = useNavigate();
 
@@ -168,7 +170,7 @@ const AnnouncementBanner: React.FC = () => {
         {/* 置顶徽章 */}
         {current.pinned && (
           <Chip
-            label={locale === 'zh' ? '置顶' : 'Pinned'}
+            label={t('news.pinned')}
             size="small"
             sx={{
               height: 18,

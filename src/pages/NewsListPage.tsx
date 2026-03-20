@@ -5,6 +5,7 @@ import { ArrowForward as ArrowIcon } from '@mui/icons-material';
 import { Box, Container, Typography, Chip, Divider, Breadcrumbs, Link } from '@mui/material';
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import { useLocaleStore } from '../stores/mirrorStore';
@@ -13,10 +14,11 @@ import { getNewsList } from '@/news';
 
 const NewsListPage: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { locale } = useLocaleStore();
   const news = useMemo(() => getNewsList(), []);
 
-  const title = locale === 'zh' ? '新闻动态 - JCUT Mirror' : 'News - JCUT Mirror';
+  const title = t('news.title') + ' - JCUT Mirror';
 
   return (
     <>
@@ -27,20 +29,18 @@ const NewsListPage: React.FC = () => {
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
         <Breadcrumbs sx={{ mb: 3 }}>
           <Link component={RouterLink} to="/" underline="hover" color="text.secondary">
-            {locale === 'zh' ? '首页' : 'Home'}
+            {t('nav.home')}
           </Link>
           <Typography color="text.primary" fontWeight={500}>
-            {locale === 'zh' ? '新闻动态' : 'News'}
+            {t('news.breadcrumb')}
           </Typography>
         </Breadcrumbs>
 
         <Typography variant="h4" fontWeight={800} sx={{ mb: 0.5 }}>
-          {locale === 'zh' ? '新闻动态' : 'Latest News'}
+          {t('news.latestNews')}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-          {locale === 'zh'
-            ? '镜像站最新动态、维护通知与服务升级公告'
-            : 'Mirror service updates, maintenance notices and announcements'}
+          {t('news.subtitle')}
         </Typography>
 
         <Box>
@@ -133,7 +133,7 @@ const NewsListPage: React.FC = () => {
 
           {news.length === 0 && (
             <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-              {locale === 'zh' ? '暂无新闻' : 'No news yet'}
+              {t('news.noNews')}
             </Typography>
           )}
         </Box>
