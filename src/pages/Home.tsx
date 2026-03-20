@@ -11,6 +11,7 @@ import {
   Close as CloseIcon,
   InfoOutlined as InfoIcon,
   WarningAmberOutlined as WarningIcon,
+  Star as StarIcon,
 } from '@mui/icons-material';
 import {
   Box,
@@ -26,7 +27,7 @@ import {
   Fade,
   IconButton,
 } from '@mui/material';
-import React, { cloneElement, useState, useEffect } from 'react';
+import React, { cloneElement, useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +42,7 @@ import {
   useGroupedMirrors,
   usePopularMirrors,
 } from '../hooks/useMirrors';
-import { useMirrorSearchStore } from '../stores/mirrorStore';
+import { useMirrorSearchStore, useFavoriteStore } from '../stores/mirrorStore';
 
 import { getNewsList } from '@/news';
 
@@ -60,6 +61,13 @@ const Home: React.FC = () => {
   const filteredMirrors = useFilteredMirrors(mirrors);
   const groupedMirrors = useGroupedMirrors(filteredMirrors);
   const popularMirrors = usePopularMirrors(mirrors, 8);
+
+  // 收藏镜像 — 订阅 favorites 数组，数据变化时自动重渲染
+  const { favorites } = useFavoriteStore();
+  const favoriteMirrors = useMemo(
+    () => mirrors.filter((m) => favorites.includes(m.id)),
+    [mirrors, favorites]
+  );
 
   // 统计数据
   const totalCount = mirrors.length;
@@ -575,6 +583,32 @@ const Home: React.FC = () => {
               </Box>
             );
           })()}
+
+        {/* ── 收藏镜像区 —— 有收藏且未在搜索时显示 ── */}
+        {!searchQuery && favoriteMirrors.length > 0 && (
+          <Box sx={{ mb: 6 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+              <StarIcon sx={{ color: 'warning.main', fontSize: '1.3rem' }} />
+              <Typography variant="h5" fontWeight={700}>
+                {t('favorites.title')}
+              </Typography>
+              <Chip
+                label={favoriteMirrors.length}
+                size="small"
+                color="warning"
+                variant="outlined"
+                sx={{ fontWeight: 700, height: 20, fontSize: '0.72rem' }}
+              />
+            </Box>
+            <Grid container spacing={2}>
+              {favoriteMirrors.map((mirror) => (
+                <Grid key={mirror.id} size={{ xs: 12, sm: 6, md: 3 }}>
+                  <MirrorCard mirror={mirror} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
 
         {/* 所有镜像列表 */}
         <Box id="mirrors">

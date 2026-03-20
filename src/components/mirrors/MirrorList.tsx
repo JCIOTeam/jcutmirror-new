@@ -67,7 +67,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
   const { searchQuery } = useMirrorSearchStore();
-  const { isFavorite, toggleFavorite } = useFavoriteStore();
+  const { favorites, toggleFavorite } = useFavoriteStore();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -186,7 +186,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
 
               <TableBody>
                 {grouped[letter].map((mirror) => {
-                  const starred = isFavorite(mirror.id);
+                  const starred = favorites.includes(mirror.id);
                   return (
                     <TableRow
                       key={mirror.id}
