@@ -61,13 +61,13 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => (
 interface IsoFilesCardProps {
   files: Array<{ name: string; url: string }>;
   mirrorUrl: string;
-  locale: 'zh' | 'en';
 }
 
 // 单个文件行显示约 36px，预留 5 行高度；超出部分滚动
 const LIST_MAX_HEIGHT = 36 * 5 + 8; // px
 
-const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale }) => {
+const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
+  const { t } = useTranslation();
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const toFull = (url: string) =>
@@ -93,9 +93,9 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale })
           sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
         >
           <FolderIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-          {locale === 'zh' ? '下载文件' : 'Downloads'}
+          {t('detail.downloads')}
         </Typography>
-        <Tooltip title={locale === 'zh' ? '在浏览器中打开' : 'Open in browser'}>
+        <Tooltip title={t('common.openInBrowser')}>
           <IconButton
             size="small"
             component="a"
@@ -130,12 +130,12 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale })
       <Divider sx={{ mb: 1 }} />
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
         <Typography variant="caption" color="text.secondary" fontWeight={600}>
-          ISO / {locale === 'zh' ? '安装镜像' : 'Install Images'}
+          {t('detail.installImages')}
         </Typography>
         {/* 文件数量角标，超过可视行数时提示"可滚动" */}
         <Typography variant="caption" color="text.disabled">
-          {files.length} {locale === 'zh' ? '个文件' : 'files'}
-          {files.length > 5 ? (locale === 'zh' ? ' · 可滚动' : ' · scroll') : ''}
+          {t('detail.filesCount', { count: files.length })}
+          {files.length > 5 ? t('detail.scrollHint') : ''}
         </Typography>
       </Box>
 
@@ -189,17 +189,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale })
                   sx={{ m: 0 }}
                 />
                 <Box sx={{ display: 'flex', gap: 0.3, ml: 0.5, flexShrink: 0 }}>
-                  <Tooltip
-                    title={
-                      copiedIdx === idx
-                        ? locale === 'zh'
-                          ? '已复制'
-                          : 'Copied!'
-                        : locale === 'zh'
-                          ? '复制链接'
-                          : 'Copy URL'
-                    }
-                  >
+                  <Tooltip title={copiedIdx === idx ? t('common.copied') : t('common.copyLink')}>
                     <IconButton
                       size="small"
                       sx={{ p: 0.4 }}
@@ -213,7 +203,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl, locale })
                       )}
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title={locale === 'zh' ? '下载' : 'Download'}>
+                  <Tooltip title={t('common.download')}>
                     <IconButton
                       size="small"
                       sx={{ p: 0.4 }}
@@ -362,11 +352,17 @@ const MirrorDetail: React.FC = () => {
 
         <Button
           startIcon={<BackIcon />}
-          onClick={() => navigate('/')}
+          onClick={() => {
+            navigate('/');
+            // 跳回首页后滚动到镜像列表区，与 SearchBar 的跳转逻辑保持一致
+            setTimeout(() => {
+              document.getElementById('mirrors')?.scrollIntoView({ behavior: 'smooth' });
+            }, 150);
+          }}
           size="small"
           sx={{ mb: 3, color: 'text.secondary' }}
         >
-          {locale === 'zh' ? '返回列表' : 'Back to List'}
+          {t('common.backToList')}
         </Button>
 
         {/* ── 顶部信息卡 ── */}
@@ -446,7 +442,7 @@ const MirrorDetail: React.FC = () => {
                       {copiedUrl ? t('mirror.copied') : t('mirror.copyUrl')}
                     </Button>
                   </Tooltip>
-                  <Tooltip title={locale === 'zh' ? '在浏览器中打开' : 'Open in browser'}>
+                  <Tooltip title={t('common.openInBrowser')}>
                     <IconButton
                       size="small"
                       component="a"
@@ -489,8 +485,8 @@ const MirrorDetail: React.FC = () => {
             }}
           >
             <Tab label={t('detail.helpDoc')} />
-            <Tab label={locale === 'zh' ? '文件列表' : 'File List'} />
-            {hasFiles && <Tab label={locale === 'zh' ? '安装镜像' : 'Downloads'} />}
+            <Tab label={t('detail.fileList')} />
+            {hasFiles && <Tab label={t('detail.installImages')} />}
           </Tabs>
 
           <TabPanel value={tabValue} index={0}>
@@ -503,7 +499,7 @@ const MirrorDetail: React.FC = () => {
 
           {hasFiles && (
             <TabPanel value={tabValue} index={2}>
-              <IsoFilesCard files={mirror.files} mirrorUrl={mirror.url} locale={locale} />
+              <IsoFilesCard files={mirror.files} mirrorUrl={mirror.url} />
             </TabPanel>
           )}
         </Box>
