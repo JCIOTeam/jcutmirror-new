@@ -11,7 +11,6 @@ import {
   Close as CloseIcon,
   InfoOutlined as InfoIcon,
   WarningAmberOutlined as WarningIcon,
-  Star as StarIcon,
 } from '@mui/icons-material';
 import {
   Box,
@@ -26,10 +25,8 @@ import {
   Snackbar,
   Fade,
   IconButton,
-  ToggleButtonGroup,
-  ToggleButton,
 } from '@mui/material';
-import React, { cloneElement, useState, useEffect, useMemo } from 'react';
+import React, { cloneElement, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
@@ -44,8 +41,7 @@ import {
   useGroupedMirrors,
   usePopularMirrors,
 } from '../hooks/useMirrors';
-import { useMirrorSearchStore, useLocaleStore, useFavoriteStore } from '../stores/mirrorStore';
-import type { MirrorStatus } from '../types';
+import { useMirrorSearchStore } from '../stores/mirrorStore';
 
 import { getNewsList } from '@/news';
 
@@ -54,7 +50,6 @@ import { getNewsList } from '@/news';
  */
 const Home: React.FC = () => {
   const { t } = useTranslation();
-  const { locale } = useLocaleStore();
   const { searchQuery } = useMirrorSearchStore();
 
   // 获取数据
@@ -63,22 +58,8 @@ const Home: React.FC = () => {
 
   // 过滤和分组
   const filteredMirrors = useFilteredMirrors(mirrors);
+  const groupedMirrors = useGroupedMirrors(filteredMirrors);
   const popularMirrors = usePopularMirrors(mirrors, 8);
-
-  // 状态过滤器
-  const [statusFilter, setStatusFilter] = useState<MirrorStatus | 'all'>('all');
-  const statusFilteredMirrors = useMemo(() => {
-    if (statusFilter === 'all') return filteredMirrors;
-    return filteredMirrors.filter((m) => m.status === statusFilter);
-  }, [filteredMirrors, statusFilter]);
-  const groupedFiltered = useGroupedMirrors(statusFilteredMirrors);
-
-  // 收藏镜像
-  const { favorites } = useFavoriteStore();
-  const favoriteMirrors = useMemo(
-    () => mirrors.filter((m) => favorites.includes(m.id)),
-    [mirrors, favorites]
-  );
 
   // 统计数据
   const totalCount = mirrors.length;
@@ -107,7 +88,7 @@ const Home: React.FC = () => {
     campusStatus === '1'
       ? {
           icon: <WifiIcon />,
-          label: locale === 'zh' ? '校园网加速' : 'Campus Network',
+          label: t('network.campusLabel'),
           dot: '#22C55E',
           tooltip: t('network.campus'),
         }
@@ -225,7 +206,7 @@ const Home: React.FC = () => {
                 campusStatus === '1'
                   ? {
                       icon: <WifiIcon sx={{ fontSize: 14 }} />,
-                      label: locale === 'zh' ? '校园网' : 'Campus Network',
+                      label: t('network.campusChip'),
                       color: 'success' as const,
                       dot: '#22C55E',
                     }
@@ -238,7 +219,7 @@ const Home: React.FC = () => {
                       }
                     : {
                         icon: <WifiIcon sx={{ fontSize: 14 }} />,
-                        label: locale === 'zh' ? '校外网络' : 'External Network',
+                        label: t('network.externalLabel'),
                         color: 'default' as const,
                         dot: '#94A3B8',
                       };
@@ -250,9 +231,7 @@ const Home: React.FC = () => {
                       ? t('network.campus')
                       : campusStatus === '6'
                         ? t('network.ipv6')
-                        : locale === 'zh'
-                          ? '当前为校外网络，速度可能较慢'
-                          : 'External network, speed may be limited'
+                        : t('network.external')
                   }
                   placement="right"
                 >
@@ -326,7 +305,7 @@ const Home: React.FC = () => {
                   ? [
                       {
                         icon: <SecurityIcon />,
-                        label: locale === 'zh' ? 'HTTPS 加密传输' : 'HTTPS Encrypted',
+                        label: t('network.https'),
                       },
                     ]
                   : []),
@@ -507,9 +486,7 @@ const Home: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
             <WarningIcon sx={{ color: '#F59E0B', fontSize: 20 }} />
             <Typography variant="body2" sx={{ flex: 1, fontSize: '0.875rem' }}>
-              {locale === 'zh'
-                ? `${failedCount} 个镜像同步失败，点击查看 →`
-                : `${failedCount} mirror${failedCount > 1 ? 's' : ''} failed to sync — click to view →`}
+              {t('home.failedSnackbar', { count: failedCount })}
             </Typography>
             <IconButton
               size="small"
@@ -565,7 +542,7 @@ const Home: React.FC = () => {
                   {hasNews && (
                     <Grid size={{ xs: 12, lg: 3 }} sx={{ order: { xs: -1, lg: 1 } }}>
                       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-                        {locale === 'zh' ? '最新动态' : 'News'}
+                        {t('home.news')}
                       </Typography>
                       <NewsWidget />
                     </Grid>
@@ -599,32 +576,6 @@ const Home: React.FC = () => {
             );
           })()}
 
-        {/* ── 收藏镜像区 —— 有收藏且未在搜索时显示 ── */}
-        {!searchQuery && favoriteMirrors.length > 0 && (
-          <Box sx={{ mb: 6 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-              <StarIcon sx={{ color: 'warning.main', fontSize: '1.3rem' }} />
-              <Typography variant="h5" fontWeight={700}>
-                {t('favorites.title')}
-              </Typography>
-              <Chip
-                label={favoriteMirrors.length}
-                size="small"
-                color="warning"
-                variant="outlined"
-                sx={{ fontWeight: 700, height: 20, fontSize: '0.72rem' }}
-              />
-            </Box>
-            <Grid container spacing={2}>
-              {favoriteMirrors.map((mirror) => (
-                <Grid key={mirror.id} size={{ xs: 12, sm: 6, md: 3 }}>
-                  <MirrorCard mirror={mirror} />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        )}
-
         {/* 所有镜像列表 */}
         <Box id="mirrors">
           <Box
@@ -639,7 +590,7 @@ const Home: React.FC = () => {
           >
             <Typography variant="h5" fontWeight={700}>
               {searchQuery
-                ? t('search.results', { count: statusFilteredMirrors.length })
+                ? t('search.results', { count: filteredMirrors.length })
                 : t('home.allMirrors')}
             </Typography>
 
@@ -652,93 +603,9 @@ const Home: React.FC = () => {
               variant="outlined"
               sx={{ borderRadius: 6 }}
             >
-              {locale === 'zh' ? '刷新' : 'Refresh'}
+              {t('common.refresh')}
             </Button>
           </Box>
-
-          {/* 状态过滤器 */}
-          {!isLoading && (
-            <Box sx={{ mb: 2 }}>
-              <ToggleButtonGroup
-                value={statusFilter}
-                exclusive
-                onChange={(_, v) => v && setStatusFilter(v)}
-                size="small"
-                aria-label={locale === 'zh' ? '按状态过滤' : 'Filter by status'}
-                sx={{
-                  flexWrap: 'wrap',
-                  gap: 0.5,
-                  '& .MuiToggleButton-root': {
-                    borderRadius: '6px !important',
-                    border: '1px solid !important',
-                    borderColor: 'divider !important',
-                    px: 1.5,
-                    py: 0.4,
-                    fontSize: '0.78rem',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    '&.Mui-selected': { borderColor: 'primary.main !important' },
-                  },
-                }}
-              >
-                <ToggleButton value="all">
-                  {t('filter.all')}
-                  <Chip
-                    label={filteredMirrors.length}
-                    size="small"
-                    sx={{
-                      ml: 0.8,
-                      height: 18,
-                      fontSize: '0.68rem',
-                      fontWeight: 700,
-                      pointerEvents: 'none',
-                    }}
-                  />
-                </ToggleButton>
-                {(
-                  [
-                    'succeeded',
-                    'failed',
-                    'syncing',
-                    'cached',
-                    'paused',
-                    'unknown',
-                  ] as MirrorStatus[]
-                ).map((s) => {
-                  const count = filteredMirrors.filter((m) => m.status === s).length;
-                  if (count === 0) return null;
-                  const colorMap: Record<
-                    MirrorStatus,
-                    'success' | 'error' | 'info' | 'default' | 'warning'
-                  > = {
-                    succeeded: 'success',
-                    failed: 'error',
-                    syncing: 'info',
-                    cached: 'default',
-                    paused: 'warning',
-                    unknown: 'default',
-                  };
-                  return (
-                    <ToggleButton key={s} value={s}>
-                      {t(`filter.${s}`)}
-                      <Chip
-                        label={count}
-                        size="small"
-                        color={colorMap[s]}
-                        sx={{
-                          ml: 0.8,
-                          height: 18,
-                          fontSize: '0.68rem',
-                          fontWeight: 700,
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </ToggleButton>
-                  );
-                })}
-              </ToggleButtonGroup>
-            </Box>
-          )}
 
           {/* 加载失败 */}
           {error && (
@@ -753,7 +620,7 @@ const Home: React.FC = () => {
           )}
 
           {/* 字母分组索引导航 */}
-          {!isLoading && Object.keys(groupedFiltered).length > 0 && (
+          {!isLoading && Object.keys(groupedMirrors).length > 0 && (
             <Box
               sx={{
                 display: 'flex',
@@ -767,7 +634,7 @@ const Home: React.FC = () => {
                 borderColor: 'divider',
               }}
             >
-              {Object.keys(groupedFiltered)
+              {Object.keys(groupedMirrors)
                 .sort()
                 .map((letter) => (
                   <Button
@@ -795,7 +662,7 @@ const Home: React.FC = () => {
 
           {/* 镜像列表 */}
           <MirrorList
-            grouped={groupedFiltered}
+            grouped={groupedMirrors}
             loading={isLoading}
             error={error ? String(error) : undefined}
           />
