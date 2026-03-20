@@ -132,7 +132,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                     scope="col"
                     sx={{ fontWeight: 700, width: { xs: '38%', sm: '20%', md: '18%' } }}
                   >
-                    {locale === 'zh' ? '镜像名称' : 'Mirror'}
+                    {t('mirror.colName')}
                   </TableCell>
                   <TableCell
                     scope="col"
@@ -142,7 +142,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                       display: { xs: 'none', sm: 'table-cell' },
                     }}
                   >
-                    {locale === 'zh' ? '描述' : 'Description'}
+                    {t('mirror.colDesc')}
                   </TableCell>
                   <TableCell
                     scope="col"
@@ -160,7 +160,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {locale === 'zh' ? '状态' : 'Status'}
+                    {t('mirror.colStatus')}
                   </TableCell>
                   <TableCell
                     scope="col"
@@ -179,7 +179,7 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                     align="center"
                     sx={{ fontWeight: 700, width: { xs: '18%', sm: '16%', md: '12%' } }}
                   >
-                    {locale === 'zh' ? '操作' : 'Actions'}
+                    {t('common.actions')}
                   </TableCell>
                 </TableRow>
               </TableHead>
