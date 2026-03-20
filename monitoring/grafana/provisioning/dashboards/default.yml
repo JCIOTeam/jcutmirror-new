@@ -1,0 +1,15 @@
+# monitoring/grafana/provisioning/dashboards/default.yml
+# 指定从文件系统自动导入仪表板
+
+apiVersion: 1
+
+providers:
+  - name: 'JCUT Mirror Dashboards'
+    orgId: 1
+    folder: 'JCUT Mirror'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

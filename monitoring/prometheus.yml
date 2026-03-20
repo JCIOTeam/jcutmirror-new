@@ -1,0 +1,40 @@
+# monitoring/prometheus.yml
+# Prometheus 抓取配置
+#
+# 抓取周期：15s（默认），保留时长由 docker-compose 的 --storage.tsdb.retention.time 控制
+
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+  # 外部标签（写入远程存储时携带，方便多实例区分）
+  external_labels:
+    site: 'jcut-mirror'
+
+# ── 规则文件（如有告警规则可在此引入）────────────────────────────────────────
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+# ── 抓取目标 ──────────────────────────────────────────────────────────────────
+scrape_configs:
+
+  # Prometheus 自身指标
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # 服务器 OS 指标（CPU、内存、磁盘、网络）
+  # 由 node_exporter 容器提供
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    # 可选：只保留常用指标，减少存储占用
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'node_(cpu_seconds_total|memory_MemAvailable_bytes|memory_MemTotal_bytes|filesystem_avail_bytes|filesystem_size_bytes|network_receive_bytes_total|network_transmit_bytes_total|load1|load5|load15|disk_io_time_seconds_total)'
+        action: keep
+
+  # Nginx 连接/请求指标
+  # 由 nginx-prometheus-exporter 容器提供，依赖 nginx stub_status
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
