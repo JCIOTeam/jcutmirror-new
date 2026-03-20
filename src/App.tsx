@@ -5,7 +5,7 @@ import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './i18n';
 
 import Footer from './components/common/Footer';
@@ -18,6 +18,7 @@ import MirrorDetail from './pages/MirrorDetail';
 import NewsDetailPage from './pages/NewsDetailPage';
 import NewsListPage from './pages/NewsListPage';
 import NotFound from './pages/NotFound';
+import StatusPage from './pages/StatusPage';
 import { useThemeStore } from './stores/mirrorStore';
 
 // 创建 React Query 客户端
@@ -71,9 +72,12 @@ const ThemedApp: React.FC = () => {
           <Box component="main" sx={{ flex: 1 }}>
             <Routes>
               <Route path="/" element={<Home />} />
+              {/* /mirrors/ 无独立页面，重定向回首页（避免直接访问出现 404） */}
+              <Route path="/mirrors" element={<Navigate to="/" replace />} />
               <Route path="/mirrors/:name" element={<MirrorDetail />} />
               <Route path="/news" element={<NewsListPage />} />
               <Route path="/news/:slug" element={<NewsDetailPage />} />
+              <Route path="/status" element={<StatusPage />} />
               {/* 明确的错误码路由 —— Nginx error_page 可将 403/500 等重定向到此处 */}
               <Route path="/403" element={<ErrorPage code={403} />} />
               <Route path="/500" element={<ErrorPage code={500} />} />
