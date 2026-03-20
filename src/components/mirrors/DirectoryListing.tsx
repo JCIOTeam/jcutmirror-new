@@ -26,8 +26,7 @@ import {
   Chip,
 } from '@mui/material';
 import React, { useEffect, useState, useCallback } from 'react';
-
-import { useLocaleStore } from '../../stores/mirrorStore';
+import { useTranslation } from 'react-i18next';
 
 interface DirEntry {
   name: string;
@@ -78,7 +77,7 @@ function parseFancyIndex(html: string, baseUrl: string): DirEntry[] {
 }
 
 const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorName }) => {
-  const { locale } = useLocaleStore();
+  const { t } = useTranslation();
   const [entries, setEntries] = useState<DirEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,16 +161,14 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
             startIcon={<RefreshIcon />}
             onClick={() => loadDirectory(currentUrl)}
           >
-            {locale === 'zh' ? '重试' : 'Retry'}
+            {t('error.retry')}
           </Button>
         }
       >
-        {locale === 'zh'
-          ? '无法加载目录列表，请确认在生产环境访问或检查网络。'
-          : 'Cannot load directory listing. Please access in production or check network.'}
+        {t('directory.networkError')}
         <Box sx={{ mt: 1 }}>
           <Link href={absCurrentUrl} target="_blank" rel="noopener noreferrer">
-            {locale === 'zh' ? '在新标签页中打开 →' : 'Open in new tab →'}
+            {t('common.openInNewTab')}
           </Link>
         </Box>
       </Alert>
@@ -181,12 +178,10 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
   if (error === 'empty' || entries.length === 0) {
     return (
       <Alert severity="info">
-        {locale === 'zh'
-          ? '目录为空或不支持文件列表展示。'
-          : 'Directory is empty or listing is unavailable.'}
+        {t('directory.emptyDir')}
         <Box sx={{ mt: 1 }}>
           <Link href={absCurrentUrl} target="_blank" rel="noopener noreferrer">
-            {locale === 'zh' ? '在浏览器中查看 →' : 'View in browser →'}
+            {t('common.viewInBrowser')}
           </Link>
         </Box>
       </Alert>
@@ -203,16 +198,27 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
       <Box
         sx={{
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'space-between',
           mb: 1.5,
           gap: 1,
           flexWrap: 'wrap',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+        {/* 左侧：路径徽章 + 数量 chip — minWidth:0 让 flex 子项可以收缩 */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            flexWrap: 'wrap',
+            minWidth: 0,
+            flex: 1,
+          }}
+        >
           <Typography
             variant="caption"
+            title={new URL(absCurrentUrl).pathname} // hover 显示完整路径
             sx={{
               fontFamily: '"JetBrains Mono", monospace',
               color: 'text.secondary',
@@ -221,6 +227,12 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
               py: 0.4,
               borderRadius: 1,
               fontSize: '0.78rem',
+              // 超长路径截断，不撑破布局
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              display: 'block',
             }}
           >
             {new URL(absCurrentUrl).pathname}
@@ -229,22 +241,22 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
             <Chip
               size="small"
               icon={<FolderIcon sx={{ fontSize: '14px !important' }} />}
-              label={`${dirs.length} ${locale === 'zh' ? '个目录' : 'dirs'}`}
+              label={t('directory.dirs', { count: dirs.length })}
               variant="outlined"
-              sx={{ fontSize: '0.72rem', height: 22 }}
+              sx={{ fontSize: '0.72rem', height: 22, flexShrink: 0 }}
             />
           )}
           {files.length > 0 && (
             <Chip
               size="small"
               icon={<FileIcon sx={{ fontSize: '14px !important' }} />}
-              label={`${files.length} ${locale === 'zh' ? '个文件' : 'files'}`}
+              label={t('directory.files', { count: files.length })}
               variant="outlined"
-              sx={{ fontSize: '0.72rem', height: 22 }}
+              sx={{ fontSize: '0.72rem', height: 22, flexShrink: 0 }}
             />
           )}
         </Box>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
           {parent && (
             <Button
               size="small"
@@ -253,7 +265,7 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
               variant="outlined"
               sx={{ fontSize: '0.78rem', height: 28 }}
             >
-              {locale === 'zh' ? '上级目录' : 'Parent'}
+              {t('directory.parent')}
             </Button>
           )}
           <Button
@@ -266,24 +278,33 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
             variant="outlined"
             sx={{ fontSize: '0.78rem', height: 28 }}
           >
-            {locale === 'zh' ? '在浏览器中打开' : 'Open in browser'}
+            {t('common.openInBrowser')}
           </Button>
         </Box>
       </Box>
 
+      {/* 表格：overflowX:auto 兜底横向滚动，tableLayout:fixed + 百分比列宽控制截断 */}
       <TableContainer
         component={Paper}
         variant="outlined"
-        sx={{ borderRadius: 2, overflow: 'hidden' }}
+        sx={{ borderRadius: 2, overflowX: 'auto' }}
       >
-        <Table size="small" aria-label={`${mirrorName ?? ''} 文件列表`}>
+        <Table
+          size="small"
+          aria-label={`${mirrorName ?? ''} 文件列表`}
+          sx={{ tableLayout: 'fixed', width: '100%' }}
+        >
           <TableHead>
             <TableRow sx={{ bgcolor: 'action.hover' }}>
-              <TableCell sx={{ fontWeight: 700, fontSize: '0.78rem', width: '55%' }}>
-                {locale === 'zh' ? '名称' : 'Name'}
+              <TableCell
+                sx={{ fontWeight: 700, fontSize: '0.78rem', width: { xs: '55%', sm: '55%' } }}
+              >
+                {t('directory.colName')}
               </TableCell>
-              <TableCell sx={{ fontWeight: 700, fontSize: '0.78rem', width: '20%' }}>
-                {locale === 'zh' ? '大小' : 'Size'}
+              <TableCell
+                sx={{ fontWeight: 700, fontSize: '0.78rem', width: { xs: '20%', sm: '20%' } }}
+              >
+                {t('directory.colSize')}
               </TableCell>
               <TableCell
                 sx={{
@@ -293,7 +314,7 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                   display: { xs: 'none', sm: 'table-cell' },
                 }}
               >
-                {locale === 'zh' ? '修改日期' : 'Modified'}
+                {t('directory.colModified')}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -308,9 +329,24 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                 }}
                 onClick={() => (entry.isDir || entry.isParent) && handleNavigate(entry)}
               >
-                {/* 名称列 */}
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {/*
+                  名称列关键布局：
+                  - TableCell: maxWidth:0 + overflow:hidden → 在 fixed 布局下把列宽锁定为百分比值
+                  - Box(flex): overflow:hidden + minWidth:0 → flex 容器不超出 cell
+                  - Typography/Link: flex:1 + minWidth:0 + textOverflow:ellipsis → 文字截断
+                */}
+                <TableCell
+                  sx={{ maxWidth: 0, overflow: 'hidden', p: { xs: '6px 8px', sm: '6px 16px' } }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.75,
+                      overflow: 'hidden',
+                      minWidth: 0,
+                    }}
+                  >
                     {entry.isParent ? (
                       <ParentIcon sx={{ fontSize: 16, color: 'text.secondary', flexShrink: 0 }} />
                     ) : entry.isDir ? (
@@ -321,19 +357,20 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                     {entry.isDir || entry.isParent ? (
                       <Typography
                         variant="body2"
+                        title={entry.name}
                         sx={{
                           fontFamily: '"JetBrains Mono", monospace',
                           fontSize: '0.83rem',
                           color: 'primary.main',
                           fontWeight: 600,
-                          wordBreak: 'break-all',
+                          flex: 1, // 撑满剩余宽度
+                          minWidth: 0, // 允许 flex 子项收缩到 0
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
                         }}
                       >
-                        {entry.isParent
-                          ? locale === 'zh'
-                            ? '上级目录'
-                            : 'Parent Directory'
-                          : entry.name}
+                        {entry.isParent ? t('directory.parentDirectory') : entry.name}
                       </Typography>
                     ) : (
                       <Link
@@ -341,11 +378,17 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                         target="_blank"
                         rel="noopener noreferrer"
                         underline="hover"
+                        title={entry.href} // hover 显示完整 URL
                         onClick={(e) => e.stopPropagation()}
                         sx={{
                           fontFamily: '"JetBrains Mono", monospace',
                           fontSize: '0.83rem',
-                          wordBreak: 'break-all',
+                          flex: 1, // 撑满剩余宽度
+                          minWidth: 0, // 允许 flex 子项收缩到 0
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          display: 'block', // block 才能让 textOverflow 生效
                         }}
                       >
                         {entry.name}
