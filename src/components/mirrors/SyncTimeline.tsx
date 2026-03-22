@@ -37,6 +37,8 @@ const TimeCard: React.FC<{
       alignItems: 'flex-start',
       gap: 1.5,
       height: '100%',
+      width: '100%',
+      boxSizing: 'border-box',
     }}
   >
     <Box sx={{ color: color ?? 'text.secondary', mt: 0.2, flexShrink: 0 }}>{icon}</Box>
