@@ -1,3 +1,20 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const kaliVariantList = [
+  "标准（deb + deb-src）",
+  "仅二进制（deb）",
+];
+
+export const defaultVersion = "标准（deb + deb-src）";
+
+export const GenKaliConfig = (variant) => {
+  if (variant === "仅二进制（deb）") {
+    return `deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib`;
+  }
+  return `deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
+deb-src https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib`;
+};
+
 ## Kali 镜像使用帮助
 
 ### 地址
@@ -16,21 +33,32 @@ amd64, armel, armhf, i386
 
 ### 使用说明
 
-#### 方法一
+#### 方法一：直接编辑 sources.list
 
-编辑 `/etc/apt/sources.list` 文件, 在文件最前面添加以下条目：
+选择所需的源类型，复制后**覆盖写入** `/etc/apt/sources.list`，或添加到文件最顶部：
 
-```shell
-deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
-deb-src https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
+<ConfigGenerator promptString="请选择源类型：" versionList={kaliVariantList} defaultVersion={defaultVersion} configGen={GenKaliConfig} language="bash" />
+
+> 如无需自行编译软件包，选择「仅二进制」即可，`deb-src` 行对日常使用无影响。
+
+复制后执行：
+
+```bash
+sudo tee /etc/apt/sources.list << EOF
+# 粘贴上方内容
+EOF
+sudo apt-get update
 ```
 
-#### 方法二
-使用 sed 命令替换
+#### 方法二：一键 sed 替换
+
+如果您的 `/etc/apt/sources.list` 中已有官方源，可直接替换地址：
 
 ```shell
 sudo sed -i "s@http://http.kali.org/kali@https://mirrors.jcut.edu.cn/kali@g" /etc/apt/sources.list
 ```
+
+---
 
 ### 注意
 

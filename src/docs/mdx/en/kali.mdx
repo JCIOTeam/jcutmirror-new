@@ -1,3 +1,20 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const kaliVariantList = [
+  "Standard (deb + deb-src)",
+  "Binary only (deb)",
+];
+
+export const defaultVersion = "Standard (deb + deb-src)";
+
+export const GenKaliConfig = (variant) => {
+  if (variant === "Binary only (deb)") {
+    return `deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib`;
+  }
+  return `deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
+deb-src https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib`;
+};
+
 ## Kali Linux Mirror Usage Guide
 
 ### URL
@@ -16,35 +33,34 @@ amd64, armel, armhf, i386
 
 ### Usage Instructions
 
-#### Method 1
+#### Method 1: Edit sources.list Directly
 
-Edit the `/etc/apt/sources.list` file and add the following entry at the top:
+Select your preferred source type, copy the output, and **overwrite** `/etc/apt/sources.list` or add it to the top of the file:
 
-```shell
-deb https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
-deb-src https://mirrors.jcut.edu.cn/kali kali-rolling main non-free contrib
+<ConfigGenerator promptString="Select source type:" versionList={kaliVariantList} defaultVersion={defaultVersion} configGen={GenKaliConfig} language="bash" />
+
+> If you do not need to compile packages from source, select "Binary only". The `deb-src` line has no effect on everyday use.
+
+After copying, run:
+
+```bash
+sudo tee /etc/apt/sources.list << EOF
+# paste the content above
+EOF
+sudo apt-get update
 ```
 
-#### Method 2
+#### Method 2: One-line sed Replacement
 
-Use sed command to replace:
+If your `/etc/apt/sources.list` already contains the official Kali source, replace the URL directly:
 
 ```shell
 sudo sed -i "s@http://http.kali.org/kali@https://mirrors.jcut.edu.cn/kali@g" /etc/apt/sources.list
 ```
 
-#### Method 3 (One-click Script)
+---
 
-```bash
-# Using curl
-bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
-# Using wget
-bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
-
-## Either method above works
-```
-
-### Note
+### Notes
 
 > After modifying the `sources.list` file, please run `sudo apt-get update` to update the index for the changes to take effect.
 
@@ -54,4 +70,4 @@ Since Kali repositories do not use the by-hash mechanism, consistency cannot be 
 E: Failed to fetch https://mirrors.jcut.edu.cn/kali/dists/kali-rolling/main/source/Sources.gz size mismatch (14593053 != 14592993). Is the mirror you are using being synchronized?
 ```
 
-If the above error occurs, you need to wait for the synchronization to complete before executing `apt update`.
+If the above error occurs, wait for the synchronization to complete before running `apt update`.

@@ -1,3 +1,21 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const alpineVersionList = [
+  "latest-stable",
+  "v3.21",
+  "v3.20",
+  "v3.19",
+  "v3.18",
+  "v3.17",
+];
+
+export const defaultVersion = "latest-stable";
+
+export const GenAlpineConfig = (version) => {
+  return `https://mirrors.jcut.edu.cn/alpine/${version}/main
+https://mirrors.jcut.edu.cn/alpine/${version}/community`;
+};
+
 ## Alpine Mirror Usage Guide
 
 ### URL
@@ -12,43 +30,42 @@ Alpine Linux software repository.
 
 x86_64, aarch64, loongarch64
 
+---
+
 ### Usage Instructions
 
-Generally, it is sufficient to replace the default repository address `http://dl-cdn.alpinelinux.org/` with `http://mirrors.jcut.edu.cn/` in the `/etc/apk/repositories` file.
+#### Method 1: One-line Replacement (Recommended)
 
-You can use the following commands:
-
-#### Method 1
+Run the following command to replace the upstream URL in your existing `/etc/apk/repositories`:
 
 ```shell
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.jcut.edu.cn/g' /etc/apk/repositories
 ```
 
-#### Method 2 (One-click Script)
+#### Method 2: Edit the Config File Directly
 
-```bash
-# Using curl
-bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
-# Using wget
-bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
+Select your Alpine version below, then **overwrite** the contents of `/etc/apk/repositories` with the generated output:
 
-## Either method above works
+<ConfigGenerator promptString="Select your Alpine Linux version:" versionList={alpineVersionList} defaultVersion={defaultVersion} configGen={GenAlpineConfig} language="text" />
+
+After copying, open the file with your editor:
+
+```shell
+sudo vi /etc/apk/repositories
+# or
+sudo nano /etc/apk/repositories
 ```
 
-You can also directly edit the `/etc/apk/repositories` file. Here is a reference configuration for v3.20:
+Replace the file contents with the generated config above, save, then run:
 
-```text
-https://mirrors.jcut.edu.cn/alpine/v3.20/main
-https://mirrors.jcut.edu.cn/alpine/v3.20/community
+```shell
+apk update
 ```
 
-You can also use `latest-stable` to point to the latest stable version:
+---
 
-```text
-https://mirrors.jcut.edu.cn/alpine/latest-stable/main
-https://mirrors.jcut.edu.cn/alpine/latest-stable/community
-```
+### Notes
 
-### Note
+`latest-stable` automatically points to the current latest stable release, which is suitable when you do not need to pin a specific version. If you want to prevent unexpected upgrades, select a specific version number (e.g. `v3.21`).
 
-After modifying the `/etc/apk/repositories` file, please run `apk update` to update the index for the changes to take effect.
+After modifying `/etc/apk/repositories`, always run `apk update` to apply the changes.

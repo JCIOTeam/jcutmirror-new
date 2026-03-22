@@ -1,3 +1,17 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const archVersionList = [
+  "x86_64",
+  "aarch64",
+  "i686",
+];
+
+export const defaultVersion = "x86_64";
+
+export const GenArchConfig = (arch) => {
+  return `Server = https://mirrors.jcut.edu.cn/archlinux/$repo/os/${arch}`;
+};
+
 ## ArchLinux 镜像使用帮助
 
 ### 地址
@@ -20,14 +34,17 @@ Pacman 以 `mirrorlist` 中 Server 的顺序作为优先级，因此添加镜像
 
 有关 Arch Linux 使用镜像的详细说明请见[官方文档](https://wiki.archlinux.org/title/mirrors)
 
-#### 方法一
-编辑 `/etc/pacman.d/mirrorlist`，在文件的最顶端添加：
+选择您的系统架构，复制生成的 Server 条目，添加到 `/etc/pacman.d/mirrorlist` 文件的最顶端：
 
-```text
-Server = https://mirrors.jcut.edu.cn/archlinux/$repo/os/$arch
-```
+<ConfigGenerator promptString="请选择您的系统架构：" versionList={archVersionList} defaultVersion={defaultVersion} configGen={GenArchConfig} language="text" />
+
+> 提示：大多数桌面及服务器用户选择 `x86_64`；树莓派等 ARM 设备选择 `aarch64`。
+
+复制后编辑 `/etc/pacman.d/mirrorlist`（需要 `sudo`），将上面的行粘贴到文件第一行。
 
 建议同时启用 `archlinuxcn` 源，有关 `archlinuxcn` 源的介绍，请查看 [archlinuxcn 镜像使用帮助](#/doc/archlinuxcn)
+
+---
 
 ### 注意
 

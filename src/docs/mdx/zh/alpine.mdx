@@ -1,3 +1,21 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const alpineVersionList = [
+  "latest-stable",
+  "v3.21",
+  "v3.20",
+  "v3.19",
+  "v3.18",
+  "v3.17",
+];
+
+export const defaultVersion = "latest-stable";
+
+export const GenAlpineConfig = (version) => {
+  return `https://mirrors.jcut.edu.cn/alpine/${version}/main
+https://mirrors.jcut.edu.cn/alpine/${version}/community`;
+};
+
 ## Alpine 镜像使用帮助
 
 ### 地址
@@ -12,32 +30,42 @@ Alpine Linux 软件源
 
 x86_64, aarch64, loongarch64
 
+---
+
 ### 使用说明
 
-一般情况下，将 `/etc/apk/repositories` 文件中 Alpine 默认的源地址 `http://dl-cdn.alpinelinux.org/` 替换为 `http://mirrors.jcut.edu.cn/` 即可。
+#### 方法一：一键替换（推荐）
 
-可以使用如下命令：
-
-#### 方法一
+在终端执行以下命令，将现有 `/etc/apk/repositories` 中的上游地址直接替换为本镜像站：
 
 ```shell
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.jcut.edu.cn/g' /etc/apk/repositories
 ```
 
-也可以直接编辑 `/etc/apk/repositories` 文件。以下是 v3.23 版本的参考配置：
+#### 方法二：直接编辑配置文件
 
-```text
-https://mirrors.jcut.edu.cn/alpine/v3.23/main
-https://mirrors.jcut.edu.cn/alpine/v3.23/community
+选择您使用的 Alpine 版本，将生成的内容**覆盖写入** `/etc/apk/repositories` 文件：
+
+<ConfigGenerator promptString="请选择您的 Alpine Linux 版本：" versionList={alpineVersionList} defaultVersion={defaultVersion} configGen={GenAlpineConfig} language="text" />
+
+复制内容后执行：
+
+```shell
+sudo vi /etc/apk/repositories
+# 或
+sudo nano /etc/apk/repositories
 ```
 
-也可以使用 `latest-stable` 指向最新的稳定版本：
+将文件内容替换为上方生成的配置，保存后执行：
 
-```text
-https://mirrors.jcut.edu.cn/alpine/latest-stable/main
-https://mirrors.jcut.edu.cn/alpine/latest-stable/community
+```shell
+apk update
 ```
 
-### 注意
+---
+
+### 注意事项
+
+`latest-stable` 会自动指向当前最新稳定版，适合不需要锁定版本的场景。如需固定版本以避免意外升级，请选择具体版本号（如 `v3.21`）。
 
 更改完 `/etc/apk/repositories` 文件后请运行 `apk update` 更新索引以生效。

@@ -1,3 +1,36 @@
+import ConfigGenerator from '../../../components/config-generator/ConfigGenerator'
+
+export const rockyVersionList = [
+  "Rocky Linux 8",
+  "Rocky Linux 9",
+  "Rocky Linux 10",
+];
+
+export const defaultVersion = "Rocky Linux 9";
+
+export const GenRockyConfig = (version) => {
+  if (version === "Rocky Linux 8") {
+    return `sed -e 's|^mirrorlist=|#mirrorlist=|g' \\
+    -e 's|^#baseurl=http://dl.rockylinux.org/\\$contentdir|baseurl=https://mirrors.jcut.edu.cn/rocky|g' \\
+    -i.bak \\
+    /etc/yum.repos.d/Rocky-AppStream.repo \\
+    /etc/yum.repos.d/Rocky-BaseOS.repo \\
+    /etc/yum.repos.d/Rocky-Extras.repo \\
+    /etc/yum.repos.d/Rocky-PowerTools.repo
+
+# Update the cache after replacement
+dnf makecache`;
+  }
+  return `sed -e 's|^mirrorlist=|#mirrorlist=|g' \\
+    -e 's|^#baseurl=http://dl.rockylinux.org/\\$contentdir|baseurl=https://mirrors.jcut.edu.cn/rocky|g' \\
+    -i.bak \\
+    /etc/yum.repos.d/rocky-extras.repo \\
+    /etc/yum.repos.d/rocky.repo
+
+# Update the cache after replacement
+dnf makecache`;
+};
+
 ## Rocky Linux Repository Usage Guide
 
 ### URL
@@ -20,41 +53,16 @@ x86_64, aarch64
 
 ### Usage Instructions
 
-#### Method 1
+Select your version, copy the command, and run it in a terminal to switch sources. The command replaces the default upstream URL with this mirror and keeps a `.bak` backup of each original config file.
 
-For Rocky Linux 8, use the following commands to replace the default configuration:
+<ConfigGenerator promptString="Select your Rocky Linux version:" versionList={rockyVersionList} defaultVersion={defaultVersion} configGen={GenRockyConfig} language="bash" />
 
-```shell
-sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.jcut.edu.cn/rocky|g' \
-    -i.bak \
-    /etc/yum.repos.d/Rocky-AppStream.repo \
-    /etc/yum.repos.d/Rocky-BaseOS.repo \
-    /etc/yum.repos.d/Rocky-Extras.repo \
-    /etc/yum.repos.d/Rocky-PowerTools.repo
-```
+> Rocky 8 and Rocky 9/10 use different repo file naming conventions (title-case vs. lowercase). Make sure you select the correct version.
 
-For Rocky Linux 9/10, use the following commands to replace the default configuration:
+---
 
-```shell
-sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.jcut.edu.cn/rocky|g' \
-    -i.bak \
-    /etc/yum.repos.d/rocky-extras.repo \
-    /etc/yum.repos.d/rocky.repo
-```
+### Notes
 
-The above commands only replace the default enabled repositories. After replacement, please run `dnf makecache` to update the cache.
-
-#### Method 2 (One-click Script)
-
-```bash
-# Using curl
-bash <(curl -sSL http://mirrors.jcut.edu.cn/mirrors.sh)
-# Using wget
-bash <(wget -qO- http://mirrors.jcut.edu.cn/mirrors.sh)
-
-## Either method above works
-```
+The commands above only replace the default enabled repositories. If you have manually enabled additional repo files (e.g. `rocky-devel.repo`), replace them manually using the same pattern.
 
 > This document was written with reference to http://mirrors.ustc.edu.cn/help/rocky.html.
