@@ -98,11 +98,11 @@ const Home: React.FC = () => {
   const networkStat =
     campusStatus === '1'
       ? {
-        icon: <WifiIcon />,
-        label: t('network.campusLabel'),
-        dot: '#22C55E',
-        tooltip: t('network.campus'),
-      }
+          icon: <WifiIcon />,
+          label: t('network.campusLabel'),
+          dot: '#22C55E',
+          tooltip: t('network.campus'),
+        }
       : campusStatus === '6'
         ? { icon: <Ipv6Icon />, label: 'IPv6', dot: '#3B82F6', tooltip: t('network.ipv6') }
         : null;
@@ -215,24 +215,24 @@ const Home: React.FC = () => {
               const netConfig =
                 campusStatus === '1'
                   ? {
-                    icon: <WifiIcon sx={{ fontSize: 14 }} />,
-                    label: t('network.campusChip'),
-                    color: 'success' as const,
-                    dot: '#22C55E',
-                  }
+                      icon: <WifiIcon sx={{ fontSize: 14 }} />,
+                      label: t('network.campusChip'),
+                      color: 'success' as const,
+                      dot: '#22C55E',
+                    }
                   : campusStatus === '6'
                     ? {
-                      icon: <Ipv6Icon sx={{ fontSize: 14 }} />,
-                      label: 'IPv6',
-                      color: 'info' as const,
-                      dot: '#3B82F6',
-                    }
+                        icon: <Ipv6Icon sx={{ fontSize: 14 }} />,
+                        label: 'IPv6',
+                        color: 'info' as const,
+                        dot: '#3B82F6',
+                      }
                     : {
-                      icon: <WifiIcon sx={{ fontSize: 14 }} />,
-                      label: t('network.externalLabel'),
-                      color: 'default' as const,
-                      dot: '#94A3B8',
-                    };
+                        icon: <WifiIcon sx={{ fontSize: 14 }} />,
+                        label: t('network.externalLabel'),
+                        color: 'default' as const,
+                        dot: '#94A3B8',
+                      };
 
               return (
                 <Tooltip
@@ -313,21 +313,21 @@ const Home: React.FC = () => {
                 { icon: <SpeedIcon />, label: t('home.syncedToday', { count: syncedTodayCount }) },
                 ...(window.location.protocol === 'https:'
                   ? [
-                    {
-                      icon: <SecurityIcon />,
-                      label: t('network.https'),
-                    },
-                  ]
+                      {
+                        icon: <SecurityIcon />,
+                        label: t('network.https'),
+                      },
+                    ]
                   : []),
                 ...(networkStat
                   ? [
-                    {
-                      icon: networkStat.icon,
-                      label: networkStat.label,
-                      dot: networkStat.dot,
-                      tooltip: networkStat.tooltip,
-                    },
-                  ]
+                      {
+                        icon: networkStat.icon,
+                        label: networkStat.label,
+                        dot: networkStat.dot,
+                        tooltip: networkStat.tooltip,
+                      },
+                    ]
                   : []),
               ];
               return (
