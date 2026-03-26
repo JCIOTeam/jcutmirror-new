@@ -16,6 +16,8 @@ const NewsWidget: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
+  // getNewsList() 通过 import.meta.glob eager 在构建时固定，运行时不会变化，
+  // 空依赖数组是有意为之，避免每次渲染都重新执行（尽管它是纯函数）
   const news = useMemo(() => getNewsList().slice(0, MAX_ITEMS), []);
 
   if (news.length === 0) return null;
