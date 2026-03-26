@@ -46,8 +46,22 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import { useMirrors } from '../hooks/useMirrors';
-import { useLocaleStore } from '../stores/mirrorStore';
+import { useLocaleStore, useThemeStore } from '../stores/mirrorStore';
 import { formatRelativeTime, formatAbsoluteTime, parseTimestamp } from '../utils/time';
+
+// ── Grafana 可用性探测 ────────────────────────────────────────────────────────
+// 发一次 HEAD 请求探测 /grafana/ 是否可达，避免未部署时展示无效区块
+function useGrafanaAvailable(): boolean | null {
+  const [available, setAvailable] = React.useState<boolean | null>(null);
+  React.useEffect(() => {
+    const controller = new AbortController();
+    fetch('/grafana/', { method: 'HEAD', signal: controller.signal })
+      .then((res) => setAvailable(res.ok))
+      .catch(() => setAvailable(false));
+    return () => controller.abort();
+  }, []);
+  return available;
+}
 
 // ── 系统整体健康状态 ──────────────────────────────────────────────────────────
 type HealthLevel = 'operational' | 'degraded' | 'outage';
@@ -140,6 +154,8 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, value, sub, color }) =
 const StatusPage: React.FC = () => {
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
+  const { mode: themeMode } = useThemeStore();
+  const grafanaAvailable = useGrafanaAvailable();
   const navigate = useNavigate();
   const { data: mirrors = [], isLoading, error, refetch, dataUpdatedAt } = useMirrors();
 
@@ -627,120 +643,121 @@ const StatusPage: React.FC = () => {
           </Grid>
         </Grid>
 
-        {/* ── Grafana 系统指标面板 ── */}
-        <Box sx={{ mt: 4 }}>
-          <Accordion
-            defaultExpanded={false}
-            sx={{
-              borderRadius: '12px !important',
-              border: '1px solid',
-              borderColor: 'divider',
-              '&:before': { display: 'none' },
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}
+        {/* ── Grafana 系统指标面板 —— 仅在探测到 /grafana/ 可达时渲染 ── */}
+        {grafanaAvailable && (
+          <Box sx={{ mt: 4 }}>
+            <Accordion
+              defaultExpanded={false}
+              sx={{
+                borderRadius: '12px !important',
+                border: '1px solid',
+                borderColor: 'divider',
+                '&:before': { display: 'none' },
+              }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <GrafanaIcon color="primary" fontSize="small" />
-                <Box>
-                  <Typography variant="subtitle1" fontWeight={700}>
-                    {t('status.serverMetrics')}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {t('status.serverMetricsSub')}
-                  </Typography>
-                </Box>
-                <Box sx={{ ml: 'auto', mr: 1 }}>
-                  <Tooltip title={t('status.openGrafana')}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
-                      component="a"
-                      href="/grafana/d/jcut-mirror-system"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      sx={{ borderRadius: 6, fontSize: '0.75rem' }}
-                    >
-                      Grafana
-                    </Button>
-                  </Tooltip>
-                </Box>
-              </Box>
-            </AccordionSummary>
-
-            <AccordionDetails sx={{ p: 0 }}>
-              <Divider />
-              {/* Grafana 面板说明 */}
-              <Alert
-                severity="info"
-                sx={{ borderRadius: 0, '& .MuiAlert-message': { fontSize: '0.82rem' } }}
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}
               >
-                {t('status.grafanaNotice')}
-              </Alert>
-
-              {/* 嵌入面板网格 */}
-              <Grid container sx={{ p: 2 }} spacing={2}>
-                {[
-                  {
-                    title: t('status.cpuUsage'),
-                    panelId: 1,
-                  },
-                  {
-                    title: t('status.memUsage'),
-                    panelId: 2,
-                  },
-                  {
-                    title: t('status.networkBandwidth'),
-                    panelId: 3,
-                  },
-                  {
-                    title: t('status.diskSpace'),
-                    panelId: 4,
-                  },
-                  {
-                    title: t('status.nginxRequests'),
-                    panelId: 5,
-                  },
-                  {
-                    title: t('status.activeConnections'),
-                    panelId: 6,
-                  },
-                ].map(({ title, panelId }) => (
-                  <Grid key={panelId} size={{ xs: 12, md: 6 }}>
-                    <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                      <Box
-                        sx={{
-                          px: 2,
-                          py: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          borderBottom: '1px solid',
-                          borderColor: 'divider',
-                          bgcolor: 'action.hover',
-                        }}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <GrafanaIcon color="primary" fontSize="small" />
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight={700}>
+                      {t('status.serverMetrics')}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {t('status.serverMetricsSub')}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ ml: 'auto', mr: 1 }}>
+                    <Tooltip title={t('status.openGrafana')}>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
+                        component="a"
+                        href="/grafana/d/jcut-mirror-system"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        sx={{ borderRadius: 6, fontSize: '0.75rem' }}
                       >
-                        <Typography variant="caption" fontWeight={700}>
-                          {title}
-                        </Typography>
-                        <Link
-                          href={`/grafana/d/jcut-mirror-system?viewPanel=${panelId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          variant="caption"
-                          color="primary"
-                          underline="hover"
-                          sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                        Grafana
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              </AccordionSummary>
+
+              <AccordionDetails sx={{ p: 0 }}>
+                <Divider />
+                {/* Grafana 面板说明 */}
+                <Alert
+                  severity="info"
+                  sx={{ borderRadius: 0, '& .MuiAlert-message': { fontSize: '0.82rem' } }}
+                >
+                  {t('status.grafanaNotice')}
+                </Alert>
+
+                {/* 嵌入面板网格 */}
+                <Grid container sx={{ p: 2 }} spacing={2}>
+                  {[
+                    {
+                      title: t('status.cpuUsage'),
+                      panelId: 1,
+                    },
+                    {
+                      title: t('status.memUsage'),
+                      panelId: 2,
+                    },
+                    {
+                      title: t('status.networkBandwidth'),
+                      panelId: 3,
+                    },
+                    {
+                      title: t('status.diskSpace'),
+                      panelId: 4,
+                    },
+                    {
+                      title: t('status.nginxRequests'),
+                      panelId: 5,
+                    },
+                    {
+                      title: t('status.activeConnections'),
+                      panelId: 6,
+                    },
+                  ].map(({ title, panelId }) => (
+                    <Grid key={panelId} size={{ xs: 12, md: 6 }}>
+                      <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                        <Box
+                          sx={{
+                            px: 2,
+                            py: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            borderBottom: '1px solid',
+                            borderColor: 'divider',
+                            bgcolor: 'action.hover',
+                          }}
                         >
-                          {t('common.fullscreen')}
-                          <OpenInNewIcon sx={{ fontSize: 11 }} />
-                        </Link>
-                      </Box>
-                      {/* Grafana iframe 嵌入
+                          <Typography variant="caption" fontWeight={700}>
+                            {title}
+                          </Typography>
+                          <Link
+                            href={`/grafana/d/jcut-mirror-system?viewPanel=${panelId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="caption"
+                            color="primary"
+                            underline="hover"
+                            sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                          >
+                            {t('common.fullscreen')}
+                            <OpenInNewIcon sx={{ fontSize: 11 }} />
+                          </Link>
+                        </Box>
+                        {/* Grafana iframe 嵌入
                         参数说明：
                           orgId=1          → 组织 ID
                           panelId=N        → 面板 ID（与 dashboard JSON 中的 id 字段对应）
@@ -748,66 +765,67 @@ const StatusPage: React.FC = () => {
                           theme            → 跟随系统主题
                           kiosk            → 隐藏 Grafana 顶栏
                       */}
-                      <Box
-                        component="iframe"
-                        src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=${panelId}&from=now-1h&to=now&theme=light&kiosk`}
-                        sx={{
-                          display: 'block',
-                          width: '100%',
-                          height: 220,
-                          border: 'none',
-                        }}
-                        title={title}
-                        loading="lazy"
-                      />
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
+                        <Box
+                          component="iframe"
+                          src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=${panelId}&from=now-1h&to=now&theme=${themeMode}&kiosk`}
+                          sx={{
+                            display: 'block',
+                            width: '100%',
+                            height: 220,
+                            border: 'none',
+                          }}
+                          title={title}
+                          loading="lazy"
+                        />
+                      </Paper>
+                    </Grid>
+                  ))}
+                </Grid>
 
-              {/* 系统负载全宽面板 */}
-              <Box sx={{ px: 2, pb: 2 }}>
-                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                  <Box
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      borderBottom: '1px solid',
-                      borderColor: 'divider',
-                      bgcolor: 'action.hover',
-                    }}
-                  >
-                    <Typography variant="caption" fontWeight={700}>
-                      {t('status.systemLoad')}
-                    </Typography>
-                    <Link
-                      href="/grafana/d/jcut-mirror-system?viewPanel=7"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      variant="caption"
-                      color="primary"
-                      underline="hover"
-                      sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                {/* 系统负载全宽面板 */}
+                <Box sx={{ px: 2, pb: 2 }}>
+                  <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                    <Box
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        bgcolor: 'action.hover',
+                      }}
                     >
-                      {t('common.fullscreen')}
-                      <OpenInNewIcon sx={{ fontSize: 11 }} />
-                    </Link>
-                  </Box>
-                  <Box
-                    component="iframe"
-                    src="/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=7&from=now-1h&to=now&theme=light&kiosk"
-                    sx={{ display: 'block', width: '100%', height: 200, border: 'none' }}
-                    title={t('status.systemLoad')}
-                    loading="lazy"
-                  />
-                </Paper>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        </Box>
+                      <Typography variant="caption" fontWeight={700}>
+                        {t('status.systemLoad')}
+                      </Typography>
+                      <Link
+                        href="/grafana/d/jcut-mirror-system?viewPanel=7"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        variant="caption"
+                        color="primary"
+                        underline="hover"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                      >
+                        {t('common.fullscreen')}
+                        <OpenInNewIcon sx={{ fontSize: 11 }} />
+                      </Link>
+                    </Box>
+                    <Box
+                      component="iframe"
+                      src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=7&from=now-1h&to=now&theme=${themeMode}&kiosk`}
+                      sx={{ display: 'block', width: '100%', height: 200, border: 'none' }}
+                      title={t('status.systemLoad')}
+                      loading="lazy"
+                    />
+                  </Paper>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+        )}
       </Container>
     </>
   );
