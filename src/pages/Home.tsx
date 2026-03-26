@@ -43,6 +43,7 @@ import {
   usePopularMirrors,
 } from '../hooks/useMirrors';
 import { useMirrorSearchStore, useFavoriteStore } from '../stores/mirrorStore';
+import type { Mirror } from '../types';
 
 import { getNewsList } from '@/news';
 
@@ -62,26 +63,28 @@ const Home: React.FC = () => {
   const groupedMirrors = useGroupedMirrors(filteredMirrors);
   const popularMirrors = usePopularMirrors(mirrors, 8);
 
-  // 收藏镜像 — 订阅 favorites 数组，数据变化时自动重渲染
+  // 收藏镜像 — 按收藏先后顺序排列（favorites 数组保留了添加时序）
   const { favorites } = useFavoriteStore();
-  const favoriteMirrors = useMemo(
-    () => mirrors.filter((m) => favorites.includes(m.id)),
-    [mirrors, favorites]
-  );
+  const favoriteMirrors = useMemo(() => {
+    const mirrorMap = new Map(mirrors.map((m) => [m.id, m]));
+    return favorites.map((id) => mirrorMap.get(id)).filter((m): m is Mirror => m !== undefined);
+  }, [mirrors, favorites]);
 
   // 统计数据
   const totalCount = mirrors.length;
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const syncedTodayCount = mirrors.filter((m) => {
-    if (!m.lastUpdated) return false;
-    const ts = Number(m.lastUpdated);
-    if (isNaN(ts) || ts <= 0) return false;
-    const ms = ts < 1e12 ? ts * 1000 : ts;
-    return ms >= todayStart.getTime();
-  }).length;
-  const failedMirrors = mirrors.filter((m) => m.status === 'failed');
-  const failedCount = failedMirrors.length;
+  const { syncedTodayCount, failedMirrors, failedCount } = useMemo(() => {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const synced = mirrors.filter((m) => {
+      if (!m.lastUpdated) return false;
+      const ts = Number(m.lastUpdated);
+      if (isNaN(ts) || ts <= 0) return false;
+      const ms = ts < 1e12 ? ts * 1000 : ts;
+      return ms >= todayStart.getTime();
+    }).length;
+    const failed = mirrors.filter((m) => m.status === 'failed');
+    return { syncedTodayCount: synced, failedMirrors: failed, failedCount: failed.length };
+  }, [mirrors]);
 
   // 点击失败摘要 → 跳到第一个失败镜像所在字母组
   const handleFailedClick = () => {
@@ -95,11 +98,11 @@ const Home: React.FC = () => {
   const networkStat =
     campusStatus === '1'
       ? {
-          icon: <WifiIcon />,
-          label: t('network.campusLabel'),
-          dot: '#22C55E',
-          tooltip: t('network.campus'),
-        }
+        icon: <WifiIcon />,
+        label: t('network.campusLabel'),
+        dot: '#22C55E',
+        tooltip: t('network.campus'),
+      }
       : campusStatus === '6'
         ? { icon: <Ipv6Icon />, label: 'IPv6', dot: '#3B82F6', tooltip: t('network.ipv6') }
         : null;
@@ -170,7 +173,6 @@ const Home: React.FC = () => {
       </Helmet>
 
       {/* Hero 区域 */}
-      {/* Hero 区域 */}
       <Box
         sx={{
           background: (theme) =>
@@ -213,24 +215,24 @@ const Home: React.FC = () => {
               const netConfig =
                 campusStatus === '1'
                   ? {
-                      icon: <WifiIcon sx={{ fontSize: 14 }} />,
-                      label: t('network.campusChip'),
-                      color: 'success' as const,
-                      dot: '#22C55E',
-                    }
+                    icon: <WifiIcon sx={{ fontSize: 14 }} />,
+                    label: t('network.campusChip'),
+                    color: 'success' as const,
+                    dot: '#22C55E',
+                  }
                   : campusStatus === '6'
                     ? {
-                        icon: <Ipv6Icon sx={{ fontSize: 14 }} />,
-                        label: 'IPv6',
-                        color: 'info' as const,
-                        dot: '#3B82F6',
-                      }
+                      icon: <Ipv6Icon sx={{ fontSize: 14 }} />,
+                      label: 'IPv6',
+                      color: 'info' as const,
+                      dot: '#3B82F6',
+                    }
                     : {
-                        icon: <WifiIcon sx={{ fontSize: 14 }} />,
-                        label: t('network.externalLabel'),
-                        color: 'default' as const,
-                        dot: '#94A3B8',
-                      };
+                      icon: <WifiIcon sx={{ fontSize: 14 }} />,
+                      label: t('network.externalLabel'),
+                      color: 'default' as const,
+                      dot: '#94A3B8',
+                    };
 
               return (
                 <Tooltip
@@ -311,21 +313,21 @@ const Home: React.FC = () => {
                 { icon: <SpeedIcon />, label: t('home.syncedToday', { count: syncedTodayCount }) },
                 ...(window.location.protocol === 'https:'
                   ? [
-                      {
-                        icon: <SecurityIcon />,
-                        label: t('network.https'),
-                      },
-                    ]
+                    {
+                      icon: <SecurityIcon />,
+                      label: t('network.https'),
+                    },
+                  ]
                   : []),
                 ...(networkStat
                   ? [
-                      {
-                        icon: networkStat.icon,
-                        label: networkStat.label,
-                        dot: networkStat.dot,
-                        tooltip: networkStat.tooltip,
-                      },
-                    ]
+                    {
+                      icon: networkStat.icon,
+                      label: networkStat.label,
+                      dot: networkStat.dot,
+                      tooltip: networkStat.tooltip,
+                    },
+                  ]
                   : []),
               ];
               return (
