@@ -1,9 +1,10 @@
 // src/components/mirrors/DownloadModal.tsx
 // 镜像下载弹窗
 
+import AlbumIcon from '@mui/icons-material/Album';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
@@ -36,6 +37,13 @@ const SAFE_URL_RE = /^(https?:\/\/|\/)/i;
 function sanitizeUrl(url: string): string {
   if (!url) return '#';
   return SAFE_URL_RE.test(url) ? url : '#';
+}
+
+// 根据文件 URL 后缀返回合适的图标
+function getFileIcon(url: string): React.ReactNode {
+  const ext = url.split('.').pop()?.toLowerCase() ?? '';
+  if (ext === 'iso' || ext === 'img') return <AlbumIcon sx={{ fontSize: 18 }} />;
+  return <InsertDriveFileIcon sx={{ fontSize: 18 }} />;
 }
 
 interface DownloadModalProps {
@@ -249,7 +257,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                       }}
                     >
                       <ListItemIcon sx={{ minWidth: 32, color: 'primary.main' }}>
-                        <FolderOpenIcon sx={{ fontSize: 18 }} />
+                        {getFileIcon(file.url)}
                       </ListItemIcon>
                       <ListItemText
                         primary={file.name}
