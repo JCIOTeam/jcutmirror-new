@@ -1,18 +1,7 @@
 // src/components/config-generator/ConfigGenerator.tsx
 // 配置生成器组件 - 用于在 MDX 文档中动态生成配置
 
-import CheckCircle from '@mui/icons-material/CheckCircle';
-import ContentCopy from '@mui/icons-material/ContentCopy';
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Paper,
-  Typography,
-  IconButton,
-} from '@mui/material';
+import { Box, FormControl, InputLabel, Select, MenuItem, Paper, Typography } from '@mui/material';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -60,7 +49,6 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
   }, [defaultVersion, safeVersionList]);
 
   const [selectedVersion, setSelectedVersion] = useState<string>(safeDefaultVersion);
-  const [copied, setCopied] = useState(false);
 
   const config = useMemo(() => {
     if (!selectedVersion || !configGen) return '';
@@ -71,17 +59,6 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
       return '# 配置生成失败';
     }
   }, [selectedVersion, configGen]);
-
-  const handleCopy = async () => {
-    if (!config) return;
-    try {
-      await navigator.clipboard.writeText(config);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      console.error('复制失败');
-    }
-  };
 
   // 如果没有版本列表，显示提示
   if (safeVersionList.length === 0) {
@@ -137,33 +114,8 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
         </FormControl>
       </Box>
 
-      {/* 配置代码块 */}
-      <Box sx={{ position: 'relative' }}>
-        <CodeBlock language={language}>{config}</CodeBlock>
-
-        {/* 复制按钮 */}
-        <IconButton
-          size="small"
-          onClick={handleCopy}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            bgcolor: 'background.paper',
-            boxShadow: 1,
-            '&:hover': {
-              bgcolor: 'action.hover',
-            },
-          }}
-          aria-label="复制配置"
-        >
-          {copied ? (
-            <CheckCircle fontSize="small" color="success" />
-          ) : (
-            <ContentCopy fontSize="small" />
-          )}
-        </IconButton>
-      </Box>
+      {/* 配置代码块（CodeBlock 顶部工具栏已内置复制按钮） */}
+      <CodeBlock language={language}>{config}</CodeBlock>
     </Paper>
   );
 };
