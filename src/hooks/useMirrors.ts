@@ -6,7 +6,7 @@ import { useMemo, useEffect, useState } from 'react';
 
 import { useMirrorSearchStore } from '../stores/mirrorStore';
 
-import { fetchMirrors, fetchMirrorByName, fetchCampusNetworkStatus } from '@/api';
+import { fetchMirrors, fetchCampusNetworkStatus } from '@/api';
 import type { Mirror, GroupedMirrors } from '@/types';
 
 // ── 基础查询 Hooks ────────────────────────────────────────────────────────────
@@ -19,11 +19,17 @@ export const useMirrors = () =>
   });
 
 export const useMirrorDetail = (name: string) =>
-  useQuery<Mirror>({
-    queryKey: ['mirror', name],
-    queryFn: () => fetchMirrorByName(name),
+  useQuery<Mirror[], Error, Mirror>({
+    // 与 useMirrors() 共享同一个缓存 key，首页已加载时进详情页无需重复请求
+    queryKey: ['mirrors'],
+    queryFn: fetchMirrors,
     enabled: !!name,
     staleTime: 60_000,
+    select: (mirrors) => {
+      const mirror = mirrors.find((m) => m.id.toLowerCase() === name.toLowerCase());
+      if (!mirror) throw new Error(`Mirror not found: ${name}`);
+      return mirror;
+    },
   });
 
 export const useCampusNetwork = () =>
