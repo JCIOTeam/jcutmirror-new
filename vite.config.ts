@@ -32,6 +32,8 @@ const proxyConfig = {
       const url = req.url ?? '';
       if (url.startsWith('/@') || url.startsWith('/__')) return url;
       if (url.startsWith('/mirrors/') || url.startsWith('/news') || url === '/') return url;
+      // Grafana 相关路径（含 HEAD 探测请求）不代理，由 nginx 或本地服务处理
+      if (url.startsWith('/grafana/')) return url;
       const accept = String(req.headers['accept'] ?? '');
       if (!accept.includes('text/html')) return url;
       return null;
@@ -65,10 +67,10 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             // React 核心（最先判断，路径精确匹配避免误判）
             if (id.includes('node_modules/react/') ||
-                id.includes('node_modules/react-dom/') ||
-                id.includes('node_modules/scheduler/') ||
-                id.includes('node_modules/react-router') ||
-                id.includes('node_modules/react-helmet')) {
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/scheduler/') ||
+              id.includes('node_modules/react-router') ||
+              id.includes('node_modules/react-helmet')) {
               return 'react-vendor';
             }
             // MUI 图标（先判断，避免被 mui-core 规则吞掉）
