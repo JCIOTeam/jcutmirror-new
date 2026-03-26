@@ -40,12 +40,20 @@ interface MirrorListProps {
 // ── 关键词高亮辅助组件 ─────────────────────────────────────────────────────────
 const Highlight: React.FC<{ text: string; query: string }> = ({ text, query }) => {
   if (!query.trim()) return <>{text}</>;
-  const idx = text.toLowerCase().indexOf(query.toLowerCase());
-  if (idx === -1) return <>{text}</>;
-  return (
-    <>
-      {text.slice(0, idx)}
+  const q = query.toLowerCase();
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+  while (remaining.length > 0) {
+    const idx = remaining.toLowerCase().indexOf(q);
+    if (idx === -1) {
+      parts.push(remaining);
+      break;
+    }
+    if (idx > 0) parts.push(remaining.slice(0, idx));
+    parts.push(
       <Box
+        key={key++}
         component="mark"
         sx={{
           bgcolor: 'warning.light',
@@ -55,11 +63,12 @@ const Highlight: React.FC<{ text: string; query: string }> = ({ text, query }) =
           fontWeight: 700,
         }}
       >
-        {text.slice(idx, idx + query.length)}
+        {remaining.slice(idx, idx + q.length)}
       </Box>
-      {text.slice(idx + query.length)}
-    </>
-  );
+    );
+    remaining = remaining.slice(idx + q.length);
+  }
+  return <>{parts}</>;
 };
 
 const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
