@@ -319,9 +319,9 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
             </TableRow>
           </TableHead>
           <TableBody>
-            {entries.map((entry, idx) => (
+            {entries.map((entry) => (
               <TableRow
-                key={idx}
+                key={entry.href}
                 hover
                 sx={{
                   cursor: entry.isDir || entry.isParent ? 'pointer' : 'default',
