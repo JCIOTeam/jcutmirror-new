@@ -16,6 +16,8 @@ const NewsListPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
+  // getNewsList() 通过 import.meta.glob eager 在构建时固定，运行时不会变化，
+  // 空依赖数组是有意为之
   const news = useMemo(() => getNewsList(), []);
 
   const title = t('news.title') + ' - JCUT Mirror';
