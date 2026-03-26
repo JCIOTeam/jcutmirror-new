@@ -159,7 +159,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
             const fullUrl = toFull(file.url);
             return (
               <ListItem
-                key={idx}
+                key={file.url}
                 disablePadding
                 sx={{
                   px: 0.5,
@@ -247,7 +247,6 @@ const MirrorDetail: React.FC = () => {
 
   // Tab 初始值：?tab=help → 0，?tab=files → 1，?tab=downloads → 2
   // 同时读取数字参数（如 ?tab=1），兼容手动刷新
-  const forceHelp = searchParams.get('tab') === 'help';
   const tabParam = searchParams.get('tab');
   const hasDoc = name ? hasMdxDoc(name, locale) : false;
 
@@ -256,7 +255,7 @@ const MirrorDetail: React.FC = () => {
     if (tabParam === 'files' || tabParam === '1') return 1;
     if (tabParam === 'downloads' || tabParam === '2') return 2;
     // 无参数时：有文档默认帮助，否则文件列表
-    return forceHelp || hasDoc ? 0 : 1;
+    return hasDoc ? 0 : 1;
   };
 
   const [tabValue, setTabValue] = useState(getInitialTab);
