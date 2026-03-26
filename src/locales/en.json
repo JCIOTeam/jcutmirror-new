@@ -5,7 +5,8 @@
     "help": "Help",
     "about": "About",
     "backHome": "Back to Home",
-    "download": "Download ISO"
+    "download": "Download ISO",
+    "backToTop": "Back to top"
   },
   "common": {
     "refresh": "Refresh",
@@ -20,7 +21,8 @@
     "fullscreen": "Full",
     "noData": "No data",
     "details": "Details",
-    "actions": "Actions"
+    "actions": "Actions",
+    "clickToCopy": "Click to copy"
   },
   "search": {
     "placeholder": "Search mirrors...",

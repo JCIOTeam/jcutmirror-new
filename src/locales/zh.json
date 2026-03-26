@@ -5,7 +5,8 @@
     "help": "使用帮助",
     "about": "关于我们",
     "backHome": "返回主页",
-    "download": "镜像下载"
+    "download": "镜像下载",
+    "backToTop": "回到顶部"
   },
   "common": {
     "refresh": "刷新",
@@ -20,7 +21,8 @@
     "fullscreen": "全屏",
     "noData": "暂无数据",
     "details": "详情",
-    "actions": "操作"
+    "actions": "操作",
+    "clickToCopy": "点击复制"
   },
   "search": {
     "placeholder": "搜索镜像...",
