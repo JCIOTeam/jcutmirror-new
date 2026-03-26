@@ -237,23 +237,27 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
           >
             {new URL(absCurrentUrl).pathname}
           </Typography>
-          {dirs.length > 0 && (
-            <Chip
-              size="small"
-              icon={<FolderIcon sx={{ fontSize: '14px !important' }} />}
-              label={t('directory.dirs', { count: dirs.length })}
-              variant="outlined"
-              sx={{ fontSize: '0.72rem', height: 22, flexShrink: 0 }}
-            />
-          )}
-          {files.length > 0 && (
-            <Chip
-              size="small"
-              icon={<FileIcon sx={{ fontSize: '14px !important' }} />}
-              label={t('directory.files', { count: files.length })}
-              variant="outlined"
-              sx={{ fontSize: '0.72rem', height: 22, flexShrink: 0 }}
-            />
+          {(dirs.length > 0 || files.length > 0) && (
+            <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0, flexWrap: 'nowrap' }}>
+              {dirs.length > 0 && (
+                <Chip
+                  size="small"
+                  icon={<FolderIcon sx={{ fontSize: '14px !important' }} />}
+                  label={t('directory.dirs', { count: dirs.length })}
+                  variant="outlined"
+                  sx={{ fontSize: '0.72rem', height: 22 }}
+                />
+              )}
+              {files.length > 0 && (
+                <Chip
+                  size="small"
+                  icon={<FileIcon sx={{ fontSize: '14px !important' }} />}
+                  label={t('directory.files', { count: files.length })}
+                  variant="outlined"
+                  sx={{ fontSize: '0.72rem', height: 22 }}
+                />
+              )}
+            </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
