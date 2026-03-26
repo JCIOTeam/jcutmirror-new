@@ -62,6 +62,7 @@ const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value
   const display = value && value !== '-' ? value : '—';
   const hasValue = display !== '—';
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
 
   const handleCopy = async () => {
     if (!hasValue) return;
@@ -129,7 +130,7 @@ const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value
             </Typography>
           </Tooltip>
           {hasValue && (
-            <Tooltip title={copied ? '已复制' : '点击复制'} placement="top">
+            <Tooltip title={copied ? t('common.copied') : t('common.clickToCopy')} placement="top">
               <IconButton size="small" onClick={handleCopy} sx={{ p: 0.3, flexShrink: 0 }}>
                 {copied ? (
                   <CheckIcon sx={{ fontSize: 13, color: 'success.main' }} />
