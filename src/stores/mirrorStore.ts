@@ -49,9 +49,19 @@ interface MirrorCacheState {
 }
 
 // ---- 主题 Store ----
+// 优先读取 localStorage；首次访问时跟随系统深色模式偏好
+function getInitialTheme(): ThemeMode {
+  const saved = safeGetItem('theme') as ThemeMode | null;
+  if (saved === 'light' || saved === 'dark') return saved;
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  } catch {
+    return 'light';
+  }
+}
+
 export const useThemeStore = create<ThemeState>((set, get) => ({
-  // 从 localStorage 读取主题，默认浅色
-  mode: (safeGetItem('theme') as ThemeMode) || 'light',
+  mode: getInitialTheme(),
 
   setMode: (mode) => {
     safeSetItem('theme', mode);
