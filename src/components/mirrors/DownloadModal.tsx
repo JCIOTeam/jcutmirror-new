@@ -31,6 +31,13 @@ import { useLocaleStore } from '../../stores/mirrorStore';
 
 import DistroLogo from './DistroLogo';
 
+// 仅允许 http / https / 相对路径，防止 javascript: 等危险协议
+const SAFE_URL_RE = /^(https?:\/\/|\/)/i;
+function sanitizeUrl(url: string): string {
+  if (!url) return '#';
+  return SAFE_URL_RE.test(url) ? url : '#';
+}
+
 interface DownloadModalProps {
   open: boolean;
   onClose: () => void;
@@ -227,10 +234,10 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
               {/* 文件列表 */}
               <List dense disablePadding sx={{ overflowY: 'auto', flex: 1, px: 1 }}>
                 {activeMirror.files.map((file, idx) => (
-                  <React.Fragment key={file.url}>
+                  <React.Fragment key={file.url || idx}>
                     <ListItemButton
                       component="a"
-                      href={file.url}
+                      href={sanitizeUrl(file.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       sx={{
