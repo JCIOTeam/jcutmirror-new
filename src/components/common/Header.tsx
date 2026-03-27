@@ -136,7 +136,7 @@ const Header: React.FC = () => {
                   fontSize: { xs: '1rem', sm: '1.1rem' },
                   fontFamily: '"JetBrains Mono", monospace',
                   letterSpacing: '-0.02em',
-                  display: { xs: 'none', sm: 'block' },
+                  display: 'block',
                 }}
               >
                 JCUT
