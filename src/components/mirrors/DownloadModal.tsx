@@ -46,6 +46,37 @@ function getFileIcon(url: string): React.ReactNode {
   return <InsertDriveFileIcon sx={{ fontSize: 18 }} />;
 }
 
+// 从文件名中提取版本号数组，用于降序排序（最新版本在最前）
+// 例："24.04.4 desktop amd64" → [24, 4, 4]
+//     "8-latest x86_64 Rocky Dvd" → [8]
+//     "latest" → []
+function extractVersion(name: string): number[] {
+  const m = name.match(/^[\d]+(?:[.-][\d]+)*/);
+  if (!m) return [];
+  return m[0]
+    .split(/[.-]/)
+    .map(Number)
+    .filter((n) => !isNaN(n));
+}
+
+function compareVersionDesc(a: string, b: string): number {
+  const va = extractVersion(a);
+  const vb = extractVersion(b);
+  // 无版本号的排到最后
+  if (va.length === 0 && vb.length === 0) return 0;
+  if (va.length === 0) return 1;
+  if (vb.length === 0) return -1;
+  for (let i = 0; i < Math.max(va.length, vb.length); i++) {
+    const diff = (vb[i] ?? 0) - (va[i] ?? 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+function sortFiles<T extends { name: string }>(files: T[]): T[] {
+  return [...files].sort((a, b) => compareVersionDesc(a.name, b.name));
+}
+
 interface DownloadModalProps {
   open: boolean;
   onClose: () => void;
@@ -241,7 +272,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
 
               {/* 文件列表 */}
               <List dense disablePadding sx={{ overflowY: 'auto', flex: 1, px: 1 }}>
-                {activeMirror.files.map((file, idx) => (
+                {sortFiles(activeMirror.files).map((file, idx, arr) => (
                   <React.Fragment key={file.url || idx}>
                     <ListItemButton
                       component="a"
@@ -253,35 +284,41 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                         px: 1.5,
                         py: 0.8,
                         my: 0.3,
+                        alignItems: 'center',
                         '&:hover .dl-icon': { opacity: 1 },
                       }}
                     >
-                      <ListItemIcon sx={{ minWidth: 32, color: 'primary.main' }}>
+                      <ListItemIcon
+                        sx={{ minWidth: 32, color: 'primary.main', alignSelf: 'center' }}
+                      >
                         {getFileIcon(file.url)}
                       </ListItemIcon>
-                      <ListItemText
-                        primary={file.name}
-                        primaryTypographyProps={{
-                          variant: 'body2',
-                          fontWeight: 500,
-                          noWrap: true,
-                        }}
-                        secondary={
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            color="text.secondary"
-                            sx={{
-                              display: 'block',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {file.url}
-                          </Typography>
-                        }
-                      />
+                      <Tooltip title={file.name} placement="top" enterDelay={600}>
+                        <ListItemText
+                          primary={file.name}
+                          primaryTypographyProps={{
+                            variant: 'body2',
+                            fontWeight: 500,
+                            noWrap: true,
+                          }}
+                          secondary={
+                            // 移动端隐藏 URL——屏幕窄且 URL 无法操作，保留空间给文件名
+                            <Typography
+                              component="span"
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{
+                                display: { xs: 'none', sm: 'block' },
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {file.url}
+                            </Typography>
+                          }
+                        />
+                      </Tooltip>
                       <Tooltip title={t('common.download')} placement="left">
                         <DownloadIcon
                           className="dl-icon"
@@ -296,7 +333,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                         />
                       </Tooltip>
                     </ListItemButton>
-                    {idx < activeMirror.files.length - 1 && <Divider sx={{ mx: 1.5 }} />}
+                    {idx < arr.length - 1 && <Divider sx={{ mx: 1.5 }} />}
                   </React.Fragment>
                 ))}
               </List>
