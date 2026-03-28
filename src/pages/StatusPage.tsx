@@ -9,7 +9,6 @@ import {
   Storage as StorageIcon,
   Speed as SpeedIcon,
   Schedule as ScheduleIcon,
-  Refresh as RefreshIcon,
   ArrowBack as BackIcon,
   Circle as DotIcon,
   BarChart as GrafanaIcon,
@@ -45,6 +44,7 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
+import RefreshButton from '../components/common/RefreshButton';
 import { useMirrors } from '../hooks/useMirrors';
 import { useLocaleStore, useThemeStore } from '../stores/mirrorStore';
 import { formatRelativeTime, formatAbsoluteTime, parseTimestamp } from '../utils/time';
@@ -157,7 +157,7 @@ const StatusPage: React.FC = () => {
   const { mode: themeMode } = useThemeStore();
   const grafanaAvailable = useGrafanaAvailable();
   const navigate = useNavigate();
-  const { data: mirrors = [], isLoading, error, refetch, dataUpdatedAt } = useMirrors();
+  const { data: mirrors = [], isLoading, isFetching, error, refetch, dataUpdatedAt } = useMirrors();
 
   // ── 聚合统计 ──────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -257,507 +257,535 @@ const StatusPage: React.FC = () => {
             {t('status.title')}
           </Typography>
           <Box sx={{ flex: 1 }} />
-          <Button
-            size="small"
-            startIcon={<RefreshIcon />}
-            onClick={() => refetch()}
-            disabled={isLoading}
-            variant="outlined"
-            sx={{ borderRadius: 6 }}
-          >
-            {t('common.refresh')}
-          </Button>
+          <RefreshButton onClick={() => refetch()} />
         </Box>
 
-        {/* 整体健康状态横幅 */}
-        {isLoading ? (
-          <Skeleton variant="rectangular" height={88} sx={{ borderRadius: 3, mb: 4 }} />
-        ) : error ? (
-          <Alert severity="error" sx={{ mb: 4, borderRadius: 2 }}>
-            {t('error.loadFailed')}
-          </Alert>
-        ) : (
-          <Paper
-            variant="outlined"
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              mb: 4,
-              bgcolor: healthCfg.bg,
-              borderColor: `${healthCfg.color}.main`,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2,
-              flexWrap: 'wrap',
-            }}
-          >
-            <Box sx={{ color: `${healthCfg.color}.main`, display: 'flex', alignItems: 'center' }}>
-              {healthCfg.icon}
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="h6" fontWeight={800} color={`${healthCfg.color}.main`}>
-                {t(`status.${health}`)}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {t('status.lastChecked', {
-                  time: lastChecked ? formatAbsoluteTime(lastChecked.getTime(), locale) : '-',
-                })}
-              </Typography>
-            </Box>
-            <Chip
-              label={`${stats.successRate}% ${t('status.availableLabel')}`}
-              color={healthCfg.color}
-              variant="filled"
-              sx={{ fontWeight: 700, fontSize: '0.85rem' }}
-            />
-          </Paper>
-        )}
+        {/* 刷新进度条——仅在后台 refetch 时（非首次加载）显示 */}
+        <LinearProgress
+          sx={{
+            mb: 2,
+            borderRadius: 1,
+            height: 3,
+            opacity: isFetching && !isLoading ? 1 : 0,
+            transition: 'opacity 0.3s',
+          }}
+        />
 
-        {/* 统计卡片 */}
-        <Grid container spacing={2.5} sx={{ mb: 4 }}>
+        {/* 整体内容区：刷新时轻微淡出，提示数据更新中 */}
+        <Box
+          sx={{
+            opacity: isFetching && !isLoading ? 0.55 : 1,
+            pointerEvents: isFetching && !isLoading ? 'none' : 'auto',
+            transition: 'opacity 0.25s',
+          }}
+        >
+          {/* 整体健康状态横幅 */}
           {isLoading ? (
-            [...Array(6)].map((_, i) => (
-              <Grid key={i} size={{ xs: 6, sm: 4, md: 2 }}>
-                <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
-              </Grid>
-            ))
+            <Skeleton variant="rectangular" height={88} sx={{ borderRadius: 3, mb: 4 }} />
+          ) : error ? (
+            <Alert severity="error" sx={{ mb: 4, borderRadius: 2 }}>
+              {t('error.loadFailed')}
+            </Alert>
           ) : (
-            <>
-              <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-                <StatCard
-                  icon={<StorageIcon />}
-                  label={t('status.totalMirrors')}
-                  value={stats.total}
-                  color="primary.main"
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-                <StatCard
-                  icon={<OkIcon />}
-                  label={t('status.succeeded')}
-                  value={stats.succeeded}
-                  sub={`${stats.successRate}%`}
-                  color="success.main"
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-                <StatCard
-                  icon={<ErrorIcon />}
-                  label={t('status.failed')}
-                  value={stats.failed}
-                  color={stats.failed > 0 ? 'error.main' : 'text.disabled'}
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-                <StatCard
-                  icon={<SyncIcon />}
-                  label={t('status.syncing')}
-                  value={stats.syncing}
-                  color="info.main"
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-                <StatCard
-                  icon={<SpeedIcon />}
-                  label={t('status.syncedToday')}
-                  value={stats.syncedToday}
-                  color="primary.main"
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 4, md: 2 }}>
-                <StatCard
-                  icon={<StorageIcon />}
-                  label={t('status.totalStorage')}
-                  value={stats.totalBytes > 0 ? formatBytes(stats.totalBytes) : '-'}
-                  color="text.secondary"
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
-
-        {/* 成功率进度条 */}
-        {!isLoading && !error && (
-          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2, mb: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-              <Typography variant="body2" fontWeight={600}>
-                {t('status.availability')}
-              </Typography>
-              <Typography variant="body2" fontWeight={700} color="success.main">
-                {stats.successRate}%
-              </Typography>
-            </Box>
-            <LinearProgress
-              variant="determinate"
-              value={stats.successRate}
-              color={
-                health === 'operational' ? 'success' : health === 'degraded' ? 'warning' : 'error'
-              }
-              sx={{ height: 8, borderRadius: 4 }}
-            />
-            <Box sx={{ display: 'flex', gap: 2, mt: 1.5, flexWrap: 'wrap' }}>
-              {(
-                [
-                  { label: t('status.legendSucceeded'), count: stats.succeeded, color: '#22C55E' },
-                  { label: t('status.legendFailed'), count: stats.failed, color: '#EF4444' },
-                  { label: t('status.legendSyncing'), count: stats.syncing, color: '#3B82F6' },
-                  { label: t('status.legendCached'), count: stats.cached, color: '#94A3B8' },
-                ] as const
-              ).map(({ label, count, color }) => (
-                <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <DotIcon sx={{ fontSize: 10, color }} />
-                  <Typography variant="caption" color="text.secondary">
-                    {label} <strong style={{ color: 'inherit' }}>{count}</strong>
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Paper>
-        )}
-
-        {/* 失败镜像列表 */}
-        {!isLoading && stats.failedList.length > 0 && (
-          <Box sx={{ mb: 4 }}>
-            <Typography
-              variant="h6"
-              fontWeight={700}
-              sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                mb: 4,
+                bgcolor: healthCfg.bg,
+                borderColor: `${healthCfg.color}.main`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                flexWrap: 'wrap',
+              }}
             >
-              <ErrorIcon color="error" fontSize="small" />
-              {t('status.failedMirrors')}
+              <Box sx={{ color: `${healthCfg.color}.main`, display: 'flex', alignItems: 'center' }}>
+                {healthCfg.icon}
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" fontWeight={800} color={`${healthCfg.color}.main`}>
+                  {t(`status.${health}`)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {t('status.lastChecked', {
+                    time: lastChecked ? formatAbsoluteTime(lastChecked.getTime(), locale) : '-',
+                  })}
+                </Typography>
+              </Box>
               <Chip
-                label={stats.failedList.length}
-                size="small"
-                color="error"
-                sx={{ fontWeight: 700, height: 20 }}
+                label={`${stats.successRate}% ${t('status.availableLabel')}`}
+                color={healthCfg.color}
+                variant="filled"
+                sx={{ fontWeight: 700, fontSize: '0.85rem' }}
               />
-            </Typography>
-            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow sx={{ bgcolor: 'action.hover' }}>
-                    <TableCell sx={{ fontWeight: 700 }}>{t('status.colMirror')}</TableCell>
-                    <TableCell sx={{ fontWeight: 700, display: { xs: 'none', sm: 'table-cell' } }}>
-                      {t('status.colLastSuccess')}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 700, display: { xs: 'none', md: 'table-cell' } }}>
-                      {t('status.colUpstream')}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 700 }} align="right">
-                      {t('status.colAction')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {stats.failedList.map((m) => (
-                    <TableRow key={m.id} sx={{ '&:last-child td': { border: 0 } }}>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <DotIcon sx={{ fontSize: 10, color: 'error.main', flexShrink: 0 }} />
-                          <Typography variant="body2" fontWeight={600}>
+            </Paper>
+          )}
+
+          {/* 统计卡片 */}
+          <Grid container spacing={2.5} sx={{ mb: 4 }}>
+            {isLoading ? (
+              [...Array(6)].map((_, i) => (
+                <Grid key={i} size={{ xs: 6, sm: 4, md: 2 }}>
+                  <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 2 }} />
+                </Grid>
+              ))
+            ) : (
+              <>
+                <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+                  <StatCard
+                    icon={<StorageIcon />}
+                    label={t('status.totalMirrors')}
+                    value={stats.total}
+                    color="primary.main"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+                  <StatCard
+                    icon={<OkIcon />}
+                    label={t('status.succeeded')}
+                    value={stats.succeeded}
+                    sub={`${stats.successRate}%`}
+                    color="success.main"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+                  <StatCard
+                    icon={<ErrorIcon />}
+                    label={t('status.failed')}
+                    value={stats.failed}
+                    color={stats.failed > 0 ? 'error.main' : 'text.disabled'}
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+                  <StatCard
+                    icon={<SyncIcon />}
+                    label={t('status.syncing')}
+                    value={stats.syncing}
+                    color="info.main"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+                  <StatCard
+                    icon={<SpeedIcon />}
+                    label={t('status.syncedToday')}
+                    value={stats.syncedToday}
+                    color="primary.main"
+                  />
+                </Grid>
+                <Grid size={{ xs: 6, sm: 4, md: 2 }}>
+                  <StatCard
+                    icon={<StorageIcon />}
+                    label={t('status.totalStorage')}
+                    value={stats.totalBytes > 0 ? formatBytes(stats.totalBytes) : '-'}
+                    color="text.secondary"
+                  />
+                </Grid>
+              </>
+            )}
+          </Grid>
+
+          {/* 成功率进度条 */}
+          {!isLoading && !error && (
+            <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2, mb: 4 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                <Typography variant="body2" fontWeight={600}>
+                  {t('status.availability')}
+                </Typography>
+                <Typography variant="body2" fontWeight={700} color="success.main">
+                  {stats.successRate}%
+                </Typography>
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={stats.successRate}
+                color={
+                  health === 'operational' ? 'success' : health === 'degraded' ? 'warning' : 'error'
+                }
+                sx={{ height: 8, borderRadius: 4 }}
+              />
+              <Box sx={{ display: 'flex', gap: 2, mt: 1.5, flexWrap: 'wrap' }}>
+                {(
+                  [
+                    {
+                      label: t('status.legendSucceeded'),
+                      count: stats.succeeded,
+                      color: '#22C55E',
+                    },
+                    { label: t('status.legendFailed'), count: stats.failed, color: '#EF4444' },
+                    { label: t('status.legendSyncing'), count: stats.syncing, color: '#3B82F6' },
+                    { label: t('status.legendCached'), count: stats.cached, color: '#94A3B8' },
+                  ] as const
+                ).map(({ label, count, color }) => (
+                  <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <DotIcon sx={{ fontSize: 10, color }} />
+                    <Typography variant="caption" color="text.secondary">
+                      {label} <strong style={{ color: 'inherit' }}>{count}</strong>
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
+          )}
+
+          {/* 失败镜像列表 */}
+          {!isLoading && stats.failedList.length > 0 && (
+            <Box sx={{ mb: 4 }}>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <ErrorIcon color="error" fontSize="small" />
+                {t('status.failedMirrors')}
+                <Chip
+                  label={stats.failedList.length}
+                  size="small"
+                  color="error"
+                  sx={{ fontWeight: 700, height: 20 }}
+                />
+              </Typography>
+              <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: 'action.hover' }}>
+                      <TableCell sx={{ fontWeight: 700 }}>{t('status.colMirror')}</TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 700, display: { xs: 'none', sm: 'table-cell' } }}
+                      >
+                        {t('status.colLastSuccess')}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 700, display: { xs: 'none', md: 'table-cell' } }}
+                      >
+                        {t('status.colUpstream')}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 700 }} align="right">
+                        {t('status.colAction')}
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {stats.failedList.map((m) => (
+                      <TableRow key={m.id} sx={{ '&:last-child td': { border: 0 } }}>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <DotIcon sx={{ fontSize: 10, color: 'error.main', flexShrink: 0 }} />
+                            <Typography variant="body2" fontWeight={600}>
+                              {m.name[locale]}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.disabled"
+                              fontFamily='"JetBrains Mono", monospace'
+                            >
+                              {m.id}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
+                          <Typography variant="caption" color="text.secondary">
+                            {formatRelativeTime(m.lastSuccess, locale)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell
+                          sx={{ display: { xs: 'none', md: 'table-cell' }, maxWidth: 200 }}
+                        >
+                          <Tooltip title={m.upstream} placement="bottom-start">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              fontFamily='"JetBrains Mono", monospace'
+                              sx={{
+                                display: 'block',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {m.upstream || '-'}
+                            </Typography>
+                          </Tooltip>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Link
+                            component={RouterLink}
+                            to={`/mirrors/${m.id}`}
+                            variant="caption"
+                            underline="hover"
+                            color="primary"
+                            sx={{ fontWeight: 600 }}
+                          >
+                            {t('common.details')}
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+
+          {/* 两列：最近同步 + 即将同步 */}
+          <Grid container spacing={3}>
+            {/* 最近已同步 */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <OkIcon color="success" fontSize="small" />
+                {t('status.recentSynced')}
+              </Typography>
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    variant="rectangular"
+                    height={44}
+                    sx={{ mb: 0.5, borderRadius: 1 }}
+                  />
+                ))
+              ) : (
+                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                  {stats.recentlySynced.length === 0 ? (
+                    <Box sx={{ p: 3, textAlign: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {t('status.noData')}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    stats.recentlySynced.map((m, idx) => (
+                      <React.Fragment key={m.id}>
+                        <Box
+                          component={RouterLink}
+                          to={`/mirrors/${m.id}`}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            px: 2,
+                            py: 1.2,
+                            gap: 1.5,
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            '&:hover': { bgcolor: 'action.hover' },
+                            transition: 'background 0.15s',
+                          }}
+                        >
+                          <DotIcon sx={{ fontSize: 8, color: 'success.main', flexShrink: 0 }} />
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ flex: 1, minWidth: 0 }}
+                            noWrap
+                          >
                             {m.name[locale]}
                           </Typography>
                           <Typography
                             variant="caption"
-                            color="text.disabled"
-                            fontFamily='"JetBrains Mono", monospace'
+                            color="text.secondary"
+                            sx={{ flexShrink: 0 }}
                           >
-                            {m.id}
+                            {formatRelativeTime(m.lastUpdated, locale)}
                           </Typography>
                         </Box>
-                      </TableCell>
-                      <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                        <Typography variant="caption" color="text.secondary">
-                          {formatRelativeTime(m.lastSuccess, locale)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ display: { xs: 'none', md: 'table-cell' }, maxWidth: 200 }}>
-                        <Tooltip title={m.upstream} placement="bottom-start">
+                        {idx < stats.recentlySynced.length - 1 && <Divider />}
+                      </React.Fragment>
+                    ))
+                  )}
+                </Paper>
+              )}
+            </Grid>
+
+            {/* 即将同步 */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Typography
+                variant="h6"
+                fontWeight={700}
+                sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <ScheduleIcon color="info" fontSize="small" />
+                {t('status.upcomingSyncs')}
+              </Typography>
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    variant="rectangular"
+                    height={44}
+                    sx={{ mb: 0.5, borderRadius: 1 }}
+                  />
+                ))
+              ) : (
+                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                  {stats.upcoming.length === 0 ? (
+                    <Box sx={{ p: 3, textAlign: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {t('status.noUpcoming')}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    stats.upcoming.map((m, idx) => (
+                      <React.Fragment key={m.id}>
+                        <Box
+                          component={RouterLink}
+                          to={`/mirrors/${m.id}`}
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            px: 2,
+                            py: 1.2,
+                            gap: 1.5,
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            '&:hover': { bgcolor: 'action.hover' },
+                            transition: 'background 0.15s',
+                          }}
+                        >
+                          <DotIcon sx={{ fontSize: 8, color: 'info.main', flexShrink: 0 }} />
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ flex: 1, minWidth: 0 }}
+                            noWrap
+                          >
+                            {m.name[locale]}
+                          </Typography>
                           <Typography
                             variant="caption"
                             color="text.secondary"
-                            fontFamily='"JetBrains Mono", monospace'
+                            sx={{ flexShrink: 0 }}
+                          >
+                            {formatRelativeTime(m.nextScheduled, locale)}
+                          </Typography>
+                        </Box>
+                        {idx < stats.upcoming.length - 1 && <Divider />}
+                      </React.Fragment>
+                    ))
+                  )}
+                </Paper>
+              )}
+            </Grid>
+          </Grid>
+
+          {/* ── Grafana 系统指标面板 —— 仅在探测到 /grafana/ 可达时渲染 ── */}
+          {grafanaAvailable && (
+            <Box sx={{ mt: 4 }}>
+              <Accordion
+                defaultExpanded={false}
+                sx={{
+                  borderRadius: '12px !important',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  '&:before': { display: 'none' },
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <GrafanaIcon color="primary" fontSize="small" />
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight={700}>
+                        {t('status.serverMetrics')}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t('status.serverMetricsSub')}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ ml: 'auto', mr: 1 }}>
+                      <Tooltip title={t('status.openGrafana')}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
+                          component="a"
+                          href="/grafana/d/jcut-mirror-system"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{ borderRadius: 6, fontSize: '0.75rem' }}
+                        >
+                          Grafana
+                        </Button>
+                      </Tooltip>
+                    </Box>
+                  </Box>
+                </AccordionSummary>
+
+                <AccordionDetails sx={{ p: 0 }}>
+                  <Divider />
+                  {/* Grafana 面板说明 */}
+                  <Alert
+                    severity="info"
+                    sx={{ borderRadius: 0, '& .MuiAlert-message': { fontSize: '0.82rem' } }}
+                  >
+                    {t('status.grafanaNotice')}
+                  </Alert>
+
+                  {/* 嵌入面板网格 */}
+                  <Grid container sx={{ p: 2 }} spacing={2}>
+                    {[
+                      {
+                        title: t('status.cpuUsage'),
+                        panelId: 1,
+                      },
+                      {
+                        title: t('status.memUsage'),
+                        panelId: 2,
+                      },
+                      {
+                        title: t('status.networkBandwidth'),
+                        panelId: 3,
+                      },
+                      {
+                        title: t('status.diskSpace'),
+                        panelId: 4,
+                      },
+                      {
+                        title: t('status.nginxRequests'),
+                        panelId: 5,
+                      },
+                      {
+                        title: t('status.activeConnections'),
+                        panelId: 6,
+                      },
+                    ].map(({ title, panelId }) => (
+                      <Grid key={panelId} size={{ xs: 12, md: 6 }}>
+                        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                          <Box
                             sx={{
-                              display: 'block',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
+                              px: 2,
+                              py: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              borderBottom: '1px solid',
+                              borderColor: 'divider',
+                              bgcolor: 'action.hover',
                             }}
                           >
-                            {m.upstream || '-'}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Link
-                          component={RouterLink}
-                          to={`/mirrors/${m.id}`}
-                          variant="caption"
-                          underline="hover"
-                          color="primary"
-                          sx={{ fontWeight: 600 }}
-                        >
-                          {t('common.details')}
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        )}
-
-        {/* 两列：最近同步 + 即将同步 */}
-        <Grid container spacing={3}>
-          {/* 最近已同步 */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography
-              variant="h6"
-              fontWeight={700}
-              sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
-            >
-              <OkIcon color="success" fontSize="small" />
-              {t('status.recentSynced')}
-            </Typography>
-            {isLoading ? (
-              [...Array(5)].map((_, i) => (
-                <Skeleton
-                  key={i}
-                  variant="rectangular"
-                  height={44}
-                  sx={{ mb: 0.5, borderRadius: 1 }}
-                />
-              ))
-            ) : (
-              <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                {stats.recentlySynced.length === 0 ? (
-                  <Box sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('status.noData')}
-                    </Typography>
-                  </Box>
-                ) : (
-                  stats.recentlySynced.map((m, idx) => (
-                    <React.Fragment key={m.id}>
-                      <Box
-                        component={RouterLink}
-                        to={`/mirrors/${m.id}`}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          px: 2,
-                          py: 1.2,
-                          gap: 1.5,
-                          textDecoration: 'none',
-                          color: 'inherit',
-                          '&:hover': { bgcolor: 'action.hover' },
-                          transition: 'background 0.15s',
-                        }}
-                      >
-                        <DotIcon sx={{ fontSize: 8, color: 'success.main', flexShrink: 0 }} />
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          sx={{ flex: 1, minWidth: 0 }}
-                          noWrap
-                        >
-                          {m.name[locale]}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
-                          {formatRelativeTime(m.lastUpdated, locale)}
-                        </Typography>
-                      </Box>
-                      {idx < stats.recentlySynced.length - 1 && <Divider />}
-                    </React.Fragment>
-                  ))
-                )}
-              </Paper>
-            )}
-          </Grid>
-
-          {/* 即将同步 */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography
-              variant="h6"
-              fontWeight={700}
-              sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
-            >
-              <ScheduleIcon color="info" fontSize="small" />
-              {t('status.upcomingSyncs')}
-            </Typography>
-            {isLoading ? (
-              [...Array(5)].map((_, i) => (
-                <Skeleton
-                  key={i}
-                  variant="rectangular"
-                  height={44}
-                  sx={{ mb: 0.5, borderRadius: 1 }}
-                />
-              ))
-            ) : (
-              <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                {stats.upcoming.length === 0 ? (
-                  <Box sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {t('status.noUpcoming')}
-                    </Typography>
-                  </Box>
-                ) : (
-                  stats.upcoming.map((m, idx) => (
-                    <React.Fragment key={m.id}>
-                      <Box
-                        component={RouterLink}
-                        to={`/mirrors/${m.id}`}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          px: 2,
-                          py: 1.2,
-                          gap: 1.5,
-                          textDecoration: 'none',
-                          color: 'inherit',
-                          '&:hover': { bgcolor: 'action.hover' },
-                          transition: 'background 0.15s',
-                        }}
-                      >
-                        <DotIcon sx={{ fontSize: 8, color: 'info.main', flexShrink: 0 }} />
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          sx={{ flex: 1, minWidth: 0 }}
-                          noWrap
-                        >
-                          {m.name[locale]}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
-                          {formatRelativeTime(m.nextScheduled, locale)}
-                        </Typography>
-                      </Box>
-                      {idx < stats.upcoming.length - 1 && <Divider />}
-                    </React.Fragment>
-                  ))
-                )}
-              </Paper>
-            )}
-          </Grid>
-        </Grid>
-
-        {/* ── Grafana 系统指标面板 —— 仅在探测到 /grafana/ 可达时渲染 ── */}
-        {grafanaAvailable && (
-          <Box sx={{ mt: 4 }}>
-            <Accordion
-              defaultExpanded={false}
-              sx={{
-                borderRadius: '12px !important',
-                border: '1px solid',
-                borderColor: 'divider',
-                '&:before': { display: 'none' },
-              }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <GrafanaIcon color="primary" fontSize="small" />
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight={700}>
-                      {t('status.serverMetrics')}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t('status.serverMetricsSub')}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ ml: 'auto', mr: 1 }}>
-                    <Tooltip title={t('status.openGrafana')}>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
-                        component="a"
-                        href="/grafana/d/jcut-mirror-system"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        sx={{ borderRadius: 6, fontSize: '0.75rem' }}
-                      >
-                        Grafana
-                      </Button>
-                    </Tooltip>
-                  </Box>
-                </Box>
-              </AccordionSummary>
-
-              <AccordionDetails sx={{ p: 0 }}>
-                <Divider />
-                {/* Grafana 面板说明 */}
-                <Alert
-                  severity="info"
-                  sx={{ borderRadius: 0, '& .MuiAlert-message': { fontSize: '0.82rem' } }}
-                >
-                  {t('status.grafanaNotice')}
-                </Alert>
-
-                {/* 嵌入面板网格 */}
-                <Grid container sx={{ p: 2 }} spacing={2}>
-                  {[
-                    {
-                      title: t('status.cpuUsage'),
-                      panelId: 1,
-                    },
-                    {
-                      title: t('status.memUsage'),
-                      panelId: 2,
-                    },
-                    {
-                      title: t('status.networkBandwidth'),
-                      panelId: 3,
-                    },
-                    {
-                      title: t('status.diskSpace'),
-                      panelId: 4,
-                    },
-                    {
-                      title: t('status.nginxRequests'),
-                      panelId: 5,
-                    },
-                    {
-                      title: t('status.activeConnections'),
-                      panelId: 6,
-                    },
-                  ].map(({ title, panelId }) => (
-                    <Grid key={panelId} size={{ xs: 12, md: 6 }}>
-                      <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                        <Box
-                          sx={{
-                            px: 2,
-                            py: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            borderBottom: '1px solid',
-                            borderColor: 'divider',
-                            bgcolor: 'action.hover',
-                          }}
-                        >
-                          <Typography variant="caption" fontWeight={700}>
-                            {title}
-                          </Typography>
-                          <Link
-                            href={`/grafana/d/jcut-mirror-system?viewPanel=${panelId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            variant="caption"
-                            color="primary"
-                            underline="hover"
-                            sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
-                          >
-                            {t('common.fullscreen')}
-                            <OpenInNewIcon sx={{ fontSize: 11 }} />
-                          </Link>
-                        </Box>
-                        {/* Grafana iframe 嵌入
+                            <Typography variant="caption" fontWeight={700}>
+                              {title}
+                            </Typography>
+                            <Link
+                              href={`/grafana/d/jcut-mirror-system?viewPanel=${panelId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              variant="caption"
+                              color="primary"
+                              underline="hover"
+                              sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                            >
+                              {t('common.fullscreen')}
+                              <OpenInNewIcon sx={{ fontSize: 11 }} />
+                            </Link>
+                          </Box>
+                          {/* Grafana iframe 嵌入
                         参数说明：
                           orgId=1          → 组织 ID
                           panelId=N        → 面板 ID（与 dashboard JSON 中的 id 字段对应）
@@ -765,67 +793,69 @@ const StatusPage: React.FC = () => {
                           theme            → 跟随系统主题
                           kiosk            → 隐藏 Grafana 顶栏
                       */}
-                        <Box
-                          component="iframe"
-                          src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=${panelId}&from=now-1h&to=now&theme=${themeMode}&kiosk`}
-                          sx={{
-                            display: 'block',
-                            width: '100%',
-                            height: 220,
-                            border: 'none',
-                          }}
-                          title={title}
-                          loading="lazy"
-                        />
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
+                          <Box
+                            component="iframe"
+                            src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=${panelId}&from=now-1h&to=now&theme=${themeMode}&kiosk`}
+                            sx={{
+                              display: 'block',
+                              width: '100%',
+                              height: 220,
+                              border: 'none',
+                            }}
+                            title={title}
+                            loading="lazy"
+                          />
+                        </Paper>
+                      </Grid>
+                    ))}
+                  </Grid>
 
-                {/* 系统负载全宽面板 */}
-                <Box sx={{ px: 2, pb: 2 }}>
-                  <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                    <Box
-                      sx={{
-                        px: 2,
-                        py: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderBottom: '1px solid',
-                        borderColor: 'divider',
-                        bgcolor: 'action.hover',
-                      }}
-                    >
-                      <Typography variant="caption" fontWeight={700}>
-                        {t('status.systemLoad')}
-                      </Typography>
-                      <Link
-                        href="/grafana/d/jcut-mirror-system?viewPanel=7"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        variant="caption"
-                        color="primary"
-                        underline="hover"
-                        sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                  {/* 系统负载全宽面板 */}
+                  <Box sx={{ px: 2, pb: 2 }}>
+                    <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                      <Box
+                        sx={{
+                          px: 2,
+                          py: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          borderBottom: '1px solid',
+                          borderColor: 'divider',
+                          bgcolor: 'action.hover',
+                        }}
                       >
-                        {t('common.fullscreen')}
-                        <OpenInNewIcon sx={{ fontSize: 11 }} />
-                      </Link>
-                    </Box>
-                    <Box
-                      component="iframe"
-                      src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=7&from=now-1h&to=now&theme=${themeMode}&kiosk`}
-                      sx={{ display: 'block', width: '100%', height: 200, border: 'none' }}
-                      title={t('status.systemLoad')}
-                      loading="lazy"
-                    />
-                  </Paper>
-                </Box>
-              </AccordionDetails>
-            </Accordion>
-          </Box>
-        )}
+                        <Typography variant="caption" fontWeight={700}>
+                          {t('status.systemLoad')}
+                        </Typography>
+                        <Link
+                          href="/grafana/d/jcut-mirror-system?viewPanel=7"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          variant="caption"
+                          color="primary"
+                          underline="hover"
+                          sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
+                        >
+                          {t('common.fullscreen')}
+                          <OpenInNewIcon sx={{ fontSize: 11 }} />
+                        </Link>
+                      </Box>
+                      <Box
+                        component="iframe"
+                        src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=7&from=now-1h&to=now&theme=${themeMode}&kiosk`}
+                        sx={{ display: 'block', width: '100%', height: 200, border: 'none' }}
+                        title={t('status.systemLoad')}
+                        loading="lazy"
+                      />
+                    </Paper>
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          )}
+        </Box>
+        {/* end opacity wrapper */}
       </Container>
     </>
   );

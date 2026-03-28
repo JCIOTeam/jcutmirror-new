@@ -22,7 +22,10 @@
     "noData": "No data",
     "details": "Details",
     "actions": "Actions",
-    "clickToCopy": "Click to copy"
+    "clickToCopy": "Click to copy",
+    "refreshing": "Please wait",
+    "refreshed": "Done",
+    "refreshFailed": "Error"
   },
   "search": {
     "placeholder": "Search mirrors...",

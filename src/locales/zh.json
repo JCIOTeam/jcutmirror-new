@@ -22,7 +22,10 @@
     "noData": "暂无数据",
     "details": "详情",
     "actions": "操作",
-    "clickToCopy": "点击复制"
+    "clickToCopy": "点击复制",
+    "refreshing": "请稍候",
+    "refreshed": "已完成",
+    "refreshFailed": "出错了"
   },
   "search": {
     "placeholder": "搜索镜像...",

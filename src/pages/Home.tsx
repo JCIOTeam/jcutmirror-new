@@ -2,7 +2,6 @@
 // 首页
 
 import {
-  Refresh as RefreshIcon,
   Storage as StorageIcon,
   Speed as SpeedIcon,
   Security as SecurityIcon,
@@ -25,12 +24,14 @@ import {
   Tooltip,
   Snackbar,
   Fade,
+  LinearProgress,
   IconButton,
 } from '@mui/material';
 import React, { cloneElement, useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
+import RefreshButton from '../components/common/RefreshButton';
 import AnnouncementBanner from '../components/home/AnnouncementBanner';
 import NewsWidget from '../components/home/NewsWidget';
 import MirrorCard from '../components/mirrors/MirrorCard';
@@ -55,7 +56,7 @@ const Home: React.FC = () => {
   const { searchQuery } = useMirrorSearchStore();
 
   // 获取数据
-  const { data: mirrors = [], isLoading, error, refetch } = useMirrors();
+  const { data: mirrors = [], isLoading, isFetching, error, refetch } = useMirrors();
   const { data: campusStatus } = useCampusNetwork();
 
   // 过滤和分组
@@ -175,23 +176,23 @@ const Home: React.FC = () => {
       {/* Hero 区域 */}
       <Box
         sx={{
+          // 多层径向渐变叠加：左上蓝光 + 右下紫光 + 纯底色，无方格干扰
           background: (theme) =>
             theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%)'
-              : 'linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 50%, #FFF7ED 100%)',
+              ? [
+                  'radial-gradient(ellipse 70% 55% at 15% 25%, rgba(59,130,246,0.13) 0%, transparent 65%)',
+                  'radial-gradient(ellipse 55% 45% at 85% 75%, rgba(139,92,246,0.10) 0%, transparent 65%)',
+                  '#0F172A',
+                ].join(', ')
+              : [
+                  'radial-gradient(ellipse 70% 55% at 15% 25%, rgba(59,130,246,0.11) 0%, transparent 65%)',
+                  'radial-gradient(ellipse 55% 45% at 85% 75%, rgba(139,92,246,0.07) 0%, transparent 65%)',
+                  '#F8FAFF',
+                ].join(', '),
           pt: { xs: 5, md: 8 },
           pb: { xs: 5, md: 8 },
           position: 'relative',
           overflow: 'hidden',
-          // 装饰背景网格
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            inset: 0,
-            backgroundImage:
-              'radial-gradient(circle at 1px 1px, rgba(59,130,246,0.08) 1px, transparent 0)',
-            backgroundSize: '32px 32px',
-          },
         }}
       >
         <Container maxWidth="lg" sx={{ position: 'relative' }}>
@@ -631,17 +632,19 @@ const Home: React.FC = () => {
             </Typography>
 
             {/* 刷新按钮 */}
-            <Button
-              size="small"
-              startIcon={<RefreshIcon />}
-              onClick={() => refetch()}
-              disabled={isLoading}
-              variant="outlined"
-              sx={{ borderRadius: 6 }}
-            >
-              {t('common.refresh')}
-            </Button>
+            <RefreshButton onClick={() => refetch()} />
           </Box>
+
+          {/* 刷新进度条——仅在后台 refetch 时（非首次加载）显示 */}
+          <LinearProgress
+            sx={{
+              mb: 1.5,
+              borderRadius: 1,
+              height: 3,
+              opacity: isFetching && !isLoading ? 1 : 0,
+              transition: 'opacity 0.3s',
+            }}
+          />
 
           {/* 加载失败 */}
           {error && (
@@ -697,11 +700,19 @@ const Home: React.FC = () => {
           )}
 
           {/* 镜像列表 */}
-          <MirrorList
-            grouped={groupedMirrors}
-            loading={isLoading}
-            error={error ? String(error) : undefined}
-          />
+          <Box
+            sx={{
+              opacity: isFetching && !isLoading ? 0.55 : 1,
+              pointerEvents: isFetching && !isLoading ? 'none' : 'auto',
+              transition: 'opacity 0.25s',
+            }}
+          >
+            <MirrorList
+              grouped={groupedMirrors}
+              loading={isLoading}
+              error={error ? String(error) : undefined}
+            />
+          </Box>
         </Box>
       </Container>
     </>
