@@ -6,7 +6,6 @@ import {
   InsertDriveFile as FileIcon,
   ArrowUpward as ParentIcon,
   OpenInNew as OpenIcon,
-  Refresh as RefreshIcon,
   Warning as WarnIcon,
 } from '@mui/icons-material';
 import {
@@ -27,6 +26,8 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import RefreshButton from '../common/RefreshButton';
 
 interface DirEntry {
   name: string;
@@ -115,6 +116,8 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
         } else {
           setError(msg);
         }
+        // 向上抛出，让 RefreshButton 感知失败状态
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -156,13 +159,7 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
         severity="warning"
         icon={<WarnIcon />}
         action={
-          <Button
-            size="small"
-            startIcon={<RefreshIcon />}
-            onClick={() => loadDirectory(currentUrl)}
-          >
-            {t('error.retry')}
-          </Button>
+          <RefreshButton size="small" variant="text" onClick={() => loadDirectory(currentUrl)} />
         }
       >
         {t('directory.networkError')}
