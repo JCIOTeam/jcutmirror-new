@@ -27,7 +27,7 @@ import {
   LinearProgress,
   IconButton,
 } from '@mui/material';
-import React, { cloneElement, useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +47,8 @@ import { useMirrorSearchStore, useFavoriteStore } from '../stores/mirrorStore';
 import type { Mirror } from '../types';
 
 import { getNewsList } from '@/news';
+import { SITE_ORIGIN, SITE_TITLE_ZH, KEYWORDS_ZH, DESC_ZH, canonicalUrl } from '@/utils/seo';
+import { safeGetItem, safeSetItem } from '@/utils/storage';
 
 /**
  * 首页 - 展示镜像站概览
@@ -99,13 +101,18 @@ const Home: React.FC = () => {
   const networkStat =
     campusStatus === '1'
       ? {
-          icon: <WifiIcon />,
+          icon: <WifiIcon sx={{ fontSize: { xs: 16, sm: 18 } }} />,
           label: t('network.campusLabel'),
           dot: '#22C55E',
           tooltip: t('network.campus'),
         }
       : campusStatus === '6'
-        ? { icon: <Ipv6Icon />, label: 'IPv6', dot: '#3B82F6', tooltip: t('network.ipv6') }
+        ? {
+            icon: <Ipv6Icon sx={{ fontSize: { xs: 16, sm: 18 } }} />,
+            label: 'IPv6',
+            dot: '#3B82F6',
+            tooltip: t('network.ipv6'),
+          }
         : null;
 
   // 浮动通知状态（Snackbar）- 队列式显示，避免重叠
@@ -117,12 +124,12 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (campusStatus === '6') {
       const key = 'ipv6_notif_ts';
-      const last = Number(localStorage.getItem(key) ?? 0);
+      const last = Number(safeGetItem(key) ?? 0);
       const now = Date.now();
       if (now - last > 30 * 60 * 1000) {
         setShowIpv6Snackbar(true);
         setIpv6Dismissed(false);
-        localStorage.setItem(key, String(now));
+        safeSetItem(key, String(now));
       }
     }
   }, [campusStatus]);
@@ -131,7 +138,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (!isLoading && failedCount > 0) {
       const key = 'sync_failed_notif_ts';
-      const last = Number(localStorage.getItem(key) ?? 0);
+      const last = Number(safeGetItem(key) ?? 0);
       const now = Date.now();
 
       if (now - last > 30 * 60 * 1000) {
@@ -139,12 +146,12 @@ const Home: React.FC = () => {
         if (showIpv6Snackbar) {
           const timer = setTimeout(() => {
             setShowFailedSnackbar(true);
-            localStorage.setItem(key, String(now));
+            safeSetItem(key, String(now));
           }, 8500);
           return () => clearTimeout(timer);
         } else if (ipv6Dismissed || campusStatus !== '6') {
           setShowFailedSnackbar(true);
-          localStorage.setItem(key, String(now));
+          safeSetItem(key, String(now));
         }
       }
     }
@@ -153,24 +160,18 @@ const Home: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>JCUT Mirror - 开源软件镜像站</title>
-        <meta
-          name="description"
-          content="JCUT Mirror - 高校开源软件镜像站，提供快速稳定的Linux发行版及开发工具镜像"
-        />
+        <title>{SITE_TITLE_ZH} - JCUT Mirror</title>
+        <meta name="description" content={DESC_ZH} />
+        <meta name="keywords" content={KEYWORDS_ZH} />
+        <link rel="canonical" href={canonicalUrl('/')} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="JCUT Mirror - 开源软件镜像站" />
-        <meta
-          property="og:description"
-          content="高校开源软件镜像站，提供快速稳定的Linux发行版及开发工具镜像"
-        />
-        <meta property="og:image" content="/favicon.svg" />
+        <meta property="og:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
+        <meta property="og:description" content={DESC_ZH} />
+        <meta property="og:url" content={canonicalUrl('/')} />
+        <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="JCUT Mirror" />
-        <meta
-          name="twitter:description"
-          content="高校开源软件镜像站，提供快速稳定的Linux发行版及开发工具镜像"
-        />
+        <meta name="twitter:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
+        <meta name="twitter:description" content={DESC_ZH} />
       </Helmet>
 
       {/* Hero 区域 */}
@@ -309,13 +310,20 @@ const Home: React.FC = () => {
 
             {/* 统计数据 —— 桌面显示图标+文字，移动端折叠成图标徽章 */}
             {(() => {
+              const iconSx = { fontSize: { xs: 16, sm: 18 } };
               const stats = [
-                { icon: <StorageIcon />, label: t('home.totalMirrors', { count: totalCount }) },
-                { icon: <SpeedIcon />, label: t('home.syncedToday', { count: syncedTodayCount }) },
+                {
+                  icon: <StorageIcon sx={iconSx} />,
+                  label: t('home.totalMirrors', { count: totalCount }),
+                },
+                {
+                  icon: <SpeedIcon sx={iconSx} />,
+                  label: t('home.syncedToday', { count: syncedTodayCount }),
+                },
                 ...(window.location.protocol === 'https:'
                   ? [
                       {
-                        icon: <SecurityIcon />,
+                        icon: <SecurityIcon sx={iconSx} />,
                         label: t('network.https'),
                       },
                     ]
@@ -355,9 +363,7 @@ const Home: React.FC = () => {
                           cursor: 'default',
                         }}
                       >
-                        {cloneElement(item.icon as React.ReactElement, {
-                          sx: { fontSize: { xs: 16, sm: 18 } },
-                        })}
+                        {item.icon}
                         <Typography
                           variant="body2"
                           color="text.secondary"
