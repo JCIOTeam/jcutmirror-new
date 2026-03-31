@@ -1,0 +1,28 @@
+# robots.txt — 荆楚理工学院开源软件镜像站
+# https://mirrors.jcut.edu.cn
+
+User-agent: *
+Allow: /
+Allow: /mirrors/
+Allow: /news/
+Allow: /status
+
+# 禁止爬取镜像文件目录（体积大、无 SEO 价值）
+Disallow: /ubuntu/
+Disallow: /debian/
+Disallow: /archlinux/
+Disallow: /centos/
+Disallow: /rocky/
+Disallow: /alpine/
+Disallow: /kali/
+Disallow: /openeuler/
+Disallow: /epel/
+Disallow: /gnu/
+Disallow: /CTAN/
+Disallow: /CPAN/
+Disallow: /CRAN/
+Disallow: /grafana/
+Disallow: /jobs
+
+# Sitemap 位置
+Sitemap: https://mirrors.jcut.edu.cn/sitemap.xml
