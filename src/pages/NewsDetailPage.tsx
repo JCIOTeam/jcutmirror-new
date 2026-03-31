@@ -26,6 +26,7 @@ import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import CodeBlock from '../components/docs/CodeBlock';
 import { useLocaleStore } from '../stores/mirrorStore';
+import { canonicalUrl } from '../utils/seo';
 
 import { getNewsArticle, getNewsItem } from '@/news';
 
@@ -141,7 +142,7 @@ const NewsDetailPage: React.FC = () => {
       ? '新闻详情'
       : 'News';
 
-  const pageTitle = `${displayTitle} - JCUT Mirror`;
+  const pageTitle = `${displayTitle} - 荆楚理工学院开源软件镜像站 JCUT Mirror`;
 
   if (notFound) {
     return (
@@ -164,6 +165,7 @@ const NewsDetailPage: React.FC = () => {
     <>
       <Helmet>
         <title>{pageTitle}</title>
+        <link rel="canonical" href={canonicalUrl(`/news/${slug}`)} />
       </Helmet>
 
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
