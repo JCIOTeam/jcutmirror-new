@@ -43,6 +43,7 @@ import SyncTimeline from '../components/mirrors/SyncTimeline';
 import { hasMdxDoc } from '../docs';
 import { useMirrorDetail } from '../hooks/useMirrors';
 import { useLocaleStore } from '../stores/mirrorStore';
+import { SITE_ORIGIN, canonicalUrl, mirrorJsonLd, breadcrumbJsonLd } from '../utils/seo';
 
 // ─── Tab 面板 ────────────────────────────────────────────────────────────────
 interface TabPanelProps {
@@ -241,7 +242,7 @@ const MirrorDetail: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { locale } = useLocaleStore();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data: mirror, isLoading, error } = useMirrorDetail(name || '');
 
@@ -269,7 +270,6 @@ const MirrorDetail: React.FC = () => {
   }, [locale, name]);
 
   // Tab 切换时同步到 URL，不产生历史记录（replace）
-  const [, setSearchParams] = useSearchParams();
   const handleTabChange = (_: React.SyntheticEvent, v: number) => {
     setTabValue(v);
     const labels = ['help', 'files', 'downloads'];
@@ -327,15 +327,35 @@ const MirrorDetail: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{mirror.name[locale]} - JCUT Mirror</title>
-        <meta name="description" content={mirror.desc[locale]} />
+        <title>{`${mirror.name[locale]} 镜像 - 荆楚理工学院开源软件镜像站 JCUT Mirror`}</title>
+        <meta
+          name="description"
+          content={`${mirror.name[locale]} - ${mirror.desc[locale]} 由荆楚理工学院开源软件镜像站（JCUT Mirror）提供高速下载。`}
+        />
+        <meta
+          name="keywords"
+          content={`${mirror.name.zh},${mirror.id},${mirror.name.zh}镜像,${mirror.name.zh}下载,JCUT Mirror,荆楚理工学院镜像站,开源软件镜像`}
+        />
+        <link rel="canonical" href={canonicalUrl(`/mirrors/${mirror.id}`)} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={`${mirror.name[locale]} - JCUT Mirror`} />
         <meta property="og:description" content={mirror.desc[locale]} />
-        <meta property="og:image" content="/favicon.svg" />
+        <meta property="og:url" content={canonicalUrl(`/mirrors/${mirror.id}`)} />
+        <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={`${mirror.name[locale]} - JCUT Mirror`} />
         <meta name="twitter:description" content={mirror.desc[locale]} />
+        {/* 结构化数据：面包屑 */}
+        <script type="application/ld+json">
+          {breadcrumbJsonLd([
+            { name: '首页', url: '/' },
+            { name: mirror.name[locale], url: `/mirrors/${mirror.id}` },
+          ])}
+        </script>
+        {/* 结构化数据：软件应用 */}
+        <script type="application/ld+json">
+          {mirrorJsonLd(mirror.name[locale], mirror.desc[locale], `/mirrors/${mirror.id}`)}
+        </script>
       </Helmet>
 
       <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
