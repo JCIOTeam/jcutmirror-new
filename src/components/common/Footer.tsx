@@ -101,7 +101,11 @@ const Footer: React.FC = () => {
             <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>
               {t('footer.links')}
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+            <Box
+              component="nav"
+              aria-label="友情链接"
+              sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}
+            >
               {friendLinks.map((link) => (
                 <Link
                   key={link.url}
@@ -124,7 +128,11 @@ const Footer: React.FC = () => {
             <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>
               {t('footer.contact')}
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+            <Box
+              component="nav"
+              aria-label="站点链接"
+              sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}
+            >
               <Link
                 href="mailto:stucloud@jcut.edu.cn"
                 variant="body2"
