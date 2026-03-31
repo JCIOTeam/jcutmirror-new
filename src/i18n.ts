@@ -7,6 +7,7 @@ import { initReactI18next } from 'react-i18next';
 
 import en from './locales/en.json';
 import zh from './locales/zh.json';
+import { safeGetItem } from './utils/storage';
 
 i18next
   .use(LanguageDetector) // 自动检测浏览器语言
@@ -18,7 +19,7 @@ i18next
     },
     // 默认语言：中文
     fallbackLng: 'zh',
-    lng: localStorage.getItem('locale') || 'zh',
+    lng: safeGetItem('locale') || 'zh',
     interpolation: {
       escapeValue: false, // React已处理XSS
     },
