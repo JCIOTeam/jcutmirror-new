@@ -2,20 +2,77 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="JCUT Mirror - 高校开源软件镜像站，提供快速稳定的软件包镜像服务" />
-    <meta name="keywords" content="镜像站,开源软件,Linux,Ubuntu,CentOS,Debian" />
-    <title>JCUT Mirror - 开源软件镜像站</title>
-    <!-- 预加载字体 -->
+
+    <!-- ── 基础 SEO ── -->
+    <title>荆楚理工学院开源软件镜像站 - JCUT Mirror</title>
+    <meta name="description" content="荆楚理工学院开源软件镜像站（JCUT Mirror）提供 Ubuntu、Debian、Arch Linux、CentOS 等主流 Linux 发行版及开源软件的高速镜像服务，面向校内外用户免费开放。" />
+    <meta name="keywords" content="荆楚理工学院镜像站,JCUT Mirror,开源软件镜像站,Linux镜像,高校镜像站,Ubuntu镜像,Debian镜像,Arch Linux镜像,CentOS镜像,Rocky Linux镜像,Alpine镜像,软件源,镜像源,荆门,开源镜像" />
+    <meta name="author" content="荆楚理工学院" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://mirrors.jcut.edu.cn/" />
+
+    <!-- ── Open Graph (Facebook / 微信 / QQ) ── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JCUT Mirror - 荆楚理工学院开源软件镜像站" />
+    <meta property="og:title" content="荆楚理工学院开源软件镜像站 - JCUT Mirror" />
+    <meta property="og:description" content="提供 Ubuntu、Debian、Arch Linux 等主流 Linux 发行版及开源软件的高速镜像服务，面向校内外用户免费开放。" />
+    <meta property="og:url" content="https://mirrors.jcut.edu.cn/" />
+    <meta property="og:image" content="https://mirrors.jcut.edu.cn/favicon.svg" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="荆楚理工学院开源软件镜像站 - JCUT Mirror" />
+    <meta name="twitter:description" content="提供 Ubuntu、Debian、Arch Linux 等主流 Linux 发行版及开源软件的高速镜像服务。" />
+    <meta name="twitter:image" content="https://mirrors.jcut.edu.cn/favicon.svg" />
+
+    <!-- ── 图标 ── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- ── 预加载字体 ── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- ── JSON-LD 结构化数据（首页）── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "荆楚理工学院开源软件镜像站",
+      "alternateName": ["JCUT Mirror", "JCUT Open Source Mirror", "荆楚理工学院镜像站"],
+      "url": "https://mirrors.jcut.edu.cn",
+      "description": "荆楚理工学院开源软件镜像站提供 Ubuntu、Debian、Arch Linux 等主流 Linux 发行版及开源软件的高速镜像服务。",
+      "publisher": {
+        "@type": "Organization",
+        "name": "荆楚理工学院",
+        "alternateName": "Jingchu University of Technology",
+        "url": "https://www.jcut.edu.cn"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://mirrors.jcut.edu.cn/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
   </head>
   <body>
+    <!-- 供搜索引擎爬虫在 JS 未执行时也能看到核心内容 -->
+    <noscript>
+      <h1>荆楚理工学院开源软件镜像站 - JCUT Mirror</h1>
+      <p>提供 Ubuntu、Debian、Arch Linux、CentOS、Rocky Linux、Alpine 等主流 Linux 发行版及开源软件的高速镜像服务，面向校内外用户免费开放。</p>
+      <p>请启用 JavaScript 以获得完整体验。</p>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
