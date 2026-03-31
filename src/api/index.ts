@@ -32,19 +32,24 @@ const errorInterceptor = (err: unknown) => {
 apiClient.interceptors.response.use((res) => res, errorInterceptor);
 
 // ── 本地元数据缓存（只需加载一次）────────────────────────────────────────────
-let _localDataCache: Record<string, LocalMeta> | null = null;
+// 缓存 Promise 本身而非结果，避免并发请求时重复发起网络请求（竞态条件）
+let _localDataPromise: Promise<Record<string, LocalMeta>> | null = null;
 
-async function getLocalData(): Promise<Record<string, LocalMeta>> {
-  if (_localDataCache) return _localDataCache;
-  try {
-    const res = await fetch('/local_data.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    _localDataCache = await res.json();
-  } catch (e) {
-    console.warn('[API] Failed to load local_data.json, using empty metadata', e);
-    _localDataCache = {};
+function getLocalData(): Promise<Record<string, LocalMeta>> {
+  if (!_localDataPromise) {
+    _localDataPromise = fetch('/local_data.json')
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<Record<string, LocalMeta>>;
+      })
+      .catch((e) => {
+        console.warn('[API] Failed to load local_data.json, using empty metadata', e);
+        // 加载失败时清空 promise，允许下次重试
+        _localDataPromise = null;
+        return {} as Record<string, LocalMeta>;
+      });
   }
-  return _localDataCache as Record<string, LocalMeta>;
+  return _localDataPromise;
 }
 
 // ── 公开 API ──────────────────────────────────────────────────────────────────
