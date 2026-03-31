@@ -207,7 +207,22 @@
     "notFoundDesc": "The mirror or page you are looking for does not exist.",
     "loadFailed": "Load Failed",
     "retry": "Retry",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "title403": "Access Denied",
+    "desc403": "You do not have permission to access this resource. Please make sure you are on the campus network or contact the administrator.",
+    "title404": "Page Not Found",
+    "desc404": "The mirror or page you are looking for does not exist. Please check the URL.",
+    "title500": "Internal Server Error",
+    "desc500": "The server encountered an unexpected error. We are working on it. Please try again later.",
+    "title502": "Bad Gateway",
+    "desc502": "The upstream service is temporarily unavailable. This is usually a temporary issue — please refresh.",
+    "title503": "Service Unavailable",
+    "desc503": "The mirror is under maintenance or experiencing high load. Please try again later.",
+    "titleDefault": "Something went wrong",
+    "descDefault": "Something went wrong. Please try again later or go back to home.",
+    "refreshPage": "Refresh",
+    "requestInfo": "Request Info",
+    "clientIp": "Client IP"
   },
   "filter": {
     "ariaLabel": "Filter by status"
