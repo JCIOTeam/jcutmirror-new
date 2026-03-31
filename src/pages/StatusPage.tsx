@@ -47,6 +47,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import RefreshButton from '../components/common/RefreshButton';
 import { useMirrors } from '../hooks/useMirrors';
 import { useLocaleStore, useThemeStore } from '../stores/mirrorStore';
+import { canonicalUrl } from '../utils/seo';
 import { formatRelativeTime, formatAbsoluteTime, parseTimestamp } from '../utils/time';
 
 // ── Grafana 可用性探测 ────────────────────────────────────────────────────────
@@ -235,8 +236,12 @@ const StatusPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{t('status.title')} - JCUT Mirror</title>
-        <meta name="description" content="JCUT Mirror 系统实时同步状态" />
+        <title>{`${t('status.title')} - 荆楚理工学院开源软件镜像站 JCUT Mirror`}</title>
+        <meta
+          name="description"
+          content="荆楚理工学院开源软件镜像站实时同步状态监控，查看各镜像源的同步健康情况、成功率和服务器指标。"
+        />
+        <link rel="canonical" href={canonicalUrl('/status')} />
       </Helmet>
 
       <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
