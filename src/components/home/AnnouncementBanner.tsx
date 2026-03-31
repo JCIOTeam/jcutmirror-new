@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { useLocaleStore } from '../../stores/mirrorStore';
+import { safeGetItem, safeSetItem } from '../../utils/storage';
 
 type AnnouncementType = 'info' | 'warning' | 'error' | 'success';
 
@@ -44,17 +45,13 @@ function isRecent(dateStr: string) {
 }
 function loadDismissed(): Set<string> {
   try {
-    return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'));
+    return new Set(JSON.parse(safeGetItem(STORAGE_KEY) ?? '[]'));
   } catch {
     return new Set();
   }
 }
 function saveDismissed(ids: Set<string>) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...ids]));
-  } catch {
-    /* ignore */
-  }
+  safeSetItem(STORAGE_KEY, JSON.stringify([...ids]));
 }
 
 // severity → 颜色 token（用于背景色和强调色）
