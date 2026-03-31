@@ -4,24 +4,7 @@
 import { create } from 'zustand';
 
 import type { Mirror, ThemeMode, Locale } from '../types';
-
-// ── 安全的 localStorage 工具函数 ──────────────────────────────────────────────
-// Safari 隐私模式、部分嵌入环境下 localStorage 访问会抛出异常，需统一兜底
-function safeGetItem(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function safeSetItem(key: string, value: string): void {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // 存储失败时静默降级，不影响运行时状态
-  }
-}
+import { safeGetItem, safeSetItem } from '../utils/storage';
 
 /** 主题状态 */
 interface ThemeState {
@@ -106,8 +89,19 @@ interface FavoriteState {
 }
 
 export const useFavoriteStore = create<FavoriteState>((set, get) => {
-  const saved = safeGetItem('mirror_favorites');
-  const initial: string[] = saved ? (JSON.parse(saved) as string[]) : [];
+  let initial: string[] = [];
+  try {
+    const saved = safeGetItem('mirror_favorites');
+    if (saved) {
+      const parsed: unknown = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.every((v) => typeof v === 'string')) {
+        initial = parsed as string[];
+      }
+    }
+  } catch {
+    // JSON 解析失败（数据被篡改），静默降级为空列表
+    initial = [];
+  }
   return {
     favorites: initial,
     toggleFavorite: (id) => {
