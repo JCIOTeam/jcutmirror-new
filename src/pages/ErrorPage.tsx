@@ -1,5 +1,6 @@
 // src/pages/ErrorPage.tsx
-// 通用错误页面 —— 支持 403 / 404 / 500 / 503 等状态码
+// 通用错误页面 —— 支持 403 / 404 / 500 / 502 / 503 等状态码
+// 同时作为路由通配的 404 页面使用，合并了原 NotFound.tsx
 
 import {
   Home as HomeIcon,
@@ -9,70 +10,15 @@ import {
 import { Box, Container, Typography, Button, Stack, Paper, Divider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-
-import { useLocaleStore } from '../stores/mirrorStore';
 
 interface ErrorPageProps {
   code?: number;
 }
 
-interface ErrorMeta {
-  titleZh: string;
-  titleEn: string;
-  descZh: string;
-  descEn: string;
-  canRefresh: boolean;
-}
-
-const ERROR_META: Record<number, ErrorMeta> = {
-  403: {
-    titleZh: '访问被拒绝',
-    titleEn: 'Access Denied',
-    descZh: '您没有权限访问该资源，请确认您在校园网内或联系管理员。',
-    descEn:
-      'You do not have permission to access this resource. Please make sure you are on the campus network or contact the administrator.',
-    canRefresh: false,
-  },
-  404: {
-    titleZh: '页面不存在',
-    titleEn: 'Page Not Found',
-    descZh: '您访问的镜像或页面不存在，请确认 URL 是否正确。',
-    descEn: 'The mirror or page you are looking for does not exist. Please check the URL.',
-    canRefresh: false,
-  },
-  500: {
-    titleZh: '服务器内部错误',
-    titleEn: 'Internal Server Error',
-    descZh: '服务器遇到了一个意外错误，我们正在努力修复。请稍后再试。',
-    descEn:
-      'The server encountered an unexpected error. We are working on it. Please try again later.',
-    canRefresh: true,
-  },
-  502: {
-    titleZh: '网关错误',
-    titleEn: 'Bad Gateway',
-    descZh: '上游服务暂时不可用，这通常是临时性问题，请稍后刷新。',
-    descEn:
-      'The upstream service is temporarily unavailable. This is usually a temporary issue — please refresh.',
-    canRefresh: true,
-  },
-  503: {
-    titleZh: '服务暂时不可用',
-    titleEn: 'Service Unavailable',
-    descZh: '镜像站正在维护或负载较高，请稍后访问。',
-    descEn: 'The mirror is under maintenance or experiencing high load. Please try again later.',
-    canRefresh: true,
-  },
-};
-
-const FALLBACK_META: ErrorMeta = {
-  titleZh: '发生错误',
-  titleEn: 'Something went wrong',
-  descZh: '访问出现了异常，请稍后再试或返回首页。',
-  descEn: 'Something went wrong. Please try again later or go back to home.',
-  canRefresh: true,
-};
+/** 哪些错误码允许用户刷新重试 */
+const REFRESHABLE_CODES = new Set([500, 502, 503]);
 
 // ── 客户端指纹信息（从响应头读取，Nginx 需配置 add_header 才会有值）──
 interface ClientInfo {
@@ -81,7 +27,8 @@ interface ClientInfo {
   ja3Fingerprint?: string;
 }
 
-const ClientInfoPanel: React.FC<{ isZh: boolean }> = ({ isZh }) => {
+const ClientInfoPanel: React.FC = () => {
+  const { t } = useTranslation();
   const [info, setInfo] = useState<ClientInfo>({});
   const [hasInfo, setHasInfo] = useState(false);
 
@@ -104,7 +51,7 @@ const ClientInfoPanel: React.FC<{ isZh: boolean }> = ({ isZh }) => {
   if (!hasInfo) return null;
 
   const rows: Array<{ label: string; value: string }> = [
-    ...(info.realIp ? [{ label: isZh ? '客户端 IP' : 'Client IP', value: info.realIp }] : []),
+    ...(info.realIp ? [{ label: t('error.clientIp'), value: info.realIp }] : []),
     ...(info.ja4Fingerprint ? [{ label: 'JA4 Fingerprint', value: info.ja4Fingerprint }] : []),
     ...(info.ja3Fingerprint ? [{ label: 'JA3 Fingerprint', value: info.ja3Fingerprint }] : []),
   ];
@@ -117,7 +64,7 @@ const ClientInfoPanel: React.FC<{ isZh: boolean }> = ({ isZh }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 1.5 }}>
         <InfoIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
         <Typography variant="caption" fontWeight={700} color="text.secondary">
-          {isZh ? '请求信息' : 'Request Info'}
+          {t('error.requestInfo')}
         </Typography>
       </Box>
       <Divider sx={{ mb: 1.5 }} />
@@ -152,19 +99,23 @@ const ClientInfoPanel: React.FC<{ isZh: boolean }> = ({ isZh }) => {
 // ── 主组件 ────────────────────────────────────────────────────────────────────
 const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
   const navigate = useNavigate();
-  // 使用 Zustand store，语言切换时会自动重渲染
-  // 原来的 localStorage.getItem('locale') 是静态读取，切换语言后不会响应
-  const { locale } = useLocaleStore();
-  const isZh = locale !== 'en';
-  const meta = ERROR_META[code] ?? FALLBACK_META;
+  const { t } = useTranslation();
 
-  // ⚠️ Helmet <title> 必须是纯字符串子节点，不能是数字或 JSX 表达式
-  const titleStr = `${code} - JCUT Mirror`;
+  // 尝试读取 error.title{code}，若该 key 不存在则降级为 titleDefault
+  const titleKey = `error.title${code}`;
+  const descKey = `error.desc${code}`;
+  const title = t(titleKey, { defaultValue: '' }) || t('error.titleDefault');
+  const desc = t(descKey, { defaultValue: '' }) || t('error.descDefault');
+  const canRefresh = REFRESHABLE_CODES.has(code);
+
+  const pageTitle = `${code} - JCUT Mirror`;
 
   return (
     <>
       <Helmet>
-        <title>{titleStr}</title>
+        <title>{pageTitle}</title>
+        {/* 错误页不应被索引 */}
+        <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
       <Container maxWidth="sm">
@@ -200,7 +151,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
             fontWeight={700}
             sx={{ mb: 1.5, position: 'relative', zIndex: 1 }}
           >
-            {isZh ? meta.titleZh : meta.titleEn}
+            {title}
           </Typography>
 
           <Typography
@@ -208,7 +159,7 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
             color="text.secondary"
             sx={{ mb: 4, maxWidth: 420, lineHeight: 1.7 }}
           >
-            {isZh ? meta.descZh : meta.descEn}
+            {desc}
           </Typography>
 
           <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
@@ -219,9 +170,9 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
               size="large"
               sx={{ borderRadius: 6 }}
             >
-              {isZh ? '返回首页' : 'Back to Home'}
+              {t('error.backHome')}
             </Button>
-            {meta.canRefresh && (
+            {canRefresh && (
               <Button
                 variant="outlined"
                 startIcon={<RefreshIcon />}
@@ -229,13 +180,13 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
                 size="large"
                 sx={{ borderRadius: 6 }}
               >
-                {isZh ? '刷新页面' : 'Refresh'}
+                {t('error.refreshPage')}
               </Button>
             )}
           </Stack>
 
           {/* 客户端指纹信息面板 —— 有响应头时自动出现 */}
-          <ClientInfoPanel isZh={isZh} />
+          <ClientInfoPanel />
 
           <Typography
             variant="caption"
