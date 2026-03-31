@@ -18,7 +18,7 @@
     "@mdx-js/rollup": "^3.1.1",
     "@mui/icons-material": "^7.3.9",
     "@mui/material": "^7.3.9",
-    "@tanstack/react-query": "^5.95.2",
+    "@tanstack/react-query": "^5.96.0",
     "axios": "^1.14.0",
     "date-fns": "^4.1.0",
     "i18next": "^23.16.8",
@@ -31,7 +31,7 @@
     "react-router-dom": "^6.30.3",
     "react-syntax-highlighter": "^15.6.6",
     "remark-gfm": "^4.0.1",
-    "simple-icons": "^16.13.0",
+    "simple-icons": "^16.14.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
@@ -46,7 +46,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.2",
+    "typescript-eslint": "^8.58.0",
     "vite": "^7.3.1"
   },
   "description": "基于 React + TypeScript + Material UI 构建的现代化镜像站前端，设计用于配合 [tunasync](https://github.com/tuna/tunasync) 使用，开箱即用。",
