@@ -17,7 +17,6 @@ import Home from './pages/Home';
 import MirrorDetail from './pages/MirrorDetail';
 import NewsDetailPage from './pages/NewsDetailPage';
 import NewsListPage from './pages/NewsListPage';
-import NotFound from './pages/NotFound';
 import StatusPage from './pages/StatusPage';
 import { useThemeStore } from './stores/mirrorStore';
 
@@ -27,6 +26,7 @@ const queryClient = new QueryClient({
     queries: {
       retry: 2,
       refetchOnWindowFocus: false,
+      gcTime: 10 * 60 * 1000, // 10 分钟垃圾回收，避免长时间停留时缓存意外失效
     },
   },
 });
@@ -83,7 +83,7 @@ const ThemedApp: React.FC = () => {
               <Route path="/500" element={<ErrorPage code={500} />} />
               <Route path="/502" element={<ErrorPage code={502} />} />
               <Route path="/503" element={<ErrorPage code={503} />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<ErrorPage code={404} />} />
             </Routes>
           </Box>
 
