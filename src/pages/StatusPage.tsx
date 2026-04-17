@@ -67,9 +67,15 @@ function useGrafanaAvailable(): boolean | null {
 // ── 系统整体健康状态 ──────────────────────────────────────────────────────────
 type HealthLevel = 'operational' | 'degraded' | 'outage';
 
-function calcHealth(total: number, failed: number): HealthLevel {
+/**
+ * 仅 failed 视为不可用；syncing/cached/succeeded/paused 都对外可访问
+ * - cached: 历史快照可正常下载
+ * - syncing: 服务在跑，旧文件依然可访问
+ * - paused: 维护中但内容仍在
+ */
+function calcHealth(total: number, unavailable: number): HealthLevel {
   if (total === 0) return 'operational';
-  const ratio = failed / total;
+  const ratio = unavailable / total;
   if (ratio === 0) return 'operational';
   if (ratio < 0.2) return 'degraded';
   return 'outage';
@@ -167,7 +173,12 @@ const StatusPage: React.FC = () => {
     const failed = mirrors.filter((m) => m.status === 'failed').length;
     const syncing = mirrors.filter((m) => m.status === 'syncing').length;
     const cached = mirrors.filter((m) => m.status === 'cached').length;
-    const successRate = total > 0 ? Math.round((succeeded / total) * 100) : 0;
+    const paused = mirrors.filter((m) => m.status === 'paused').length;
+
+    // 可用率 = (succeeded + cached + syncing + paused) / total
+    // 已缓存/同步中/暂停的镜像，文件层面对用户都是可访问的；只有 failed 才真的不可用
+    const available = succeeded + cached + syncing + paused;
+    const successRate = total > 0 ? Math.round((available / total) * 100) : 0;
 
     // 存储大小汇总
     const totalBytes = mirrors.reduce((acc, m) => acc + parseSize(m.size), 0);
@@ -219,6 +230,8 @@ const StatusPage: React.FC = () => {
       failed,
       syncing,
       cached,
+      paused,
+      available,
       successRate,
       totalBytes,
       syncedToday,
@@ -228,6 +241,7 @@ const StatusPage: React.FC = () => {
     };
   }, [mirrors]);
 
+  // 健康度只看 failed —— 与可用率含义一致
   const health = calcHealth(stats.total, stats.failed);
   const healthCfg = HEALTH_CONFIG[health];
   const lastChecked = dataUpdatedAt ? new Date(dataUpdatedAt) : null;
@@ -724,13 +738,6 @@ const StatusPage: React.FC = () => {
 
                 <AccordionDetails sx={{ p: 0 }}>
                   <Divider />
-                  {/* Grafana 面板说明 */}
-                  <Alert
-                    severity="info"
-                    sx={{ borderRadius: 0, '& .MuiAlert-message': { fontSize: '0.82rem' } }}
-                  >
-                    {t('status.grafanaNotice')}
-                  </Alert>
 
                   {/* 嵌入面板网格 */}
                   <Grid container sx={{ p: 2 }} spacing={2}>
@@ -790,14 +797,6 @@ const StatusPage: React.FC = () => {
                               <OpenInNewIcon sx={{ fontSize: 11 }} />
                             </Link>
                           </Box>
-                          {/* Grafana iframe 嵌入
-                        参数说明：
-                          orgId=1          → 组织 ID
-                          panelId=N        → 面板 ID（与 dashboard JSON 中的 id 字段对应）
-                          from/to          → 时间范围（相对）
-                          theme            → 跟随系统主题
-                          kiosk            → 隐藏 Grafana 顶栏
-                      */}
                           <Box
                             component="iframe"
                             src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=${panelId}&from=now-1h&to=now&theme=${themeMode}&kiosk`}
