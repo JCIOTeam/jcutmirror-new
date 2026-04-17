@@ -1,15 +1,25 @@
 {
   "name": "mirror-site",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
+  "description": "基于 React + TypeScript + Material UI 构建的现代化镜像站前端，设计用于配合 tunasync 使用",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/generate-sitemap.mjs",
+    "build": "npm run typecheck && vite build && node scripts/generate-sitemap.mjs",
     "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -35,23 +45,23 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
     "@types/react": "^18.3.28",
     "@types/react-dom": "^18.3.7",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-v8": "^2.1.9",
     "eslint": "9.39.4",
     "eslint-config-prettier": "^9.1.2",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "jsdom": "^25.0.1",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.58.0",
-    "vite": "^7.3.1"
-  },
-  "description": "基于 React + TypeScript + Material UI 构建的现代化镜像站前端，设计用于配合 [tunasync](https://github.com/tuna/tunasync) 使用，开箱即用。",
-  "main": "eslint.config.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "vite": "^7.3.1",
+    "vitest": "^2.1.9"
+  }
 }
