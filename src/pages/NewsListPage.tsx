@@ -4,7 +4,6 @@
 import { ArrowForward as ArrowIcon } from '@mui/icons-material';
 import { Box, Container, Typography, Chip, Divider, Breadcrumbs, Link } from '@mui/material';
 import React, { useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
@@ -25,11 +24,11 @@ const NewsListPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
+
         <title>{title}</title>
         <meta name="description" content="荆楚理工学院开源软件镜像站最新动态与公告。" />
         <link rel="canonical" href={canonicalUrl('/news')} />
-      </Helmet>
+
 
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
         <Breadcrumbs sx={{ mb: 3 }}>

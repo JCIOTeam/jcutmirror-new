@@ -9,7 +9,6 @@ import {
 } from '@mui/icons-material';
 import { Box, Container, Typography, Button, Stack, Paper, Divider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
@@ -112,11 +111,11 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
 
   return (
     <>
-      <Helmet>
+
         <title>{pageTitle}</title>
         {/* 错误页不应被索引 */}
         <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
+
 
       <Container maxWidth="sm">
         <Box

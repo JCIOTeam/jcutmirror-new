@@ -28,7 +28,6 @@ import {
   IconButton,
 } from '@mui/material';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
 import RefreshButton from '../components/common/RefreshButton';
@@ -165,7 +164,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Helmet>
+
         <title>{SITE_TITLE_ZH} - JCUT Mirror</title>
         <meta name="description" content={DESC_ZH} />
         <meta name="keywords" content={KEYWORDS_ZH} />
@@ -178,7 +177,7 @@ const Home: React.FC = () => {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
         <meta name="twitter:description" content={DESC_ZH} />
-      </Helmet>
+
 
       {/* Hero 区域 */}
       <Box

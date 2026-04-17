@@ -20,7 +20,6 @@ import {
   TableCell,
 } from '@mui/material';
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 
@@ -163,10 +162,10 @@ const NewsDetailPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
+
         <title>{pageTitle}</title>
         <link rel="canonical" href={canonicalUrl(`/news/${slug}`)} />
-      </Helmet>
+
 
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
         {/* 面包屑 */}

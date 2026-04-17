@@ -1,9 +1,9 @@
 // 烟雾测试：确认 React 19 渲染 + StrictMode + MUI 双调用不报错
+import { Button, Chip } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import { StrictMode } from 'react';
 import { describe, expect, it } from 'vitest';
-import { ThemeProvider } from '@mui/material/styles';
-import { Button, Chip } from '@mui/material';
 
 import { lightTheme } from '../../theme/theme';
 

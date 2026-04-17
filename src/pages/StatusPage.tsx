@@ -40,7 +40,6 @@ import {
   AccordionDetails,
 } from '@mui/material';
 import React, { useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
@@ -249,14 +248,14 @@ const StatusPage: React.FC = () => {
   // ── 渲染 ──────────────────────────────────────────────────────────────────
   return (
     <>
-      <Helmet>
+
         <title>{`${t('status.title')} - 荆楚理工学院开源软件镜像站 JCUT Mirror`}</title>
         <meta
           name="description"
           content="荆楚理工学院开源软件镜像站实时同步状态监控，查看各镜像源的同步健康情况、成功率和服务器指标。"
         />
         <link rel="canonical" href={canonicalUrl('/status')} />
-      </Helmet>
+
 
       <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
         {/* 面包屑 */}

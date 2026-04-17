@@ -4,7 +4,6 @@
 import { ThemeProvider, CssBaseline, Box, GlobalStyles, LinearProgress } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { Suspense, lazy } from 'react';
-import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './i18n';
 
@@ -120,11 +119,9 @@ const ThemedApp: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <ThemedApp />
-    </QueryClientProvider>
-  </HelmetProvider>
+  <QueryClientProvider client={queryClient}>
+    <ThemedApp />
+  </QueryClientProvider>
 );
 
 export default App;

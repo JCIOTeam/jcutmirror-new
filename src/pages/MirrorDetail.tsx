@@ -31,7 +31,6 @@ import {
   IconButton,
 } from '@mui/material';
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 // useSearchParams allows us to read ?tab=help from the URL
 import { useParams, useNavigate, Link as RouterLink, useSearchParams } from 'react-router-dom';
@@ -325,7 +324,7 @@ const MirrorDetail: React.FC = () => {
 
   return (
     <>
-      <Helmet>
+
         <html lang={locale === 'en' ? 'en' : 'zh-CN'} />
         <title>
           {locale === 'en'
@@ -368,7 +367,7 @@ const MirrorDetail: React.FC = () => {
         <script type="application/ld+json">
           {mirrorJsonLd(mirror.name[locale], mirror.desc[locale], `/mirrors/${mirror.id}`)}
         </script>
-      </Helmet>
+
 
       <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
         {/* 面包屑 */}
