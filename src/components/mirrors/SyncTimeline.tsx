@@ -131,7 +131,12 @@ const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value
           </Tooltip>
           {hasValue && (
             <Tooltip title={copied ? t('common.copied') : t('common.clickToCopy')} placement="top">
-              <IconButton size="small" onClick={handleCopy} sx={{ p: 0.3, flexShrink: 0 }}>
+              <IconButton
+                size="small"
+                onClick={handleCopy}
+                sx={{ p: 0.3, flexShrink: 0 }}
+                aria-label={t('common.clickToCopy')}
+              >
                 {copied ? (
                   <CheckIcon sx={{ fontSize: 13, color: 'success.main' }} />
                 ) : (

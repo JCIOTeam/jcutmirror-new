@@ -236,6 +236,7 @@ const AnnouncementBanner: React.FC = () => {
               sx={{ p: 0.3 }}
               onClick={() => setIndex((i) => (i - 1 + total) % total)}
               disabled={total <= 1}
+              aria-label="上一条公告"
             >
               <PrevIcon sx={{ fontSize: 16 }} />
             </IconButton>
@@ -255,6 +256,7 @@ const AnnouncementBanner: React.FC = () => {
               sx={{ p: 0.3 }}
               onClick={() => setIndex((i) => (i + 1) % total)}
               disabled={total <= 1}
+              aria-label="下一条公告"
             >
               <NextIcon sx={{ fontSize: 16 }} />
             </IconButton>
@@ -267,6 +269,7 @@ const AnnouncementBanner: React.FC = () => {
             size="small"
             onClick={handleDismiss}
             sx={{ p: 0.4, flexShrink: 0, opacity: 0.6, '&:hover': { opacity: 1 } }}
+            aria-label="关闭公告"
           >
             <CloseIcon sx={{ fontSize: 14 }} />
           </IconButton>
