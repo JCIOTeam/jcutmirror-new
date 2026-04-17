@@ -58,18 +58,40 @@ export const useFilteredMirrors = (mirrors: Mirror[]): Mirror[] => {
   }, [mirrors, searchQuery]);
 };
 
+/**
+ * 取分组键：A-Z 字母直接用，数字与其他符号统一归到 '#' 组
+ * 这样字母索引导航就不会出现 0/1/2.../9 这些零散的数字按钮
+ */
+function getGroupKey(id: string): string {
+  const ch = id[0]?.toUpperCase();
+  if (!ch) return '#';
+  return /^[A-Z]$/.test(ch) ? ch : '#';
+}
+
 export const useGroupedMirrors = (mirrors: Mirror[]): GroupedMirrors =>
   useMemo(() => {
     const groups: GroupedMirrors = {};
     mirrors.forEach((m) => {
-      const letter = m.id[0]?.toUpperCase() ?? '#';
-      if (!groups[letter]) groups[letter] = [];
-      groups[letter].push(m);
+      const key = getGroupKey(m.id);
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(m);
     });
     // 组内按 id 字母升序排列，避免因后端返回顺序不定导致每次刷新乱序
     Object.values(groups).forEach((group) => group.sort((a, b) => a.id.localeCompare(b.id)));
     return groups;
   }, [mirrors]);
+
+/**
+ * 字母分组的展示顺序：A-Z 在前，'#' 兜底放最后
+ * 避免 Object.keys().sort() 把 '#' 排到字母前面
+ */
+export function sortedGroupKeys(grouped: GroupedMirrors): string[] {
+  return Object.keys(grouped).sort((a, b) => {
+    if (a === '#') return 1;
+    if (b === '#') return -1;
+    return a.localeCompare(b);
+  });
+}
 
 // ── 常用镜像 —— 从 public/popular-mirrors.json 读取，运行时可热更新 ─────────
 

@@ -2,53 +2,74 @@
 // API 请求封装 — 直接对接后端
 //
 // 数据流：
-//   GET /jobs               → RawJob[]（nginx 已将 /jobs 反向代理至后端）
-//   GET /local_data.json    → LocalMeta（本地补充元数据，随前端构建发布）
-//   transformJobs()         → Mirror[]（前端完成格式转换）
+//   GET /jobs                       → RawJob[]（nginx 已反代到 tunasync manager）
+//   GET /local_data.json            → LocalMeta（本地补充元数据，随前端构建发布）
+//   transformJobs()                 → Mirror[]（前端完成格式转换）
 //
 // GET /api/is_campus_network 由 nginx 直接判断客户端 IP 并返回
 
-import axios from 'axios';
+import axios, { type AxiosInstance } from 'axios';
 
 import type { Mirror, CampusNetworkStatus } from '../types';
 
 import { transformJobs } from './transform';
 import type { RawJob, LocalMeta } from './transform';
 
-// ── 统一的 axios 实例 ─────────────────────────────────────────────────────────
-// 使用一个实例管理所有请求，通过 baseURL 参数区分不同接口
-const apiClient = axios.create({
-  timeout: 15000,
-  headers: { 'Content-Type': 'application/json' },
-});
+// ── 工厂：每个域一个独立 axios 实例，避免每次 get 都传 baseURL ─────────────
+function createClient(baseURL: string): AxiosInstance {
+  const client = axios.create({
+    baseURL,
+    timeout: 15_000,
+    headers: { 'Content-Type': 'application/json' },
+  });
+  client.interceptors.response.use(
+    (res) => res,
+    (err) => {
+      const msg = err instanceof Error ? err.message : String(err);
+      // 仅记录基础信息，避免把响应体打到 console（可能含敏感信息）
+      console.error(`[API ${baseURL}]`, msg);
+      return Promise.reject(err);
+    }
+  );
+  return client;
+}
 
-// 错误拦截器
-const errorInterceptor = (err: unknown) => {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error('[API Error]', msg);
-  return Promise.reject(err);
-};
+// 后端镜像状态接口（nginx 已将 /jobs 反代）
+const backend = createClient('/');
 
-apiClient.interceptors.response.use((res) => res, errorInterceptor);
+// 校园网检测（nginx 直接返回）
+const internal = createClient('/api');
 
 // ── 本地元数据缓存（只需加载一次）────────────────────────────────────────────
-// 缓存 Promise 本身而非结果，避免并发请求时重复发起网络请求（竞态条件）
+// 缓存 Promise 本身而非结果，避免并发请求时重复发起网络请求（竞态）
 let _localDataPromise: Promise<Record<string, LocalMeta>> | null = null;
 
+/**
+ * 失败时回到空对象作为兜底，但**保留** Promise 拒绝信息给上层 logger
+ * （上次实现把 catch 吞掉了 —— 现在保留警告并允许一次性重试）
+ */
 function getLocalData(): Promise<Record<string, LocalMeta>> {
-  if (!_localDataPromise) {
-    _localDataPromise = fetch('/local_data.json')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<Record<string, LocalMeta>>;
-      })
-      .catch((e) => {
-        console.warn('[API] Failed to load local_data.json, using empty metadata', e);
-        // 加载失败时清空 promise，允许下次重试
-        _localDataPromise = null;
-        return {} as Record<string, LocalMeta>;
-      });
-  }
+  if (_localDataPromise) return _localDataPromise;
+
+  _localDataPromise = fetch('/local_data.json', { cache: 'no-cache' })
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`local_data.json HTTP ${res.status}`);
+      const json = (await res.json()) as unknown;
+      // 防御：必须是非数组的对象
+      if (!json || typeof json !== 'object' || Array.isArray(json)) {
+        throw new Error('local_data.json: invalid root, expected object');
+      }
+      return json as Record<string, LocalMeta>;
+    })
+    .catch((e) => {
+      // 失败时清空缓存，下一次调用会重试（避免一次失败导致整次会话都没补充信息）
+      _localDataPromise = null;
+      console.warn(
+        '[API] local_data.json 加载失败，镜像名称/描述将退回到默认值。重试将在下次请求触发。',
+        e
+      );
+      return {};
+    });
   return _localDataPromise;
 }
 
@@ -56,14 +77,15 @@ function getLocalData(): Promise<Record<string, LocalMeta>> {
 
 /**
  * 获取所有镜像列表
- * GET /jobs（nginx 已代理，无需额外前缀）
  */
 export const fetchMirrors = async (): Promise<Mirror[]> => {
   const [{ data: jobs }, localData] = await Promise.all([
-    // 使用 baseURL='' 覆盖默认配置，直接访问 /jobs
-    apiClient.get<RawJob[]>('/jobs', { baseURL: '' }),
+    backend.get<RawJob[]>('/jobs'),
     getLocalData(),
   ]);
+  if (!Array.isArray(jobs)) {
+    throw new Error('Backend /jobs response is not an array');
+  }
   return transformJobs(jobs, localData);
 };
 
@@ -82,9 +104,7 @@ export const fetchMirrorByName = async (name: string): Promise<Mirror> => {
  * GET /api/is_campus_network → "1"(校内) | "0"(校外) | "6"(IPv6)
  */
 export const fetchCampusNetworkStatus = async (): Promise<CampusNetworkStatus> => {
-  const { data } = await apiClient.get<CampusNetworkStatus>('/is_campus_network', {
-    baseURL: '/api',
-  });
+  const { data } = await internal.get<CampusNetworkStatus>('/is_campus_network');
   const val = String(data).trim() as CampusNetworkStatus;
   return (['1', '0', '6'] as const).includes(val) ? val : '0';
 };
