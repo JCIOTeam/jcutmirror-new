@@ -243,16 +243,23 @@ const Header: React.FC = () => {
           )}
         </Toolbar>
       </AppBar>
-
       {/* 移动端抽屉菜单 */}
       <Drawer
         anchor="right"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        slotProps={{
+          paper: { sx: { width: 240 } },
+        }}
       >
         <Box sx={{ p: 2 }}>
-          <Typography variant="h6" fontWeight={800} fontFamily='"JetBrains Mono", monospace'>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 800,
+              fontFamily: '"JetBrains Mono", monospace',
+            }}
+          >
             JCUT Mirror
           </Typography>
         </Box>
@@ -283,7 +290,9 @@ const Header: React.FC = () => {
               </ListItemIcon>
               <ListItemText
                 primary={t('nav.download', '镜像下载')}
-                primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}
+                slotProps={{
+                  primary: { sx: { fontWeight: 600, fontSize: '0.9rem' } },
+                }}
               />
             </ListItemButton>
           </ListItem>
@@ -293,7 +302,6 @@ const Header: React.FC = () => {
           <LocaleToggle />
         </Box>
       </Drawer>
-
       {/* 下载弹窗 */}
       <DownloadModal open={downloadOpen} onClose={() => setDownloadOpen(false)} />
     </>

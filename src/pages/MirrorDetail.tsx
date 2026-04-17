@@ -89,8 +89,12 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
         <Typography
           variant="subtitle2"
-          fontWeight={700}
-          sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+          sx={{
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.5,
+          }}
         >
           <FolderIcon sx={{ fontSize: 16, color: 'primary.main' }} />
           {t('detail.downloads')}
@@ -108,7 +112,6 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
           </IconButton>
         </Tooltip>
       </Box>
-
       {/* 完整 URL 展示 */}
       <Box
         sx={{
@@ -127,19 +130,28 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
       >
         {toFull(mirrorUrl)}
       </Box>
-
       <Divider sx={{ mb: 1 }} />
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-        <Typography variant="caption" color="text.secondary" fontWeight={600}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary',
+            fontWeight: 600,
+          }}
+        >
           {t('detail.installImages')}
         </Typography>
         {/* 文件数量角标，超过可视行数时提示"可滚动" */}
-        <Typography variant="caption" color="text.disabled">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.disabled',
+          }}
+        >
           {t('detail.filesCount', { count: files.length })}
           {files.length > 5 ? t('detail.scrollHint') : ''}
         </Typography>
       </Box>
-
       {/* 固定高度 + 滚动区域 —— 5 行可见，更多文件直接向下滚动 */}
       <Box
         sx={{
@@ -324,58 +336,67 @@ const MirrorDetail: React.FC = () => {
 
   return (
     <>
-
-        <html lang={locale === 'en' ? 'en' : 'zh-CN'} />
-        <title>
-          {locale === 'en'
-            ? `${mirror.name.en} Mirror — JCUT Mirror`
-            : `${mirror.name.zh} 镜像 - 荆楚理工学院开源软件镜像站 JCUT Mirror`}
-        </title>
-        <meta
-          name="description"
-          content={
-            locale === 'en'
-              ? `${mirror.name.en} - ${mirror.desc.en} High-speed mirror provided by JCUT Mirror.`
-              : `${mirror.name.zh} - ${mirror.desc.zh} 由荆楚理工学院开源软件镜像站（JCUT Mirror）提供高速下载。`
-          }
-        />
-        <meta
-          name="keywords"
-          content={
-            locale === 'en'
-              ? `${mirror.name.en},${mirror.id},${mirror.name.en} mirror,${mirror.name.en} download,JCUT Mirror,open source mirror`
-              : `${mirror.name.zh},${mirror.id},${mirror.name.zh}镜像,${mirror.name.zh}下载,JCUT Mirror,荆楚理工学院镜像站,开源软件镜像`
-          }
-        />
-        <link rel="canonical" href={canonicalUrl(`/mirrors/${mirror.id}`)} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${mirror.name[locale]} - JCUT Mirror`} />
-        <meta property="og:description" content={mirror.desc[locale]} />
-        <meta property="og:url" content={canonicalUrl(`/mirrors/${mirror.id}`)} />
-        <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${mirror.name[locale]} - JCUT Mirror`} />
-        <meta name="twitter:description" content={mirror.desc[locale]} />
-        {/* 结构化数据：面包屑 */}
-        <script type="application/ld+json">
-          {breadcrumbJsonLd([
-            { name: locale === 'en' ? 'Home' : '首页', url: '/' },
-            { name: mirror.name[locale], url: `/mirrors/${mirror.id}` },
-          ])}
-        </script>
-        {/* 结构化数据：软件应用 */}
-        <script type="application/ld+json">
-          {mirrorJsonLd(mirror.name[locale], mirror.desc[locale], `/mirrors/${mirror.id}`)}
-        </script>
-
-
+      <html lang={locale === 'en' ? 'en' : 'zh-CN'} />
+      <title>
+        {locale === 'en'
+          ? `${mirror.name.en} Mirror — JCUT Mirror`
+          : `${mirror.name.zh} 镜像 - 荆楚理工学院开源软件镜像站 JCUT Mirror`}
+      </title>
+      <meta
+        name="description"
+        content={
+          locale === 'en'
+            ? `${mirror.name.en} - ${mirror.desc.en} High-speed mirror provided by JCUT Mirror.`
+            : `${mirror.name.zh} - ${mirror.desc.zh} 由荆楚理工学院开源软件镜像站（JCUT Mirror）提供高速下载。`
+        }
+      />
+      <meta
+        name="keywords"
+        content={
+          locale === 'en'
+            ? `${mirror.name.en},${mirror.id},${mirror.name.en} mirror,${mirror.name.en} download,JCUT Mirror,open source mirror`
+            : `${mirror.name.zh},${mirror.id},${mirror.name.zh}镜像,${mirror.name.zh}下载,JCUT Mirror,荆楚理工学院镜像站,开源软件镜像`
+        }
+      />
+      <link rel="canonical" href={canonicalUrl(`/mirrors/${mirror.id}`)} />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content={`${mirror.name[locale]} - JCUT Mirror`} />
+      <meta property="og:description" content={mirror.desc[locale]} />
+      <meta property="og:url" content={canonicalUrl(`/mirrors/${mirror.id}`)} />
+      <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={`${mirror.name[locale]} - JCUT Mirror`} />
+      <meta name="twitter:description" content={mirror.desc[locale]} />
+      {/* 结构化数据：面包屑 */}
+      <script type="application/ld+json">
+        {breadcrumbJsonLd([
+          { name: locale === 'en' ? 'Home' : '首页', url: '/' },
+          { name: mirror.name[locale], url: `/mirrors/${mirror.id}` },
+        ])}
+      </script>
+      {/* 结构化数据：软件应用 */}
+      <script type="application/ld+json">
+        {mirrorJsonLd(mirror.name[locale], mirror.desc[locale], `/mirrors/${mirror.id}`)}
+      </script>
       <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
         {/* 面包屑 */}
         <Breadcrumbs sx={{ mb: 2 }}>
-          <Link component={RouterLink} to="/" underline="hover" color="text.secondary">
+          <Link
+            component={RouterLink}
+            to="/"
+            underline="hover"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('nav.home')}
           </Link>
-          <Typography color="text.primary" fontWeight={500}>
+          <Typography
+            sx={{
+              color: 'text.primary',
+              fontWeight: 500,
+            }}
+          >
             {mirror.name[locale]}
           </Typography>
         </Breadcrumbs>
@@ -397,14 +418,26 @@ const MirrorDetail: React.FC = () => {
 
         {/* ── 顶部信息卡 ── */}
         <Paper variant="outlined" sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 2, mb: 3 }}>
-          <Grid container spacing={3} alignItems="flex-start">
+          <Grid
+            container
+            spacing={3}
+            sx={{
+              alignItems: 'flex-start',
+            }}
+          >
             {/* 左侧：名称 / 描述 / URL */}
             {/* 若没有文件，左侧占满 12 列；有文件时占 8 列，右侧 4 列给侧栏 */}
             <Grid size={{ xs: 12 }}>
               <Box
                 sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 0.5, flexWrap: 'wrap' }}
               >
-                <Typography variant="h4" fontWeight={800} fontSize={{ xs: '1.5rem', md: '2rem' }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: { xs: '1.5rem', md: '2rem' },
+                  }}
+                >
                   {mirror.name[locale]}
                 </Typography>
                 <StatusChip status={mirror.status} size="medium" />
@@ -426,7 +459,14 @@ const MirrorDetail: React.FC = () => {
                 )}
               </Box>
 
-              <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7, mb: 2 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'text.secondary',
+                  lineHeight: 1.7,
+                  mb: 2,
+                }}
+              >
                 {mirror.desc[locale]}
               </Typography>
 
@@ -493,7 +533,13 @@ const MirrorDetail: React.FC = () => {
 
         {/* 同步状态 */}
         <Box sx={{ mb: 3 }}>
-          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              mb: 2,
+            }}
+          >
             {t('detail.syncStatus')}
           </Typography>
           <SyncTimeline mirror={mirror} />

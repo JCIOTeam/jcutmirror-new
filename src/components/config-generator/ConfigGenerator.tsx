@@ -74,7 +74,12 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
           bgcolor: 'action.hover',
         }}
       >
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {t('configGenerator.noVersions')}
         </Typography>
       </Paper>
@@ -94,7 +99,13 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
     >
       {/* 版本选择器 */}
       <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{
+            fontWeight: 600,
+          }}
+        >
           {promptString}
         </Typography>
         <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -113,7 +124,6 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
           </Select>
         </FormControl>
       </Box>
-
       {/* 配置代码块（CodeBlock 顶部工具栏已内置复制按钮） */}
       <CodeBlock language={language}>{config}</CodeBlock>
     </Paper>

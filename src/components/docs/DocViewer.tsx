@@ -120,12 +120,24 @@ const mdxComponents = {
   ),
   td: ({ children }: { children: React.ReactNode }) => <TableCell>{children}</TableCell>,
   strong: ({ children }: { children: React.ReactNode }) => (
-    <Typography component="strong" fontWeight={700} color="text.primary">
+    <Typography
+      component="strong"
+      sx={{
+        fontWeight: 700,
+        color: 'text.primary',
+      }}
+    >
       {children}
     </Typography>
   ),
   em: ({ children }: { children: React.ReactNode }) => (
-    <Typography component="em" fontStyle="italic" color="text.primary">
+    <Typography
+      component="em"
+      sx={{
+        fontStyle: 'italic',
+        color: 'text.primary',
+      }}
+    >
       {children}
     </Typography>
   ),
@@ -170,7 +182,12 @@ const DocViewer: React.FC<DocViewerProps> = ({ mirrorId, content, loading }) => 
     return (
       <Box sx={{ py: 2, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <CircularProgress size={24} sx={{ mr: 1 }} />
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+          }}
+        >
           {t('docs.loading')}
         </Typography>
       </Box>
@@ -344,7 +361,13 @@ const DocViewer: React.FC<DocViewerProps> = ({ mirrorId, content, loading }) => 
 
           // 强调
           strong: ({ children }) => (
-            <Typography component="strong" fontWeight={700} color="text.primary">
+            <Typography
+              component="strong"
+              sx={{
+                fontWeight: 700,
+                color: 'text.primary',
+              }}
+            >
               {children}
             </Typography>
           ),

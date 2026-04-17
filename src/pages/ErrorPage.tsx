@@ -62,7 +62,13 @@ const ClientInfoPanel: React.FC = () => {
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, mb: 1.5 }}>
         <InfoIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-        <Typography variant="caption" fontWeight={700} color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            fontWeight: 700,
+            color: 'text.secondary',
+          }}
+        >
           {t('error.requestInfo')}
         </Typography>
       </Box>
@@ -72,8 +78,12 @@ const ClientInfoPanel: React.FC = () => {
           <Box key={row.label} sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
             <Typography
               variant="caption"
-              color="text.secondary"
-              sx={{ minWidth: 120, flexShrink: 0, pt: 0.1 }}
+              sx={{
+                color: 'text.secondary',
+                minWidth: 120,
+                flexShrink: 0,
+                pt: 0.1,
+              }}
             >
               {row.label}
             </Typography>
@@ -111,12 +121,9 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
 
   return (
     <>
-
-        <title>{pageTitle}</title>
-        {/* 错误页不应被索引 */}
-        <meta name="robots" content="noindex, nofollow" />
-
-
+      <title>{pageTitle}</title>
+      {/* 错误页不应被索引 */}
+      <meta name="robots" content="noindex, nofollow" />
       <Container maxWidth="sm">
         <Box
           sx={{
@@ -147,21 +154,36 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
 
           <Typography
             variant="h4"
-            fontWeight={700}
-            sx={{ mb: 1.5, position: 'relative', zIndex: 1 }}
+            sx={{
+              fontWeight: 700,
+              mb: 1.5,
+              position: 'relative',
+              zIndex: 1,
+            }}
           >
             {title}
           </Typography>
 
           <Typography
             variant="body1"
-            color="text.secondary"
-            sx={{ mb: 4, maxWidth: 420, lineHeight: 1.7 }}
+            sx={{
+              color: 'text.secondary',
+              mb: 4,
+              maxWidth: 420,
+              lineHeight: 1.7,
+            }}
           >
             {desc}
           </Typography>
 
-          <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
             <Button
               variant="contained"
               startIcon={<HomeIcon />}
@@ -189,8 +211,11 @@ const ErrorPage: React.FC<ErrorPageProps> = ({ code = 404 }) => {
 
           <Typography
             variant="caption"
-            color="text.disabled"
-            sx={{ mt: 4, fontFamily: '"JetBrains Mono", monospace' }}
+            sx={{
+              color: 'text.disabled',
+              mt: 4,
+              fontFamily: '"JetBrains Mono", monospace',
+            }}
           >
             HTTP {code}
           </Typography>

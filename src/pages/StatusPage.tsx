@@ -141,14 +141,34 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, value, sub, color }) =
   >
     <Box sx={{ color: color ?? 'primary.main', mt: 0.3, flexShrink: 0 }}>{icon}</Box>
     <Box>
-      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.4 }}>
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+          display: 'block',
+          mb: 0.4,
+        }}
+      >
         {label}
       </Typography>
-      <Typography variant="h5" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 800,
+          lineHeight: 1.2,
+        }}
+      >
         {value}
       </Typography>
       {sub && (
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.3, display: 'block' }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary',
+            mt: 0.3,
+            display: 'block',
+          }}
+        >
           {sub}
         </Typography>
       )}
@@ -248,15 +268,12 @@ const StatusPage: React.FC = () => {
   // ── 渲染 ──────────────────────────────────────────────────────────────────
   return (
     <>
-
-        <title>{`${t('status.title')} - 荆楚理工学院开源软件镜像站 JCUT Mirror`}</title>
-        <meta
-          name="description"
-          content="荆楚理工学院开源软件镜像站实时同步状态监控，查看各镜像源的同步健康情况、成功率和服务器指标。"
-        />
-        <link rel="canonical" href={canonicalUrl('/status')} />
-
-
+      <title>{`${t('status.title')} - 荆楚理工学院开源软件镜像站 JCUT Mirror`}</title>
+      <meta
+        name="description"
+        content="荆楚理工学院开源软件镜像站实时同步状态监控，查看各镜像源的同步健康情况、成功率和服务器指标。"
+      />
+      <link rel="canonical" href={canonicalUrl('/status')} />
       <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
         {/* 面包屑 */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3, flexWrap: 'wrap' }}>
@@ -268,10 +285,20 @@ const StatusPage: React.FC = () => {
           >
             {t('common.backToHome')}
           </Button>
-          <Typography color="text.disabled" sx={{ display: { xs: 'none', sm: 'block' } }}>
+          <Typography
+            sx={{
+              color: 'text.disabled',
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
             /
           </Typography>
-          <Typography color="text.secondary" variant="body2">
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('status.title')}
           </Typography>
           <Box sx={{ flex: 1 }} />
@@ -323,10 +350,21 @@ const StatusPage: React.FC = () => {
                 {healthCfg.icon}
               </Box>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" fontWeight={800} color={`${healthCfg.color}.main`}>
+                <Typography
+                  variant="h6"
+                  color={`${healthCfg.color}.main`}
+                  sx={{
+                    fontWeight: 800,
+                  }}
+                >
                   {t(`status.${health}`)}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   {t('status.lastChecked', {
                     time: lastChecked ? formatAbsoluteTime(lastChecked.getTime(), locale) : '-',
                   })}
@@ -408,10 +446,21 @@ const StatusPage: React.FC = () => {
           {!isLoading && !error && (
             <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2, mb: 4 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography variant="body2" fontWeight={600}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 600,
+                  }}
+                >
                   {t('status.availability')}
                 </Typography>
-                <Typography variant="body2" fontWeight={700} color="success.main">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 700,
+                    color: 'success.main',
+                  }}
+                >
                   {stats.successRate}%
                 </Typography>
               </Box>
@@ -438,7 +487,12 @@ const StatusPage: React.FC = () => {
                 ).map(({ label, count, color }) => (
                   <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <DotIcon sx={{ fontSize: 10, color }} />
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                      }}
+                    >
                       {label} <strong style={{ color: 'inherit' }}>{count}</strong>
                     </Typography>
                   </Box>
@@ -452,8 +506,13 @@ const StatusPage: React.FC = () => {
             <Box sx={{ mb: 4 }}>
               <Typography
                 variant="h6"
-                fontWeight={700}
-                sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
               >
                 <ErrorIcon color="error" fontSize="small" />
                 {t('status.failedMirrors')}
@@ -490,20 +549,32 @@ const StatusPage: React.FC = () => {
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <DotIcon sx={{ fontSize: 10, color: 'error.main', flexShrink: 0 }} />
-                            <Typography variant="body2" fontWeight={600}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                              }}
+                            >
                               {m.name[locale]}
                             </Typography>
                             <Typography
                               variant="caption"
-                              color="text.disabled"
-                              fontFamily='"JetBrains Mono", monospace'
+                              sx={{
+                                color: 'text.disabled',
+                                fontFamily: '"JetBrains Mono", monospace',
+                              }}
                             >
                               {m.id}
                             </Typography>
                           </Box>
                         </TableCell>
                         <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
-                          <Typography variant="caption" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: 'text.secondary',
+                            }}
+                          >
                             {formatRelativeTime(m.lastSuccess, locale)}
                           </Typography>
                         </TableCell>
@@ -513,9 +584,9 @@ const StatusPage: React.FC = () => {
                           <Tooltip title={m.upstream} placement="bottom-start">
                             <Typography
                               variant="caption"
-                              color="text.secondary"
-                              fontFamily='"JetBrains Mono", monospace'
                               sx={{
+                                color: 'text.secondary',
+                                fontFamily: '"JetBrains Mono", monospace',
                                 display: 'block',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -552,8 +623,13 @@ const StatusPage: React.FC = () => {
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="h6"
-                fontWeight={700}
-                sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
               >
                 <OkIcon color="success" fontSize="small" />
                 {t('status.recentSynced')}
@@ -571,7 +647,12 @@ const StatusPage: React.FC = () => {
                 <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
                   {stats.recentlySynced.length === 0 ? (
                     <Box sx={{ p: 3, textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         {t('status.noData')}
                       </Typography>
                     </Box>
@@ -596,16 +677,21 @@ const StatusPage: React.FC = () => {
                           <DotIcon sx={{ fontSize: 8, color: 'success.main', flexShrink: 0 }} />
                           <Typography
                             variant="body2"
-                            fontWeight={600}
-                            sx={{ flex: 1, minWidth: 0 }}
                             noWrap
+                            sx={{
+                              fontWeight: 600,
+                              flex: 1,
+                              minWidth: 0,
+                            }}
                           >
                             {m.name[locale]}
                           </Typography>
                           <Typography
                             variant="caption"
-                            color="text.secondary"
-                            sx={{ flexShrink: 0 }}
+                            sx={{
+                              color: 'text.secondary',
+                              flexShrink: 0,
+                            }}
                           >
                             {formatRelativeTime(m.lastUpdated, locale)}
                           </Typography>
@@ -622,8 +708,13 @@ const StatusPage: React.FC = () => {
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="h6"
-                fontWeight={700}
-                sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+                sx={{
+                  fontWeight: 700,
+                  mb: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
               >
                 <ScheduleIcon color="info" fontSize="small" />
                 {t('status.upcomingSyncs')}
@@ -641,7 +732,12 @@ const StatusPage: React.FC = () => {
                 <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
                   {stats.upcoming.length === 0 ? (
                     <Box sx={{ p: 3, textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         {t('status.noUpcoming')}
                       </Typography>
                     </Box>
@@ -666,16 +762,21 @@ const StatusPage: React.FC = () => {
                           <DotIcon sx={{ fontSize: 8, color: 'info.main', flexShrink: 0 }} />
                           <Typography
                             variant="body2"
-                            fontWeight={600}
-                            sx={{ flex: 1, minWidth: 0 }}
                             noWrap
+                            sx={{
+                              fontWeight: 600,
+                              flex: 1,
+                              minWidth: 0,
+                            }}
                           >
                             {m.name[locale]}
                           </Typography>
                           <Typography
                             variant="caption"
-                            color="text.secondary"
-                            sx={{ flexShrink: 0 }}
+                            sx={{
+                              color: 'text.secondary',
+                              flexShrink: 0,
+                            }}
                           >
                             {formatRelativeTime(m.nextScheduled, locale)}
                           </Typography>
@@ -708,10 +809,20 @@ const StatusPage: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <GrafanaIcon color="primary" fontSize="small" />
                     <Box>
-                      <Typography variant="subtitle1" fontWeight={700}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 700,
+                        }}
+                      >
                         {t('status.serverMetrics')}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          color: 'text.secondary',
+                        }}
+                      >
                         {t('status.serverMetricsSub')}
                       </Typography>
                     </Box>
@@ -780,7 +891,12 @@ const StatusPage: React.FC = () => {
                               bgcolor: 'action.hover',
                             }}
                           >
-                            <Typography variant="caption" fontWeight={700}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                fontWeight: 700,
+                              }}
+                            >
                               {title}
                             </Typography>
                             <Link
@@ -828,7 +944,12 @@ const StatusPage: React.FC = () => {
                           bgcolor: 'action.hover',
                         }}
                       >
-                        <Typography variant="caption" fontWeight={700}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontWeight: 700,
+                          }}
+                        >
                           {t('status.systemLoad')}
                         </Typography>
                         <Link

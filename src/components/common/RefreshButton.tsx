@@ -4,8 +4,8 @@
 
 import {
   Refresh as RefreshIcon,
-  CheckCircleOutline as CheckIcon,
-  ErrorOutline as ErrorIcon,
+  CheckCircleOutlined as CheckIcon,
+  ErrorOutlined as ErrorIcon,
 } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material';

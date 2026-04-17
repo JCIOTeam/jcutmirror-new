@@ -56,8 +56,8 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
           {/* 描述 */}
           <Typography
             variant="body2"
-            color="text.secondary"
             sx={{
+              color: 'text.secondary',
               mb: 1.5,
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -86,12 +86,22 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
                 sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}
               >
                 <StorageIcon sx={{ fontSize: 14 }} />
-                <Typography variant="caption" fontWeight={500}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 500,
+                  }}
+                >
                   {mirror.size || '-'}
                 </Typography>
               </Box>
             </Tooltip>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+              }}
+            >
               {lastUpdatedText}
             </Typography>
           </Box>

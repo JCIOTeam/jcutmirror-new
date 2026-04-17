@@ -24,26 +24,47 @@ const NewsListPage: React.FC = () => {
 
   return (
     <>
-
-        <title>{title}</title>
-        <meta name="description" content="荆楚理工学院开源软件镜像站最新动态与公告。" />
-        <link rel="canonical" href={canonicalUrl('/news')} />
-
-
+      <title>{title}</title>
+      <meta name="description" content="荆楚理工学院开源软件镜像站最新动态与公告。" />
+      <link rel="canonical" href={canonicalUrl('/news')} />
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
         <Breadcrumbs sx={{ mb: 3 }}>
-          <Link component={RouterLink} to="/" underline="hover" color="text.secondary">
+          <Link
+            component={RouterLink}
+            to="/"
+            underline="hover"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('nav.home')}
           </Link>
-          <Typography color="text.primary" fontWeight={500}>
+          <Typography
+            sx={{
+              color: 'text.primary',
+              fontWeight: 500,
+            }}
+          >
             {t('news.breadcrumb')}
           </Typography>
         </Breadcrumbs>
 
-        <Typography variant="h4" fontWeight={800} sx={{ mb: 0.5 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 800,
+            mb: 0.5,
+          }}
+        >
           {t('news.latestNews')}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: 'text.secondary',
+            mb: 4,
+          }}
+        >
           {t('news.subtitle')}
         </Typography>
 
@@ -76,8 +97,10 @@ const NewsListPage: React.FC = () => {
                   >
                     <Typography
                       variant="caption"
-                      color="text.disabled"
-                      fontFamily='"JetBrains Mono", monospace'
+                      sx={{
+                        color: 'text.disabled',
+                        fontFamily: '"JetBrains Mono", monospace',
+                      }}
                     >
                       {item.date}
                     </Typography>
@@ -99,8 +122,8 @@ const NewsListPage: React.FC = () => {
                   <Typography
                     className="news-title"
                     variant="h6"
-                    fontWeight={700}
                     sx={{
+                      fontWeight: 700,
                       fontSize: { xs: '1rem', md: '1.1rem' },
                       mb: 0.5,
                       transition: 'color 0.15s',
@@ -112,8 +135,11 @@ const NewsListPage: React.FC = () => {
                   {/* 摘要 */}
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.6, maxWidth: 600 }}
+                    sx={{
+                      color: 'text.secondary',
+                      lineHeight: 1.6,
+                      maxWidth: 600,
+                    }}
                   >
                     {locale === 'zh' ? item.summary : (item.summaryEn ?? item.summary)}
                   </Typography>
@@ -136,7 +162,13 @@ const NewsListPage: React.FC = () => {
           ))}
 
           {news.length === 0 && (
-            <Typography color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+            <Typography
+              sx={{
+                color: 'text.secondary',
+                py: 4,
+                textAlign: 'center',
+              }}
+            >
               {t('news.noNews')}
             </Typography>
           )}
