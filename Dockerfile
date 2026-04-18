@@ -17,8 +17,10 @@ RUN npm run build
 
 # ===== 生产阶段 =====
 # 使用带 fancyindex 的 nginx 发行版
-# FancyIndex 通过 apk 安装
-FROM nginx:1.27-alpine AS production
+# FancyIndex 通过 apk 安装（需要与 nginx 主程序版本匹配）
+# 使用 nginx:1.26-alpine 而非 1.27，因为 Alpine 3.20 的 nginx-mod-http-fancyindex
+# 包仅针对 nginx 1.26 编译（ABI 版本 1026003），与 nginx 1.27（1027005）不兼容
+FROM nginx:1.26-alpine AS production
 
 # 安装额外模块；fancyindex 通过 apk 安装
 # 注意：brotli 模块在 Alpine 官方仓库中不可用，已移除
