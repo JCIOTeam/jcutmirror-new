@@ -24,9 +24,10 @@ const Footer: React.FC = () => {
   const year = new Date().getFullYear();
 
   const friendLinks = [
+    { name: '荆楚理工学院信息化办公室', url: 'https://net.jcut.edu.cn/' },
     { name: 'TUNA Mirror', url: 'https://mirrors.tuna.tsinghua.edu.cn' },
     { name: 'USTC Mirror', url: 'https://mirrors.ustc.edu.cn' },
-    { name: 'NJU Mirror', url: 'https://mirror.nju.edu.cn' },
+    { name: '教育网联合镜像站', url: 'https://mirrors.cernet.edu.cn/' },
   ];
 
   return (
