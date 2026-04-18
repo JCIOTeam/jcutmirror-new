@@ -103,6 +103,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
             href={toFull(mirrorUrl)}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={t('common.openInBrowser')}
           >
             <OpenIcon sx={{ fontSize: 15 }} />
           </IconButton>
@@ -196,6 +197,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
                       sx={{ p: 0.4 }}
                       onClick={() => handleCopy(file.url, idx)}
                       color={copiedIdx === idx ? 'success' : 'default'}
+                      aria-label={`${t('common.copyLink')}: ${file.name}`}
                     >
                       {copiedIdx === idx ? (
                         <CheckIcon sx={{ fontSize: 13 }} />
@@ -213,6 +215,7 @@ const IsoFilesCard: React.FC<IsoFilesCardProps> = ({ files, mirrorUrl }) => {
                       target="_blank"
                       rel="noopener noreferrer"
                       color="primary"
+                      aria-label={`${t('common.download')}: ${file.name}`}
                     >
                       <DownloadIcon sx={{ fontSize: 13 }} />
                     </IconButton>
@@ -246,28 +249,24 @@ const MirrorDetail: React.FC = () => {
 
   const { data: mirror, isLoading, error } = useMirrorDetail(name || '');
 
-  // Tab 初始值：?tab=help → 0，?tab=files → 1，?tab=downloads → 2
-  // 同时读取数字参数（如 ?tab=1），兼容手动刷新
+  // Tab 初始值计算 —— 提取为纯函数，依赖完全显式，避免 effect 闭包过期
   const tabParam = searchParams.get('tab');
   const hasDoc = name ? hasMdxDoc(name, locale) : false;
 
-  const getInitialTab = () => {
-    if (tabParam === 'help' || tabParam === '0') return 0;
-    if (tabParam === 'files' || tabParam === '1') return 1;
-    if (tabParam === 'downloads' || tabParam === '2') return 2;
+  const computeTab = React.useCallback((param: string | null, docAvailable: boolean): number => {
+    if (param === 'help' || param === '0') return 0;
+    if (param === 'files' || param === '1') return 1;
+    if (param === 'downloads' || param === '2') return 2;
     // 无参数时：有文档默认帮助，否则文件列表
-    return hasDoc ? 0 : 1;
-  };
+    return docAvailable ? 0 : 1;
+  }, []);
 
-  const [tabValue, setTabValue] = useState(getInitialTab);
+  const [tabValue, setTabValue] = useState(() => computeTab(tabParam, hasDoc));
 
-  // 当语言切换导致文档可用性变化时，重置 Tab 到合适的初始值
-  // 例如：某个镜像只有中文文档，切换到英文后帮助 Tab 应退回到文件列表
+  // tabParam / locale / 文档可用性变化时重算 Tab，依赖完全显式
   React.useEffect(() => {
-    const nextInitial = getInitialTab();
-    setTabValue(nextInitial);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locale, name]);
+    setTabValue(computeTab(tabParam, hasDoc));
+  }, [tabParam, hasDoc, computeTab]);
 
   // Tab 切换时同步到 URL，不产生历史记录（replace）
   const handleTabChange = (_: React.SyntheticEvent, v: number) => {
@@ -327,14 +326,27 @@ const MirrorDetail: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>{`${mirror.name[locale]} 镜像 - 荆楚理工学院开源软件镜像站 JCUT Mirror`}</title>
+        <html lang={locale === 'en' ? 'en' : 'zh-CN'} />
+        <title>
+          {locale === 'en'
+            ? `${mirror.name.en} Mirror — JCUT Mirror`
+            : `${mirror.name.zh} 镜像 - 荆楚理工学院开源软件镜像站 JCUT Mirror`}
+        </title>
         <meta
           name="description"
-          content={`${mirror.name[locale]} - ${mirror.desc[locale]} 由荆楚理工学院开源软件镜像站（JCUT Mirror）提供高速下载。`}
+          content={
+            locale === 'en'
+              ? `${mirror.name.en} - ${mirror.desc.en} High-speed mirror provided by JCUT Mirror.`
+              : `${mirror.name.zh} - ${mirror.desc.zh} 由荆楚理工学院开源软件镜像站（JCUT Mirror）提供高速下载。`
+          }
         />
         <meta
           name="keywords"
-          content={`${mirror.name.zh},${mirror.id},${mirror.name.zh}镜像,${mirror.name.zh}下载,JCUT Mirror,荆楚理工学院镜像站,开源软件镜像`}
+          content={
+            locale === 'en'
+              ? `${mirror.name.en},${mirror.id},${mirror.name.en} mirror,${mirror.name.en} download,JCUT Mirror,open source mirror`
+              : `${mirror.name.zh},${mirror.id},${mirror.name.zh}镜像,${mirror.name.zh}下载,JCUT Mirror,荆楚理工学院镜像站,开源软件镜像`
+          }
         />
         <link rel="canonical" href={canonicalUrl(`/mirrors/${mirror.id}`)} />
         <meta property="og:type" content="website" />
@@ -348,7 +360,7 @@ const MirrorDetail: React.FC = () => {
         {/* 结构化数据：面包屑 */}
         <script type="application/ld+json">
           {breadcrumbJsonLd([
-            { name: '首页', url: '/' },
+            { name: locale === 'en' ? 'Home' : '首页', url: '/' },
             { name: mirror.name[locale], url: `/mirrors/${mirror.id}` },
           ])}
         </script>
@@ -469,6 +481,7 @@ const MirrorDetail: React.FC = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       color="primary"
+                      aria-label={t('common.openInBrowser')}
                     >
                       <OpenIcon fontSize="small" />
                     </IconButton>

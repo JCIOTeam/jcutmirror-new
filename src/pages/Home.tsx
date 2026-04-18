@@ -42,6 +42,7 @@ import {
   useFilteredMirrors,
   useGroupedMirrors,
   usePopularMirrors,
+  sortedGroupKeys,
 } from '../hooks/useMirrors';
 import { useMirrorSearchStore, useFavoriteStore } from '../stores/mirrorStore';
 import type { Mirror } from '../types';
@@ -72,6 +73,11 @@ const Home: React.FC = () => {
     const mirrorMap = new Map(mirrors.map((m) => [m.id, m]));
     return favorites.map((id) => mirrorMap.get(id)).filter((m): m is Mirror => m !== undefined);
   }, [mirrors, favorites]);
+
+  // 新闻列表 —— 同步读取一次（import.meta.glob 静态分析），用 useMemo 防止每次 render 重算
+  const newsList = useMemo(() => getNewsList(), []);
+  const hasNews = newsList.length > 0;
+  const mirrorCount = hasNews ? 6 : 8;
 
   // 统计数据
   const totalCount = mirrors.length;
@@ -320,7 +326,7 @@ const Home: React.FC = () => {
                   icon: <SpeedIcon sx={iconSx} />,
                   label: t('home.syncedToday', { count: syncedTodayCount }),
                 },
-                ...(window.location.protocol === 'https:'
+                ...(typeof window !== 'undefined' && window.location.protocol === 'https:'
                   ? [
                       {
                         icon: <SecurityIcon sx={iconSx} />,
@@ -545,53 +551,45 @@ const Home: React.FC = () => {
 
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* 常用镜像 + 最新动态（无搜索时显示） */}
-        {!searchQuery &&
-          (() => {
-            // 同步读取新闻列表，决定布局
-            const newsList = getNewsList();
-            const hasNews = newsList.length > 0;
-            // 有新闻时左侧显示 6 个（留出右侧列给新闻），无新闻时恢复 8 个
-            const mirrorCount = hasNews ? 6 : 8;
-            return (
-              <Box sx={{ mb: 6 }}>
-                <Grid container spacing={3} alignItems="flex-start">
-                  {/* 新闻列 —— 移动端通过 order:-1 排到镜像上方，桌面端还原到右侧 */}
-                  {hasNews && (
-                    <Grid size={{ xs: 12, lg: 3 }} sx={{ order: { xs: -1, lg: 1 } }}>
-                      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-                        {t('home.news')}
-                      </Typography>
-                      <NewsWidget />
-                    </Grid>
-                  )}
-
-                  {/* 常用镜像列 —— 有新闻时桌面 9 列，无新闻时全宽 */}
-                  <Grid size={{ xs: 12, lg: hasNews ? 9 : 12 }} sx={{ order: { xs: 1, lg: 0 } }}>
-                    <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-                      {t('home.popularMirrors')}
-                    </Typography>
-                    {isLoading ? (
-                      <Grid container spacing={2}>
-                        {[...Array(mirrorCount)].map((_, i) => (
-                          <Grid key={i} size={{ xs: 12, sm: 6, md: hasNews ? 4 : 3 }}>
-                            <Skeleton variant="rectangular" height={160} sx={{ borderRadius: 2 }} />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    ) : (
-                      <Grid container spacing={2}>
-                        {popularMirrors.slice(0, mirrorCount).map((mirror) => (
-                          <Grid key={mirror.id} size={{ xs: 12, sm: 6, md: hasNews ? 4 : 3 }}>
-                            <MirrorCard mirror={mirror} />
-                          </Grid>
-                        ))}
-                      </Grid>
-                    )}
-                  </Grid>
+        {!searchQuery && (
+          <Box sx={{ mb: 6 }}>
+            <Grid container spacing={3} alignItems="flex-start">
+              {/* 新闻列 —— 移动端通过 order:-1 排到镜像上方，桌面端还原到右侧 */}
+              {hasNews && (
+                <Grid size={{ xs: 12, lg: 3 }} sx={{ order: { xs: -1, lg: 1 } }}>
+                  <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+                    {t('home.news')}
+                  </Typography>
+                  <NewsWidget />
                 </Grid>
-              </Box>
-            );
-          })()}
+              )}
+
+              {/* 常用镜像列 —— 有新闻时桌面 9 列，无新闻时全宽 */}
+              <Grid size={{ xs: 12, lg: hasNews ? 9 : 12 }} sx={{ order: { xs: 1, lg: 0 } }}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+                  {t('home.popularMirrors')}
+                </Typography>
+                {isLoading ? (
+                  <Grid container spacing={2}>
+                    {[...Array(mirrorCount)].map((_, i) => (
+                      <Grid key={i} size={{ xs: 12, sm: 6, md: hasNews ? 4 : 3 }}>
+                        <Skeleton variant="rectangular" height={160} sx={{ borderRadius: 2 }} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <Grid container spacing={2}>
+                    {popularMirrors.slice(0, mirrorCount).map((mirror) => (
+                      <Grid key={mirror.id} size={{ xs: 12, sm: 6, md: hasNews ? 4 : 3 }}>
+                        <MirrorCard mirror={mirror} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+          </Box>
+        )}
 
         {/* ── 收藏镜像区 —— 有收藏且未在搜索时显示 ── */}
         {!searchQuery && favoriteMirrors.length > 0 && (
@@ -678,30 +676,30 @@ const Home: React.FC = () => {
                 border: '1px solid',
                 borderColor: 'divider',
               }}
+              role="navigation"
+              aria-label={t('home.allMirrors')}
             >
-              {Object.keys(groupedMirrors)
-                .sort()
-                .map((letter) => (
-                  <Button
-                    key={letter}
-                    size="small"
-                    href={`#group-${letter}`}
-                    sx={{
-                      minWidth: 32,
-                      width: 32,
-                      height: 28,
-                      p: 0,
-                      fontFamily: '"JetBrains Mono", monospace',
-                      fontWeight: 700,
-                      fontSize: '0.8rem',
-                      borderRadius: 1,
-                      color: 'primary.main',
-                      '&:hover': { bgcolor: 'primary.main', color: 'white' },
-                    }}
-                  >
-                    {letter}
-                  </Button>
-                ))}
+              {sortedGroupKeys(groupedMirrors).map((letter) => (
+                <Button
+                  key={letter}
+                  size="small"
+                  href={`#group-${letter}`}
+                  sx={{
+                    minWidth: 32,
+                    width: 32,
+                    height: 28,
+                    p: 0,
+                    fontFamily: '"JetBrains Mono", monospace',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    borderRadius: 1,
+                    color: 'primary.main',
+                    '&:hover': { bgcolor: 'primary.main', color: 'white' },
+                  }}
+                >
+                  {letter}
+                </Button>
+              ))}
             </Box>
           )}
 

@@ -15,18 +15,18 @@
 
 ## 技术栈（简介）
 
-| 层次 | 技术 |
-|------|------|
-| 前端框架 | React 18 + TypeScript |
-| UI 组件 | Material UI v7 |
-| 构建工具 | Vite |
-| 数据获取 | TanStack Query + Axios |
-| 状态管理 | Zustand |
-| 国际化 | react-i18next |
-| 文档渲染 | MDX（帮助文档编译到前端） |
+| 层次     | 技术                        |
+| -------- | --------------------------- |
+| 前端框架 | React 18 + TypeScript       |
+| UI 组件  | Material UI v7              |
+| 构建工具 | Vite                        |
+| 数据获取 | TanStack Query + Axios      |
+| 状态管理 | Zustand                     |
+| 国际化   | react-i18next               |
+| 文档渲染 | MDX（帮助文档编译到前端）   |
 | Web 服务 | Nginx（含 FancyIndex 模块） |
-| 部署方式 | Docker + Docker Compose |
-| 监控 | Prometheus + Grafana |
+| 部署方式 | Docker + Docker Compose     |
+| 监控     | Prometheus + Grafana        |
 
 ---
 
@@ -215,13 +215,13 @@ python3 scripts/mirror_config_updater.py \
 
 ### 参数说明
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `--data-dir` | `/data` | 镜像文件根目录（tunasync 同步到的目录） |
-| `--config` | `/opt/convertAPI/local_data.json` | `local_data.json` 路径（**需要手动指定为项目路径**） |
-| `--apply` | 否 | 实际写入配置，不加则只预览 |
-| `--distro` | 全部 | 只处理指定发行版 |
-| `--list-paths` | — | 列出所有扫描路径后退出 |
+| 参数           | 默认值                            | 说明                                                 |
+| -------------- | --------------------------------- | ---------------------------------------------------- |
+| `--data-dir`   | `/data`                           | 镜像文件根目录（tunasync 同步到的目录）              |
+| `--config`     | `/opt/convertAPI/local_data.json` | `local_data.json` 路径（**需要手动指定为项目路径**） |
+| `--apply`      | 否                                | 实际写入配置，不加则只预览                           |
+| `--distro`     | 全部                              | 只处理指定发行版                                     |
+| `--list-paths` | —                                 | 列出所有扫描路径后退出                               |
 
 > ⚠️ **已知问题**：`--config` 的默认路径是开发时的遗留值（`/opt/convertAPI/local_data.json`），**每次运行必须手动指定正确路径**，否则会找不到文件。
 

@@ -17,3 +17,11 @@ export function safeSetItem(key: string, value: string): void {
     // 存储失败时静默降级，不影响运行时状态
   }
 }
+
+export function safeRemoveItem(key: string): void {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
+}

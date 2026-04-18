@@ -1,10 +1,10 @@
 // src/api/transform.ts
-// 将后端原始 /api/jobs 数据转换为前端 Mirror 类型
+// 将后端原始 /jobs 数据转换为前端 Mirror 类型
 
-import type { Mirror, MirrorStatus } from '@/types';
+import type { Mirror, MirrorFile, MirrorStatus } from '@/types';
 
 /**
- * 后端 /api/jobs 返回的原始条目结构
+ * 后端 /jobs 返回的原始条目结构
  */
 export interface RawJob {
   name: string;
@@ -18,59 +18,89 @@ export interface RawJob {
 
 /**
  * public/local_data.json 中每个镜像的补充信息
- * 所有字段均可选，存在时会覆盖/扩充 RawJob 生成的默认值
+ * 所有字段均可选，存在时**逐字段**覆盖（而非整段覆盖）
  */
 export interface LocalMeta {
-  name?: { zh: string; en: string };
-  desc?: { zh: string; en: string };
+  name?: Partial<{ zh: string; en: string }>;
+  desc?: Partial<{ zh: string; en: string }>;
   type?: string;
   files?: { name: string; url: string }[];
-  [key: string]: unknown;
+  helpUrl?: string;
 }
 
 /** 状态映射：将后端状态值转换为前端枚举 */
 const STATUS_MAP: Record<string, MirrorStatus> = {
   success: 'succeeded',
-  'pre-syncing': 'cached',
   succeeded: 'succeeded',
+  'pre-syncing': 'cached',
+  cached: 'cached',
   failed: 'failed',
   syncing: 'syncing',
-  cached: 'cached',
   paused: 'paused',
 };
 
+const SAFE_URL_RE = /^(https?:\/\/|\/)/i;
+function sanitizeFileUrl(url: unknown): string | null {
+  if (typeof url !== 'string' || !SAFE_URL_RE.test(url)) return null;
+  return url;
+}
+
+function sanitizeFiles(files: unknown): MirrorFile[] {
+  if (!Array.isArray(files)) return [];
+  return files
+    .map((f): MirrorFile | null => {
+      if (!f || typeof f !== 'object') return null;
+      const name = (f as { name?: unknown }).name;
+      const url = sanitizeFileUrl((f as { url?: unknown }).url);
+      if (typeof name !== 'string' || !url) return null;
+      return { name, url };
+    })
+    .filter((f): f is MirrorFile => f !== null);
+}
+
 /**
  * 将单条 RawJob + LocalMeta 转换为前端 Mirror 对象
+ * 显式合并避免 Object.assign 把 base.name 整体覆盖（导致 zh/en 缺失）
  */
 function convertItem(raw: RawJob, local: LocalMeta = {}): Mirror {
-  const defaultName = raw.name.charAt(0).toUpperCase() + raw.name.slice(1);
+  const id = raw.name;
+  const defaultLabel = id.charAt(0).toUpperCase() + id.slice(1);
 
-  const base: Mirror = {
-    id: raw.name,
-    url: `/${raw.name}/`,
-    name: { zh: defaultName, en: defaultName },
-    desc: {
-      zh: `${defaultName} 镜像`,
-      en: `Mirror of ${defaultName}`,
+  return {
+    id,
+    url: `/${id}/`,
+    name: {
+      zh: local.name?.zh ?? defaultLabel,
+      en: local.name?.en ?? defaultLabel,
     },
-    helpUrl: `/docs/${raw.name}`,
+    desc: {
+      zh: local.desc?.zh ?? `${defaultLabel} 镜像`,
+      en: local.desc?.en ?? `Mirror of ${defaultLabel}`,
+    },
+    helpUrl: local.helpUrl ?? `/docs/${id}`,
     upstream: raw.upstream ?? '',
     size: raw.size ?? '1G',
     status: STATUS_MAP[raw.status] ?? 'unknown',
     lastUpdated: String(raw.last_ended_ts ?? ''),
     nextScheduled: String(raw.next_schedule_ts ?? ''),
     lastSuccess: String(raw.last_update_ts ?? ''),
-    type: 'none',
-    files: [],
+    type: local.type ?? 'none',
+    files: sanitizeFiles(local.files),
   };
-
-  // local_data.json 中的字段深度合并（优先级高于默认值）
-  return Object.assign(base, local) as Mirror;
 }
 
 /**
  * 批量转换：将 RawJob[] + LocalData 合并为 Mirror[]
+ * 跳过非法条目（字段缺失等）而不是抛错，避免单个坏数据让整页崩溃
  */
 export function transformJobs(jobs: RawJob[], localData: Record<string, LocalMeta> = {}): Mirror[] {
-  return jobs.map((job) => convertItem(job, localData[job.name]));
+  const out: Mirror[] = [];
+  for (const job of jobs) {
+    if (!job || typeof job.name !== 'string' || !job.name) {
+      console.warn('[transform] skipping job with missing name:', job);
+      continue;
+    }
+    out.push(convertItem(job, localData[job.name]));
+  }
+  return out;
 }
