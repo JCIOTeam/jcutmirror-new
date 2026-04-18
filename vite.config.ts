@@ -55,46 +55,32 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes('node_modules')) return undefined;
 
-          // React 核心：路由 + 文档元数据 + 状态管理
+          // ⚠ 谨慎拆包：之前把 react-router / zustand / react-helmet 塞进 react-vendor
+          // 触发 Vite 7 + Rollup 4 的循环依赖检测漏洞，导致 minified `let` 在初始化前
+          // 被引用 (TDZ: "Cannot access 'jt' before initialization")，全站白屏。
+          // 现在只拆 **反向无引用、tree 末端** 的库；让 vite 自动处理其余。
+
+          // 1. React 运行时 (react / react-dom / scheduler) —— 最叶子
           if (
             id.includes('node_modules/react/') ||
             id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/scheduler/') ||
-            id.includes('node_modules/react-router') ||
-            id.includes('node_modules/react-helmet') ||
-            id.includes('node_modules/zustand')
+            id.includes('node_modules/scheduler/')
           ) {
-            return 'react-vendor';
+            return 'react-core';
           }
 
-          // MUI 全家桶 + Emotion，单独一个大 chunk
-          // 拆 icons 反而会让首页拆 chunk 数量翻倍；icons tree-shake 已足够
-          if (id.includes('@mui/') || id.includes('@emotion/')) {
-            return 'mui-vendor';
+          // 2. 代码高亮（最大、且只详情页需要，自然就单 chunk 更好）
+          if (id.includes('react-syntax-highlighter') || id.includes('refractor')) {
+            return 'syntax-highlighter';
           }
 
-          // i18n + 数据层
-          if (
-            id.includes('i18next') ||
-            id.includes('@tanstack/react-query') ||
-            id.includes('axios')
-          ) {
-            return 'data-vendor';
+          // 3. MUI icons —— 大量小图标，单独 chunk 利于浏览器并行
+          if (id.includes('@mui/icons-material')) {
+            return 'mui-icons';
           }
 
-          // 文档类（mdx 运行时 + 高亮 + markdown）
-          // 这些只在镜像详情/新闻页用到，路由级 lazy 后默认会单独 chunk
-          if (
-            id.includes('@mdx-js/') ||
-            id.includes('react-markdown') ||
-            id.includes('react-syntax-highlighter') ||
-            id.includes('remark-gfm')
-          ) {
-            return 'docs-vendor';
-          }
-
-          // 其余 node_modules 走默认 vendor
-          return 'vendor';
+          // 其他全部由 Vite 默认处理（按入口/动态 import 自动分组）
+          return undefined;
         },
       },
     },
