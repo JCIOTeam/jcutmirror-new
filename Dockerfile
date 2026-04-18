@@ -16,15 +16,15 @@ COPY . .
 RUN npm run build
 
 # ===== 生产阶段 =====
-# 使用带 fancyindex + brotli + headers-more 的 nginx 发行版
-# fholzer/nginx-brotli 自带 brotli；FancyIndex 通过 apk 安装
+# 使用带 fancyindex 的 nginx 发行版
+# FancyIndex 通过 apk 安装
 FROM nginx:1.27-alpine AS production
 
-# 安装额外模块；如果使用官方 nginx 镜像，fancyindex 必须从社区源装
-# 同时安装 wget 给 healthcheck 使用，curl 用于排查
+# 安装额外模块；fancyindex 通过 apk 安装
+# 注意：brotli 模块在 Alpine 官方仓库中不可用，已移除
+# wget 给 healthcheck 使用，curl 用于排查
 RUN apk add --no-cache \
       nginx-mod-http-fancyindex \
-      nginx-mod-http-brotli \
       wget \
       curl \
       tzdata \
