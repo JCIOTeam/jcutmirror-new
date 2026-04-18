@@ -40,7 +40,7 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/nginx/header.html /etc/nginx/conf.d/fancyindex/header.html
 COPY --from=builder /app/nginx/footer.html /etc/nginx/conf.d/fancyindex/footer.html
 # fancyindex.css 必须存在（README 中已说明，由维护者编写）；缺失时构建失败更明显
-COPY --from=builder /app/nginx/fancyindex.css /usr/share/nginx/html/fancyindex.css
+#COPY --from=builder /app/nginx/fancyindex.css /usr/share/nginx/html/fancyindex.css
 
 # 复制 Nginx 配置
 COPY docker/nginx.conf /etc/nginx/nginx.conf
