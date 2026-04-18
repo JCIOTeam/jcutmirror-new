@@ -16,21 +16,21 @@ COPY . .
 RUN npm run build
 
 # ===== 生产阶段 =====
-# 使用带 fancyindex 的 nginx 发行版
-# FancyIndex 通过 apk 安装（需要与 nginx 主程序版本匹配）
-# 使用 nginx:1.26-alpine 而非 1.27，因为 Alpine 3.20 的 nginx-mod-http-fancyindex
-# 包仅针对 nginx 1.26 编译（ABI 版本 1026003），与 nginx 1.27（1027005）不兼容
-FROM nginx:1.26-alpine AS production
+# 使用 Alpine 官方 nginx 包，确保主程序与 fancyindex 模块来自同一套构建
+# 不使用官方 nginx:X.Y-alpine 镜像，因为其编译参数与 Alpine apk 模块包不兼容
+FROM alpine:3.20 AS production
 
-# 安装额外模块；fancyindex 通过 apk 安装
-# 注意：brotli 模块在 Alpine 官方仓库中不可用，已移除
+# nginx 和 fancyindex 模块必须来自同一个 apk 仓库，保证 ABI 兼容
 # wget 给 healthcheck 使用，curl 用于排查
 RUN apk add --no-cache \
+      nginx \
       nginx-mod-http-fancyindex \
       wget \
       curl \
       tzdata \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && mkdir -p /var/log/nginx /var/run/nginx /usr/share/nginx/html \
+    && chown -R nginx:nginx /var/log/nginx /var/run/nginx /usr/share/nginx/html
 
 # 用非 root 用户跑 nginx 主进程（worker 仍然降权运行）
 # nginx 镜像里默认有 nginx 用户
