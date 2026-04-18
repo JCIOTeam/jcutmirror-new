@@ -56,17 +56,33 @@ const Footer: React.FC = () => {
               />
               <Typography
                 variant="h6"
-                fontWeight={800}
-                fontFamily='"JetBrains Mono", monospace'
-                fontSize="1rem"
+                sx={{
+                  fontWeight: 800,
+                  fontFamily: '"JetBrains Mono", monospace',
+                  fontSize: '1rem',
+                }}
               >
                 JCUT
-                <Typography component="span" color="primary.main" fontWeight={800} fontSize="1rem">
+                <Typography
+                  component="span"
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 800,
+                    fontSize: '1rem',
+                  }}
+                >
                   Mirror
                 </Typography>
               </Typography>
             </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7, mb: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                lineHeight: 1.7,
+                mb: 2,
+              }}
+            >
               {t('footer.description')}
             </Typography>
             {/* 社交链接 */}
@@ -98,7 +114,13 @@ const Footer: React.FC = () => {
 
           {/* 中列：友情链接 */}
           <Grid size={{ xs: 6, md: 4 }}>
-            <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                fontWeight: 700,
+                mb: 1.5,
+              }}
+            >
               {t('footer.links')}
             </Typography>
             <Box
@@ -113,9 +135,12 @@ const Footer: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="body2"
-                  color="text.secondary"
                   underline="hover"
-                  sx={{ '&:hover': { color: 'primary.main' }, transition: 'color 0.2s' }}
+                  sx={{
+                    color: 'text.secondary',
+                    '&:hover': { color: 'primary.main' },
+                    transition: 'color 0.2s',
+                  }}
                 >
                   {link.name}
                 </Link>
@@ -125,7 +150,13 @@ const Footer: React.FC = () => {
 
           {/* 右列：技术信息 */}
           <Grid size={{ xs: 6, md: 4 }}>
-            <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                fontWeight: 700,
+                mb: 1.5,
+              }}
+            >
               {t('footer.contact')}
             </Typography>
             <Box
@@ -136,8 +167,10 @@ const Footer: React.FC = () => {
               <Link
                 href="mailto:stucloud@jcut.edu.cn"
                 variant="body2"
-                color="text.secondary"
                 underline="hover"
+                sx={{
+                  color: 'text.secondary',
+                }}
               >
                 stucloud@jcut.edu.cn
               </Link>
@@ -145,8 +178,10 @@ const Footer: React.FC = () => {
                 component={RouterLink}
                 to="/status"
                 variant="body2"
-                color="text.secondary"
                 underline="hover"
+                sx={{
+                  color: 'text.secondary',
+                }}
               >
                 {t('footer.status')}
               </Link>
@@ -155,8 +190,10 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="body2"
-                color="text.secondary"
                 underline="hover"
+                sx={{
+                  color: 'text.secondary',
+                }}
               >
                 源代码 / Source Code
               </Link>
@@ -176,10 +213,20 @@ const Footer: React.FC = () => {
             gap: 1,
           }}
         >
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('footer.copyright', { year })}
           </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('footer.poweredBy')}
           </Typography>
         </Box>

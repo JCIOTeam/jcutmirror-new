@@ -43,13 +43,23 @@ const TimeCard: React.FC<{
   >
     <Box sx={{ color: color ?? 'text.secondary', mt: 0.2, flexShrink: 0 }}>{icon}</Box>
     <Box sx={{ minWidth: 0 }}>
-      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.3 }}>
+      <Typography
+        variant="caption"
+        sx={{
+          color: 'text.secondary',
+          display: 'block',
+          mb: 0.3,
+        }}
+      >
         {label}
       </Typography>
       <Typography
         variant="body2"
-        fontWeight={600}
-        sx={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '0.82rem' }}
+        sx={{
+          fontWeight: 600,
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '0.82rem',
+        }}
       >
         {value}
       </Typography>
@@ -97,7 +107,14 @@ const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value
       </Box>
       {/* 文字区域：minWidth:0 让 flex 子项可以压缩 */}
       <Box sx={{ minWidth: 0, flex: 1 }}>
-        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.3 }}>
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary',
+            display: 'block',
+            mb: 0.3,
+          }}
+        >
           {label}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
@@ -109,14 +126,16 @@ const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value
           >
             <Typography
               variant="body2"
-              fontWeight={600}
               onClick={handleCopy}
               sx={{
+                fontWeight: 600,
                 fontFamily: '"JetBrains Mono", monospace',
                 fontSize: '0.82rem',
                 color: hasValue ? 'text.primary' : 'text.disabled',
+
                 // 这三行缺一不可
                 whiteSpace: 'nowrap',
+
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 minWidth: 0,
@@ -168,7 +187,13 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
   return (
     <Box>
       {/* 四列同行，alignItems="stretch" 保证等高 */}
-      <Grid container spacing={2} alignItems="stretch">
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          alignItems: 'stretch',
+        }}
+      >
         <Grid size={{ xs: 6, md: 3 }} sx={{ display: 'flex' }}>
           <TimeCard
             icon={<SyncIcon fontSize="small" />}
@@ -218,7 +243,13 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
               }}
             >
               <ErrorIcon color="error" sx={{ flexShrink: 0 }} />
-              <Typography variant="body2" color="error.dark" fontWeight={500}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'error.dark',
+                  fontWeight: 500,
+                }}
+              >
                 {t('sync.failedWarning', { time: formatAbsoluteTime(mirror.lastSuccess, locale) })}
               </Typography>
             </Paper>

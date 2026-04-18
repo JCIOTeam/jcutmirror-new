@@ -124,11 +124,13 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
       fullScreen={fullScreen}
       maxWidth="md"
       fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: fullScreen ? 0 : 3,
-          overflow: 'hidden',
-          height: fullScreen ? '100%' : 600,
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: fullScreen ? 0 : 3,
+            overflow: 'hidden',
+            height: fullScreen ? '100%' : 600,
+          },
         },
       }}
     >
@@ -147,10 +149,21 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <DownloadIcon color="primary" />
-          <Typography variant="h6" fontWeight={700}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             {t('download.title')}
           </Typography>
-          <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              ml: 0.5,
+            }}
+          >
             {t('download.distroCount', { count: distros.length })}
           </Typography>
         </Box>
@@ -158,7 +171,6 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-
       <DialogContent sx={{ p: 0, display: 'flex', overflow: 'hidden', flex: 1 }}>
         {/* 左栏：发行版列表 */}
         <Box
@@ -182,13 +194,15 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                 setSearch(e.target.value);
                 setSelectedId(null);
               }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                  </InputAdornment>
-                ),
-                sx: { fontSize: '0.85rem', borderRadius: 2 },
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                  sx: { fontSize: '0.85rem', borderRadius: 2 },
+                },
               }}
             />
           </Box>
@@ -197,7 +211,12 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
           <List dense disablePadding sx={{ overflowY: 'auto', flex: 1 }}>
             {filtered.length === 0 ? (
               <Box sx={{ p: 2, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary">
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                  }}
+                >
                   {t('search.noResults')}
                 </Typography>
               </Box>
@@ -225,14 +244,19 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                     </ListItemIcon>
                     <ListItemText
                       primary={m.name[locale]}
-                      primaryTypographyProps={{
-                        variant: 'body2',
-                        fontWeight: isActive ? 700 : 500,
-                        noWrap: true,
-                        fontSize: '0.85rem',
-                      }}
                       secondary={t('download.fileCount', { count: m.files.length })}
-                      secondaryTypographyProps={{ fontSize: '0.72rem' }}
+                      slotProps={{
+                        primary: {
+                          variant: 'body2',
+                          noWrap: true,
+                          sx: {
+                            fontWeight: isActive ? 700 : 500,
+                            fontSize: '0.85rem',
+                          },
+                        },
+
+                        secondary: { sx: { fontSize: '0.72rem' } },
+                      }}
                     />
                   </ListItemButton>
                 );
@@ -261,10 +285,21 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
               >
                 <DistroLogo id={activeMirror.id} size={30} />
                 <Box>
-                  <Typography variant="subtitle1" fontWeight={700} lineHeight={1.2}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 700,
+                      lineHeight: 1.2,
+                    }}
+                  >
                     {activeMirror.name[locale]}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'text.secondary',
+                    }}
+                  >
                     {activeMirror.desc[locale]}
                   </Typography>
                 </Box>
@@ -296,18 +331,13 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                       <Tooltip title={file.name} placement="top" enterDelay={600}>
                         <ListItemText
                           primary={file.name}
-                          primaryTypographyProps={{
-                            variant: 'body2',
-                            fontWeight: 500,
-                            noWrap: true,
-                          }}
                           secondary={
                             // 移动端隐藏 URL——屏幕窄且 URL 无法操作，保留空间给文件名
                             <Typography
                               component="span"
                               variant="caption"
-                              color="text.secondary"
                               sx={{
+                                color: 'text.secondary',
                                 display: { xs: 'none', sm: 'block' },
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
@@ -317,6 +347,13 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                               {file.url}
                             </Typography>
                           }
+                          slotProps={{
+                            primary: {
+                              variant: 'body2',
+                              noWrap: true,
+                              sx: { fontWeight: 500 },
+                            },
+                          }}
                         />
                       </Tooltip>
                       <Tooltip title={t('common.download')} placement="left">
@@ -347,7 +384,12 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
                 height: '100%',
               }}
             >
-              <Typography color="text.secondary" variant="body2">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                }}
+              >
                 {t('download.selectDistro')}
               </Typography>
             </Box>

@@ -20,7 +20,6 @@ import {
   TableCell,
 } from '@mui/material';
 import React from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 
@@ -163,21 +162,39 @@ const NewsDetailPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <link rel="canonical" href={canonicalUrl(`/news/${slug}`)} />
-      </Helmet>
-
+      <title>{pageTitle}</title>
+      <link rel="canonical" href={canonicalUrl(`/news/${slug}`)} />
       <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
         {/* 面包屑 */}
         <Breadcrumbs sx={{ mb: 3 }}>
-          <Link component={RouterLink} to="/" underline="hover" color="text.secondary">
+          <Link
+            component={RouterLink}
+            to="/"
+            underline="hover"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('nav.home')}
           </Link>
-          <Link component={RouterLink} to="/news" underline="hover" color="text.secondary">
+          <Link
+            component={RouterLink}
+            to="/news"
+            underline="hover"
+            sx={{
+              color: 'text.secondary',
+            }}
+          >
             {t('news.breadcrumb')}
           </Link>
-          <Typography color="text.primary" fontWeight={500} noWrap sx={{ maxWidth: 200 }}>
+          <Typography
+            noWrap
+            sx={{
+              color: 'text.primary',
+              fontWeight: 500,
+              maxWidth: 200,
+            }}
+          >
             {displayTitle}
           </Typography>
         </Breadcrumbs>
@@ -197,8 +214,10 @@ const NewsDetailPage: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5, flexWrap: 'wrap' }}>
               <Typography
                 variant="caption"
-                color="text.disabled"
-                fontFamily='"JetBrains Mono", monospace'
+                sx={{
+                  color: 'text.disabled',
+                  fontFamily: '"JetBrains Mono", monospace',
+                }}
               >
                 {meta.date}
               </Typography>
@@ -214,13 +233,22 @@ const NewsDetailPage: React.FC = () => {
 
             <Typography
               variant="h3"
-              fontWeight={800}
-              sx={{ mb: 1.5, fontSize: { xs: '1.6rem', md: '2rem' } }}
+              sx={{
+                fontWeight: 800,
+                mb: 1.5,
+                fontSize: { xs: '1.6rem', md: '2rem' },
+              }}
             >
               {displayTitle}
             </Typography>
 
-            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'text.secondary',
+                lineHeight: 1.7,
+              }}
+            >
               {locale === 'zh' ? meta.summary : (meta.summaryEn ?? meta.summary)}
             </Typography>
 

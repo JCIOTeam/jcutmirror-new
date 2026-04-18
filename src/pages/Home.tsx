@@ -28,7 +28,6 @@ import {
   IconButton,
 } from '@mui/material';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
 import RefreshButton from '../components/common/RefreshButton';
@@ -165,21 +164,18 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{SITE_TITLE_ZH} - JCUT Mirror</title>
-        <meta name="description" content={DESC_ZH} />
-        <meta name="keywords" content={KEYWORDS_ZH} />
-        <link rel="canonical" href={canonicalUrl('/')} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
-        <meta property="og:description" content={DESC_ZH} />
-        <meta property="og:url" content={canonicalUrl('/')} />
-        <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
-        <meta name="twitter:description" content={DESC_ZH} />
-      </Helmet>
-
+      <title>{SITE_TITLE_ZH} - JCUT Mirror</title>
+      <meta name="description" content={DESC_ZH} />
+      <meta name="keywords" content={KEYWORDS_ZH} />
+      <link rel="canonical" href={canonicalUrl('/')} />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
+      <meta property="og:description" content={DESC_ZH} />
+      <meta property="og:url" content={canonicalUrl('/')} />
+      <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
+      <meta name="twitter:description" content={DESC_ZH} />
       {/* Hero 区域 */}
       <Box
         sx={{
@@ -300,16 +296,24 @@ const Home: React.FC = () => {
 
             <Typography
               variant="h5"
-              color="text.secondary"
-              sx={{ mb: 2, fontWeight: 400, fontSize: { xs: '1rem', md: '1.25rem' } }}
+              sx={{
+                color: 'text.secondary',
+                mb: 2,
+                fontWeight: 400,
+                fontSize: { xs: '1rem', md: '1.25rem' },
+              }}
             >
               {t('home.hero.subtitle')}
             </Typography>
 
             <Typography
               variant="body1"
-              color="text.secondary"
-              sx={{ mb: 3, lineHeight: 1.8, maxWidth: 520 }}
+              sx={{
+                color: 'text.secondary',
+                mb: 3,
+                lineHeight: 1.8,
+                maxWidth: 520,
+              }}
             >
               {t('home.hero.description')}
             </Typography>
@@ -372,9 +376,11 @@ const Home: React.FC = () => {
                         {item.icon}
                         <Typography
                           variant="body2"
-                          color="text.secondary"
-                          fontWeight={500}
-                          sx={{ display: { xs: 'none', sm: 'block' } }}
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 500,
+                            display: { xs: 'none', sm: 'block' },
+                          }}
                         >
                           {item.label}
                         </Typography>
@@ -387,7 +393,6 @@ const Home: React.FC = () => {
           </Box>
         </Container>
       </Box>
-
       {/* IPv6 浮动通知 - 右上角，毛玻璃效果，淡入淡出，5 秒自动消失 */}
       <Snackbar
         open={showIpv6Snackbar}
@@ -397,8 +402,10 @@ const Home: React.FC = () => {
           setIpv6Dismissed(true);
         }}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        TransitionComponent={Fade}
         sx={{ mt: 9, mr: 2 }}
+        slots={{
+          transition: Fade,
+        }}
       >
         <Box
           sx={{
@@ -465,15 +472,16 @@ const Home: React.FC = () => {
           />
         </Box>
       </Snackbar>
-
       {/* 同步失败浮动通知 - 右上角，毛玻璃效果，淡入淡出，5 秒自动消失 */}
       <Snackbar
         open={showFailedSnackbar}
         autoHideDuration={5000}
         onClose={() => setShowFailedSnackbar(false)}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        TransitionComponent={Fade}
         sx={{ mt: 9, mr: 2 }}
+        slots={{
+          transition: Fade,
+        }}
       >
         <Box
           onClick={handleFailedClick}
@@ -548,16 +556,27 @@ const Home: React.FC = () => {
           />
         </Box>
       </Snackbar>
-
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         {/* 常用镜像 + 最新动态（无搜索时显示） */}
         {!searchQuery && (
           <Box sx={{ mb: 6 }}>
-            <Grid container spacing={3} alignItems="flex-start">
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                alignItems: 'flex-start',
+              }}
+            >
               {/* 新闻列 —— 移动端通过 order:-1 排到镜像上方，桌面端还原到右侧 */}
               {hasNews && (
                 <Grid size={{ xs: 12, lg: 3 }} sx={{ order: { xs: -1, lg: 1 } }}>
-                  <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      fontWeight: 700,
+                      mb: 3,
+                    }}
+                  >
                     {t('home.news')}
                   </Typography>
                   <NewsWidget />
@@ -566,7 +585,13 @@ const Home: React.FC = () => {
 
               {/* 常用镜像列 —— 有新闻时桌面 9 列，无新闻时全宽 */}
               <Grid size={{ xs: 12, lg: hasNews ? 9 : 12 }} sx={{ order: { xs: 1, lg: 0 } }}>
-                <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontWeight: 700,
+                    mb: 3,
+                  }}
+                >
                   {t('home.popularMirrors')}
                 </Typography>
                 {isLoading ? (
@@ -596,7 +621,12 @@ const Home: React.FC = () => {
           <Box sx={{ mb: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
               <StarIcon sx={{ color: 'warning.main', fontSize: '1.3rem' }} />
-              <Typography variant="h5" fontWeight={700}>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {t('favorites.title')}
               </Typography>
               <Chip
@@ -629,7 +659,12 @@ const Home: React.FC = () => {
               gap: 1,
             }}
           >
-            <Typography variant="h5" fontWeight={700}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               {searchQuery
                 ? t('search.results', { count: filteredMirrors.length })
                 : t('home.allMirrors')}

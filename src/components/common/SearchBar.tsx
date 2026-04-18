@@ -50,9 +50,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ fullWidth = false, size = 'small'
       size={size}
       variant="outlined"
       autoComplete="off"
-      inputProps={{
-        'aria-label': t('search.placeholder'),
-      }}
       slotProps={{
         input: {
           startAdornment: (
@@ -67,6 +64,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ fullWidth = false, size = 'small'
               </IconButton>
             </InputAdornment>
           ) : null,
+        },
+
+        htmlInput: {
+          'aria-label': t('search.placeholder'),
         },
       }}
       sx={{

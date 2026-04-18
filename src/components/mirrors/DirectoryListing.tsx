@@ -283,7 +283,6 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
           </Button>
         </Box>
       </Box>
-
       {/* 表格：overflowX:auto 兜底横向滚动，tableLayout:fixed + 百分比列宽控制截断 */}
       <TableContainer
         component={Paper}
@@ -402,8 +401,10 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                 <TableCell>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontFamily='"JetBrains Mono", monospace'
+                    sx={{
+                      color: 'text.secondary',
+                      fontFamily: '"JetBrains Mono", monospace',
+                    }}
                   >
                     {entry.isDir || entry.isParent ? '-' : entry.size}
                   </Typography>
@@ -413,8 +414,10 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
                 <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    fontFamily='"JetBrains Mono", monospace'
+                    sx={{
+                      color: 'text.secondary',
+                      fontFamily: '"JetBrains Mono", monospace',
+                    }}
                   >
                     {entry.date}
                   </Typography>

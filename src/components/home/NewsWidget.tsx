@@ -50,7 +50,12 @@ const NewsWidget: React.FC = () => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
           <ArticleIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-          <Typography variant="subtitle2" fontWeight={700}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             {t('news.latestNews')}
           </Typography>
         </Box>
@@ -63,7 +68,6 @@ const NewsWidget: React.FC = () => {
           {t('news.all')}
         </Button>
       </Box>
-
       {/* 新闻列表 */}
       <Box sx={{ flex: 1 }}>
         {news.map((item, idx) => (
@@ -84,8 +88,8 @@ const NewsWidget: React.FC = () => {
               {/* 标题 */}
               <Typography
                 variant="body2"
-                fontWeight={600}
                 sx={{
+                  fontWeight: 600,
                   lineHeight: 1.4,
                   overflow: 'hidden',
                   display: '-webkit-box',
@@ -102,8 +106,10 @@ const NewsWidget: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, flexWrap: 'wrap' }}>
                 <Typography
                   variant="caption"
-                  color="text.disabled"
-                  fontFamily='"JetBrains Mono", monospace'
+                  sx={{
+                    color: 'text.disabled',
+                    fontFamily: '"JetBrains Mono", monospace',
+                  }}
                 >
                   {item.date}
                 </Typography>

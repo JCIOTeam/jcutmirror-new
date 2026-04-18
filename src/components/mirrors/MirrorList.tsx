@@ -2,7 +2,7 @@
 // 镜像列表组件 - 按字母A-Z分组展示
 
 import { Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutlined';
 import {
   Box,
   Typography,
@@ -217,7 +217,6 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                           <Highlight text={mirror.name[locale]} query={searchQuery} />
                         </Typography>
                       </TableCell>
-
                       {/* 描述（带高亮） */}
                       <TableCell
                         sx={{ display: { xs: 'none', sm: 'table-cell' }, color: 'text.secondary' }}
@@ -234,26 +233,33 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                           <Highlight text={mirror.desc[locale]} query={searchQuery} />
                         </Typography>
                       </TableCell>
-
                       {/* 大小 */}
                       <TableCell align="center">
-                        <Typography variant="caption" color="text.secondary" fontWeight={500}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 500,
+                          }}
+                        >
                           {mirror.size || '-'}
                         </Typography>
                       </TableCell>
-
                       {/* 状态 */}
                       <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                         <StatusChip status={mirror.status} size="small" iconOnly={isMobile} />
                       </TableCell>
-
                       {/* 最后更新 */}
                       <TableCell align="center" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            color: 'text.secondary',
+                          }}
+                        >
                           {formatRelativeTime(mirror.lastUpdated, locale)}
                         </Typography>
                       </TableCell>
-
                       {/* 收藏 + 帮助 */}
                       <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                         <Box
