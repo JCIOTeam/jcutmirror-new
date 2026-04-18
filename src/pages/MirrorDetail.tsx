@@ -279,6 +279,12 @@ const MirrorDetail: React.FC = () => {
     setTabValue(computeTab(tabParam, hasDoc));
   }, [tabParam, hasDoc, computeTab]);
 
+  // React 19 原生 metadata 不能 hoist <html>/<body>，必须直接同步 DOM
+  // 放在 early return 之前以满足 Rules of Hooks
+  React.useEffect(() => {
+    document.documentElement.lang = locale === 'en' ? 'en' : 'zh-CN';
+  }, [locale]);
+
   // Tab 切换时同步到 URL，不产生历史记录（replace）
   const handleTabChange = (_: React.SyntheticEvent, v: number) => {
     setTabValue(v);
@@ -336,7 +342,6 @@ const MirrorDetail: React.FC = () => {
 
   return (
     <>
-      <html lang={locale === 'en' ? 'en' : 'zh-CN'} />
       <title>
         {locale === 'en'
           ? `${mirror.name.en} Mirror — JCUT Mirror`
