@@ -81,7 +81,22 @@ jobs:
       - name: Boot smoke test
         run: |
           docker run -d --name smoke -p 8080:80 jcutmirror:ci
-          sleep 3
-          curl -fsS http://127.0.0.1:8080/ -o /dev/null
+          # 等待容器启动，检查是否存活
+          for i in $(seq 1 10); do
+            if curl -fsS http://127.0.0.1:8080/ -o /dev/null 2>/dev/null; then
+              echo "Smoke test passed!"
+              docker stop smoke
+              exit 0
+            fi
+            # 容器可能已崩溃退出
+            if [ "$(docker inspect -f '{{.State.Running}}' smoke 2>/dev/null)" != "true" ]; then
+              echo "Container exited unexpectedly, showing logs:"
+              docker logs smoke
+              exit 1
+            fi
+            sleep 1
+          done
+          echo "Smoke test failed: could not connect after 10s"
           docker logs smoke
-          docker stop smoke
+          docker stop smoke || true
+          exit 1
