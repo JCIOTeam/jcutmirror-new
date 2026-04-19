@@ -19,6 +19,9 @@ export interface RawJob {
 /**
  * public/local_data.json 中每个镜像的补充信息
  * 所有字段均可选，存在时**逐字段**覆盖（而非整段覆盖）
+ *
+ * `status` 可选：用于前端强制覆盖后端状态，适合 EOL / 已暂停但仍保留快照的镜像
+ * （例如 centos-vault，tunasync 不再同步但文件仍可下载，手动标记为 cached）
  */
 export interface LocalMeta {
   name?: Partial<{ zh: string; en: string }>;
@@ -26,6 +29,7 @@ export interface LocalMeta {
   type?: string;
   files?: { name: string; url: string }[];
   helpUrl?: string;
+  status?: MirrorStatus;
 }
 
 /** 状态映射：将后端状态值转换为前端枚举 */
@@ -80,7 +84,7 @@ function convertItem(raw: RawJob, local: LocalMeta = {}): Mirror {
     helpUrl: local.helpUrl ?? `/docs/${id}`,
     upstream: raw.upstream ?? '',
     size: raw.size ?? '1G',
-    status: STATUS_MAP[raw.status] ?? 'unknown',
+    status: local.status ?? STATUS_MAP[raw.status] ?? 'unknown',
     lastUpdated: String(raw.last_ended_ts ?? ''),
     nextScheduled: String(raw.next_schedule_ts ?? ''),
     lastSuccess: String(raw.last_update_ts ?? ''),
