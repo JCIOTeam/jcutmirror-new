@@ -38,8 +38,10 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Popover,
+  CircularProgress,
 } from '@mui/material';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
@@ -184,6 +186,39 @@ const StatusPage: React.FC = () => {
   const grafanaAvailable = useGrafanaAvailable();
   const navigate = useNavigate();
   const { data: mirrors = [], isLoading, isFetching, error, refetch, dataUpdatedAt } = useMirrors();
+
+  // ── 失败详情气泡 ──────────────────────────────────────────────────────────
+  const [errorPopover, setErrorPopover] = useState<{
+    anchorEl: HTMLElement;
+    loading: boolean;
+    errorMsg: string | null;
+    mirrorId: string;
+  } | null>(null);
+
+  const handleShowError = useCallback(
+    async (e: React.MouseEvent<HTMLElement>, mirrorId: string) => {
+      e.preventDefault();
+      setErrorPopover({ anchorEl: e.currentTarget, loading: true, errorMsg: null, mirrorId });
+      try {
+        const res = await fetch(`/jobs/${encodeURIComponent(mirrorId)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        // tunasync /jobs/:name 返回数组，取第一条
+        const job = Array.isArray(data) ? data[0] : data;
+        const msg = job?.error_msg || t('status.noErrorMsg');
+        setErrorPopover((prev) =>
+          prev ? { ...prev, loading: false, errorMsg: msg } : null
+        );
+      } catch {
+        setErrorPopover((prev) =>
+          prev ? { ...prev, loading: false, errorMsg: t('status.fetchErrorFailed') } : null
+        );
+      }
+    },
+    [t]
+  );
+
+  const handleCloseError = useCallback(() => setErrorPopover(null), []);
 
   // ── 聚合统计 ──────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -599,12 +634,14 @@ const StatusPage: React.FC = () => {
                         </TableCell>
                         <TableCell align="right">
                           <Link
-                            component={RouterLink}
-                            to={`/mirrors/${m.id}`}
+                            component="button"
                             variant="caption"
                             underline="hover"
                             color="primary"
-                            sx={{ fontWeight: 600 }}
+                            sx={{ fontWeight: 600, cursor: 'pointer' }}
+                            onClick={(e: React.MouseEvent<HTMLElement>) =>
+                              handleShowError(e, m.id)
+                            }
                           >
                             {t('common.details')}
                           </Link>
@@ -614,6 +651,56 @@ const StatusPage: React.FC = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
+
+              {/* 错误详情气泡 */}
+              <Popover
+                open={!!errorPopover}
+                anchorEl={errorPopover?.anchorEl}
+                onClose={handleCloseError}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      mt: 0.5,
+                      p: 2,
+                      maxWidth: 420,
+                      minWidth: 200,
+                      borderRadius: 2,
+                    },
+                  },
+                }}
+              >
+                {errorPopover?.loading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.5 }}>
+                    <CircularProgress size={16} />
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      {t('status.loadingError')}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary', fontWeight: 600, mb: 0.5, display: 'block' }}
+                    >
+                      {errorPopover?.mirrorId}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontFamily: '"JetBrains Mono", monospace',
+                        fontSize: '0.8rem',
+                        color: 'error.main',
+                        wordBreak: 'break-word',
+                        whiteSpace: 'pre-wrap',
+                      }}
+                    >
+                      {errorPopover?.errorMsg}
+                    </Typography>
+                  </Box>
+                )}
+              </Popover>
             </Box>
           )}
 
