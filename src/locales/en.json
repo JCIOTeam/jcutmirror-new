@@ -37,7 +37,10 @@
       "succeeded": "Succeeded",
       "failed": "Failed",
       "syncing": "Syncing",
-      "cached": "Cached"
+      "cached": "Cached",
+      "paused": "Paused",
+      "disabled": "Disabled",
+      "unknown": "Unknown"
     },
     "lastUpdated": "Last Updated",
     "nextScheduled": "Next Sync",
@@ -153,6 +156,8 @@
     "legendFailed": "Failed",
     "legendSyncing": "Syncing",
     "legendCached": "Cached",
+    "legendPaused": "Paused",
+    "legendDisabled": "Disabled",
     "failedMirrors": "Failed Mirrors",
     "colMirror": "Mirror",
     "colLastSuccess": "Last Success",

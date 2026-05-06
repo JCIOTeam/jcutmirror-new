@@ -42,6 +42,8 @@ const STATUS_MAP: Record<string, MirrorStatus> = {
   failed: 'failed',
   syncing: 'syncing',
   paused: 'paused',
+  disabled: 'disabled',
+  none: 'unknown',
 };
 
 const SAFE_URL_RE = /^(https?:\/\/|\/)/i;

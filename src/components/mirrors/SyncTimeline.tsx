@@ -181,6 +181,7 @@ const SyncTimeline: React.FC<SyncTimelineProps> = ({ mirror }) => {
     syncing: 'info.main',
     cached: 'text.secondary',
     paused: 'warning.main',
+    disabled: 'text.disabled',
     unknown: 'text.secondary',
   }[mirror.status];
 

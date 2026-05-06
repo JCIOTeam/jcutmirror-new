@@ -228,11 +228,15 @@ const StatusPage: React.FC = () => {
     const syncing = mirrors.filter((m) => m.status === 'syncing').length;
     const cached = mirrors.filter((m) => m.status === 'cached').length;
     const paused = mirrors.filter((m) => m.status === 'paused').length;
+    const disabled = mirrors.filter((m) => m.status === 'disabled').length;
+    const unknown = mirrors.filter((m) => m.status === 'unknown').length;
 
-    // 可用率 = (succeeded + cached + syncing + paused) / total
-    // 已缓存/同步中/暂停的镜像，文件层面对用户都是可访问的；只有 failed 才真的不可用
+    // 可用率 = (succeeded + cached + syncing + paused) / activeTotal
+    // disabled / unknown 镜像是管理员主动关闭或尚未运行的，不纳入可用率计算
+    const excluded = disabled + unknown;
+    const activeTotal = total - excluded;
     const available = succeeded + cached + syncing + paused;
-    const successRate = total > 0 ? Math.round((available / total) * 100) : 0;
+    const successRate = activeTotal > 0 ? Math.round((available / activeTotal) * 100) : 0;
 
     // 存储大小汇总
     const totalBytes = mirrors.reduce((acc, m) => acc + parseSize(m.size), 0);
@@ -280,11 +284,14 @@ const StatusPage: React.FC = () => {
 
     return {
       total,
+      activeTotal,
       succeeded,
       failed,
       syncing,
       cached,
       paused,
+      disabled,
+      unknown,
       available,
       successRate,
       totalBytes,
@@ -295,8 +302,8 @@ const StatusPage: React.FC = () => {
     };
   }, [mirrors]);
 
-  // 健康度只看 failed —— 与可用率含义一致
-  const health = calcHealth(stats.total, stats.failed);
+  // 健康度只看 failed / activeTotal —— disabled/unknown 不影响健康判断
+  const health = calcHealth(stats.activeTotal, stats.failed);
   const healthCfg = HEALTH_CONFIG[health];
   const lastChecked = dataUpdatedAt ? new Date(dataUpdatedAt) : null;
 
@@ -518,6 +525,16 @@ const StatusPage: React.FC = () => {
                     { label: t('status.legendFailed'), count: stats.failed, color: '#EF4444' },
                     { label: t('status.legendSyncing'), count: stats.syncing, color: '#3B82F6' },
                     { label: t('status.legendCached'), count: stats.cached, color: '#94A3B8' },
+                    { label: t('status.legendPaused'), count: stats.paused, color: '#F59E0B' },
+                    ...(stats.disabled > 0
+                      ? [
+                          {
+                            label: t('status.legendDisabled'),
+                            count: stats.disabled,
+                            color: '#9CA3AF',
+                          },
+                        ]
+                      : []),
                   ] as const
                 ).map(({ label, count, color }) => (
                   <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

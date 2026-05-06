@@ -72,6 +72,21 @@ describe('transformJobs', () => {
     expect(m.status).toBe('cached');
   });
 
+  it('maps "disabled" to "disabled"', () => {
+    const [m] = transformJobs([{ ...baseJob, status: 'disabled' }]);
+    expect(m.status).toBe('disabled');
+  });
+
+  it('maps "none" to "unknown"', () => {
+    const [m] = transformJobs([{ ...baseJob, status: 'none' }]);
+    expect(m.status).toBe('unknown');
+  });
+
+  it('maps "paused" to "paused"', () => {
+    const [m] = transformJobs([{ ...baseJob, status: 'paused' }]);
+    expect(m.status).toBe('paused');
+  });
+
   it('preserves timestamps as strings (consumer formats them)', () => {
     const [m] = transformJobs([baseJob]);
     expect(m.lastUpdated).toBe('1700000000');

@@ -19,6 +19,7 @@ const statusColorMap: Record<MirrorStatus, 'success' | 'error' | 'info' | 'defau
   syncing: 'info',
   cached: 'default',
   paused: 'warning',
+  disabled: 'default',
   unknown: 'default',
 };
 
@@ -29,6 +30,7 @@ const DOT_COLOR: Record<MirrorStatus, string> = {
   syncing: '#3B82F6',
   cached: '#94A3B8',
   paused: '#F59E0B',
+  disabled: '#9CA3AF',
   unknown: '#6B7280',
 };
 
