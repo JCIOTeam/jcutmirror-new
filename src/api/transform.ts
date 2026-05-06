@@ -11,6 +11,7 @@ export interface RawJob {
   upstream: string;
   size?: string;
   status: string;
+  error_msg?: string;
   last_update_ts?: number | string;
   next_schedule_ts?: number | string;
   last_ended_ts?: number | string;
