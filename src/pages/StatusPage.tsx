@@ -193,7 +193,8 @@ const StatusPage: React.FC = () => {
 
   // ── 后端能力探测 ──────────────────────────────────────────────────────────
   // 旧版 tunasync 不支持单镜像详情 / SSE 流，探测后隐藏对应入口
-  const capabilities = useCapabilities(mirrors[0]?.id);
+  // 探测独立于镜像列表数据，挂载即启动
+  const capabilities = useCapabilities();
 
   // ── 失败详情气泡 ──────────────────────────────────────────────────────────
   const [errorPopover, setErrorPopover] = useState<{
