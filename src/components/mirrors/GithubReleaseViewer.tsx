@@ -39,118 +39,19 @@ import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next';
 
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import {
+  detectPlatform,
+  detectArch,
+  fetchDir,
+  platformLabel,
+  PLATFORM_ORDER,
+  ensureTrailingSlash,
+  type Project,
+  type Release,
+  type FileEntry,
+} from '../../utils/githubRelease';
 
-// ─── 类型 ────────────────────────────────────────────────────────────────────
-
-interface DirEntry {
-  name: string;
-  href: string;
-  size: string;
-  date: string;
-  isDir: boolean;
-}
-
-interface Project {
-  org: string;
-  repo: string;
-  orgDate: string;
-}
-
-interface Release {
-  name: string;
-  path: string;
-  date: string;
-  isLatest: boolean;
-}
-
-interface FileEntry {
-  name: string;
-  href: string;
-  size: string;
-  date: string;
-  platform: 'windows' | 'linux' | 'macos' | 'android' | 'checksum' | 'other';
-  arch: string;
-}
-
-// ─── 平台检测 ─────────────────────────────────────────────────────────────────
-
-function detectPlatform(name: string): FileEntry['platform'] {
-  const f = name.toLowerCase();
-  if (
-    f.includes('windows') ||
-    f.includes('_win') ||
-    f.endsWith('.exe') ||
-    f.endsWith('.msi') ||
-    f.endsWith('.msix')
-  )
-    return 'windows';
-  if (
-    f.includes('darwin') ||
-    f.includes('macos') ||
-    f.includes('osx') ||
-    f.endsWith('.dmg') ||
-    f.endsWith('.pkg')
-  )
-    return 'macos';
-  if (
-    f.includes('linux') ||
-    f.endsWith('.deb') ||
-    f.endsWith('.rpm') ||
-    f.endsWith('.appimage') ||
-    f.endsWith('.flatpak')
-  )
-    return 'linux';
-  if (f.includes('android') || f.endsWith('.apk') || f.endsWith('.aab')) return 'android';
-  // 校验文件：sha256、md5、sig、asc 等
-  if (
-    f.endsWith('.sha256') ||
-    f.endsWith('.sha512') ||
-    f.endsWith('.md5') ||
-    f.endsWith('.sha1') ||
-    f.endsWith('.sig') ||
-    f.endsWith('.asc') ||
-    f.includes('checksum') ||
-    f.includes('sha256sum') ||
-    f.includes('md5sum') ||
-    f === 'shasums' ||
-    f.startsWith('sha256sums') ||
-    f.startsWith('md5sums') ||
-    f.includes('hash')
-  )
-    return 'checksum';
-  return 'other';
-}
-
-function detectArch(name: string): string {
-  const f = name.toLowerCase();
-  if (f.includes('amd64') || f.includes('x86_64') || f.includes('x64')) return 'x64';
-  if (f.includes('arm64') || f.includes('aarch64')) return 'arm64';
-  if (f.includes('armv7') || f.includes('arm32') || f.includes('armv6') || f.includes('armv5'))
-    return f.match(/arm(v\d)/)?.[1] ?? 'arm';
-  if (f.includes('386') || f.includes('x86') || f.includes('i386')) return 'x86';
-  if (f.includes('riscv64')) return 'riscv64';
-  if (f.includes('ppc64')) return 'ppc64';
-  if (f.includes('mips')) return f.match(/mips\w*/)?.[0] ?? 'mips';
-  return '';
-}
-
-// ─── 常量 ────────────────────────────────────────────────────────────────────
-
-// 平台显示标签：windows/linux/macos/android 是品牌名不随语言变化；
-// checksum/other 走 i18n，故 platformLabel 设计为函数，由组件传入 t。
-function platformLabel(
-  platform: FileEntry['platform'],
-  t: (key: string) => string
-): string {
-  switch (platform) {
-    case 'checksum':
-      return t('githubRelease.platform.checksum');
-    case 'other':
-      return t('githubRelease.platform.other');
-    default:
-      return { windows: 'Windows', linux: 'Linux', macos: 'macOS', android: 'Android' }[platform];
-  }
-}
+// ─── 平台图标（组件特有，纯 UI）──────────────────────────────────────────────
 
 // macOS 用内联 SVG（Apple logo 版权原因不能用 emoji，unicode 私有区在非 Apple 系统不渲染）
 const AppleIcon: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
@@ -166,39 +67,21 @@ const AppleIcon: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
   </svg>
 );
 
-const PLATFORM_ICON: Record<FileEntry['platform'], React.ReactNode> = {
-  windows: (
-    <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>
-      🪟
-    </span>
-  ),
-  linux: (
-    <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>
-      🐧
-    </span>
-  ),
-  macos: <AppleIcon style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} />,
-  android: (
-    <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>
-      🤖
-    </span>
-  ),
-  checksum: null, // 用 MUI VerifiedUser 图标，在渲染处单独处理
-  other: (
-    <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>
-      📦
-    </span>
-  ),
-};
+// emoji 图标统一构造，消除重复的 <span style> 包裹
+const emojiIcon = (emoji: string): React.ReactNode => (
+  <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>
+    {emoji}
+  </span>
+);
 
-const PLATFORM_ORDER: FileEntry['platform'][] = [
-  'windows',
-  'linux',
-  'macos',
-  'android',
-  'other',
-  'checksum',
-];
+const PLATFORM_ICON: Record<FileEntry['platform'], React.ReactNode> = {
+  windows: emojiIcon('🪟'),
+  linux: emojiIcon('🐧'),
+  macos: <AppleIcon style={{ fontSize: '1rem', width: '1rem', height: '1rem' }} />,
+  android: emojiIcon('🤖'),
+  checksum: null, // 用 MUI VerifiedUser 图标，在渲染处单独处理
+  other: emojiIcon('📦'),
+};
 
 // ─── 头像颜色：根据 org 名 hash 生成确定性色相 ──────────────────────────────
 
@@ -227,39 +110,6 @@ function orgColorIndex(org: string): number {
   let h = 0;
   for (let i = 0; i < org.length; i++) h = (Math.imul(31, h) + org.charCodeAt(i)) >>> 0;
   return h % AVATAR_COLORS.length;
-}
-
-// ─── 解析 fancyindex HTML ─────────────────────────────────────────────────────
-
-function parseDirEntries(html: string, baseUrl: string): DirEntry[] {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  const table = doc.getElementById('list');
-  if (!table) return [];
-
-  return Array.from(table.querySelectorAll('tbody tr'))
-    .map((row): DirEntry | null => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length < 2) return null;
-      const anchor = cells[0].querySelector('a');
-      if (!anchor) return null;
-      const name = anchor.textContent?.trim() ?? '';
-      const href = anchor.getAttribute('href') ?? '';
-      if (!href || href === '../' || name === 'Parent Directory') return null;
-      const size = cells[1]?.textContent?.trim() ?? '';
-      const date = cells[2]?.textContent?.trim() ?? '';
-      const isDir = href.endsWith('/');
-      const absHref = href.startsWith('http') ? href : new URL(href, baseUrl).href;
-      return { name: decodeURIComponent(name), href: absHref, size, date, isDir };
-    })
-    .filter((e): e is DirEntry => e !== null);
-}
-
-async function fetchDir(path: string): Promise<DirEntry[]> {
-  const url = path.startsWith('http') ? path : `${window.location.origin}${path}`;
-  const res = await fetch(url, { headers: { Accept: 'text/html' } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = await res.text();
-  return parseDirEntries(html, url);
 }
 
 // ─── 子组件：项目头像（加载中/失败显示彩色首字母 fallback） ──────────────────────
@@ -572,8 +422,7 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectsError, setProjectsError] = useState<string | null>(null);
 
-  // 每个项目的最新版本号缓存
-  const versionCache = useRef<Map<string, string>>(new Map()); // key: `{org}/{repo}`
+  // 每个项目的最新版本号（驱动 ProjectCard footer 展示）
   const [versionMap, setVersionMap] = useState<Record<string, string>>({});
 
   // 当前选中的项目
@@ -594,42 +443,48 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
       setProjectsError(null);
       try {
         // Step1: 获取 org 列表
-        const norm = rootPath.endsWith('/') ? rootPath : rootPath + '/';
+        const norm = ensureTrailingSlash(rootPath);
         const orgs = await fetchDir(norm);
         if (signal?.aborted) return;
         const orgDirs = orgs.filter((e) => e.isDir);
 
-        // Step2: 并行拉取每个 org 下的 repo
-        const results = await Promise.allSettled(
+        // Step2: 并行拉取每个 org 下的 repo，同时保留 repo 条目供 Step3 复用
+        // （旧实现 Step3 又对每个 project 重新 fetchDir(org.href) 拿同一份 org
+        //  目录，造成 N 次重复请求）
+        const orgReposMaps = await Promise.allSettled(
           orgDirs.map(async (org) => {
             const repos = await fetchDir(org.href);
-            return repos
-              .filter((r) => r.isDir)
-              .map(
-                (repo): Project => ({
-                  org: org.name.replace(/\/$/, ''),
-                  repo: repo.name.replace(/\/$/, ''),
-                  orgDate: org.date,
-                })
-              );
+            const repoEntries = repos.filter((r) => r.isDir);
+            const projects = repoEntries.map(
+              (repo): Project => ({
+                org: org.name.replace(/\/$/, ''),
+                repo: repo.name.replace(/\/$/, ''),
+                orgDate: org.date,
+              })
+            );
+            // 返回 projects 与对应 repo 的 href 映射，供 Step3 直接取版本目录
+            return { projects, repoHrefByName: new Map(repoEntries.map((r) => [r.name.replace(/\/$/, ''), r.href])) };
           })
         );
         if (signal?.aborted) return;
 
-        const allProjects: Project[] = results.flatMap((r) =>
-          r.status === 'fulfilled' ? r.value : []
-        );
+        const allProjects: Project[] = [];
+        // org 名 → repo 名 → repo href，供 Step3 复用，避免重复拉取 org 目录
+        const orgRepoHrefByName = new Map<string, Map<string, string>>();
+        orgReposMaps.forEach((r) => {
+          if (r.status !== 'fulfilled') return;
+          allProjects.push(...r.value.projects);
+          orgRepoHrefByName.set(r.value.projects[0]?.org ?? '', r.value.repoHrefByName);
+        });
         setProjects(allProjects);
 
-        // Step3: 并行拉取每个项目的版本列表，只取最新非LatestRelease版本号
+        // Step3: 并行拉取每个项目的版本列表，只取最新非 LatestRelease 版本号
+        // 复用 Step2 已拿到的 repo href，不再重复 fetchDir org 目录
         const versionResults = await Promise.allSettled(
           allProjects.map(async (proj) => {
-            const rootOrg = orgs.find((o) => o.name.replace(/\/$/, '') === proj.org);
-            if (!rootOrg) return null;
-            const orgEntries = (await fetchDir(rootOrg.href)).filter((e) => e.isDir);
-            const repoEntry = orgEntries.find((r) => r.name.replace(/\/$/, '') === proj.repo);
-            if (!repoEntry) return null;
-            const versions = await fetchDir(repoEntry.href);
+            const repoHref = orgRepoHrefByName.get(proj.org)?.get(proj.repo);
+            if (!repoHref) return null;
+            const versions = await fetchDir(repoHref);
             const latest = versions
               .filter((v) => v.isDir && v.name.replace(/\/$/, '').toLowerCase() !== 'latestrelease')
               .sort((a, b) => b.date.localeCompare(a.date))[0];
@@ -644,7 +499,6 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
         const map: Record<string, string> = {};
         versionResults.forEach((r) => {
           if (r.status === 'fulfilled' && r.value) {
-            versionCache.current.set(r.value.key, r.value.version);
             map[r.value.key] = r.value.version;
           }
         });
@@ -673,7 +527,7 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
       setReleases([]);
       setFiles([]);
       try {
-        const norm = rootPath.endsWith('/') ? rootPath : rootPath + '/';
+        const norm = ensureTrailingSlash(rootPath);
         const path = `${norm}${encodeURIComponent(proj.org)}/${encodeURIComponent(proj.repo)}/`;
         const entries = await fetchDir(path);
         const releaseList: Release[] = entries
