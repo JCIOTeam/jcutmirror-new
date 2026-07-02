@@ -6,17 +6,22 @@
 // - GET /jobs/<name>/log/stream → SSE 实时日志流
 //
 // 新版 tunasync-rs 全部支持。
-// 此 hook 在前端启动时探测一次，并把结果缓存到 React Query。
+// 此 hook 用一个真实存在的 mirrorId 探测，结果缓存到 React Query。
 // 缺失能力时，前端隐藏对应入口（详情按钮 / 终端图标 / 日志窗口）。
 //
 // 设计要点（修复历史缺陷）：
-// - 不再依赖某个具体 mirrorId 做探测对象：改为探测固定的 /jobs 端点本身。
-//   旧实现用 mirrors[0]?.id 探测，存在三个问题：
-//   1) 镜像列表为空时 enabled 永久为 false，整页降级直到刷新；
-//   2) 首个镜像被删/列表变化后缓存不刷新，探测的是已失效路径；
-//   3) 缓存键 ['backend-capabilities'] 不含 mirrorId，结果被错误推广。
+// - queryKey 包含 probeMirrorId：旧版 queryKey=['backend-capabilities'] 不含
+//   mirrorId，首个镜像被删/列表变化后缓存不刷新，探测的是已失效路径。
+//   现在缓存随探测对象变化而刷新。
+// - probeMirrorId 变化时（如首个镜像被删，mirrors[0] 变成新 id）会重新探测，
+//   不再有"缓存与探测对象脱节"的问题。
 // - 区分「明确不支持」（404）与「网络错误/超时」：后者不缓存为 false，
-//   而是允许重试，避免一次瞬态抖动导致整会话误判（配合 retry）。
+//   允许重试，避免一次瞬态抖动导致整会话误判。
+// - mirrors 为空时 enabled 为 false，不探测；mirrors 加载后自动启动。
+//
+// 注意：logStream 探测必须用真实存在的 mirrorId——SSE 端点 /jobs/<name>/log/stream
+// 是否可达取决于 <name> 这个 job 是否存在，不能用占位 id（占位 id 在新版后端
+// 也会因 job 不存在而 404，导致 logStream 永远误判为 false）。
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -57,51 +62,47 @@ export async function probeEndpoint(path: string): Promise<ProbeResult> {
 }
 
 /**
- * 探测后端能力。固定探测 /jobs 端点本身（始终存在的全局端点），
- * 而非依赖某个动态 mirrorId —— 这样能力判断独立于镜像列表的加载顺序与内容。
+ * 探测后端能力。需要一个真实存在的 mirrorId 作为探测对象——
+ * SSE 端点 /jobs/<name>/log/stream 是否可达取决于该 job 是否存在。
  *
- * - jobDetail：探测 /jobs 是否可达（manager 在线即应 2xx）。
- *   旧版 Go tunasync 同样提供 /jobs，因此这里无法区分新旧版；
- *   但 jobDetail 入口（详情按钮）在新旧版下都不会崩溃——旧版只是不返回
- *   error_msg，会显示「暂无错误信息」，所以保守地认为 /jobs 可达即可。
- * - logStream：探测一个已知 SSE 端点是否存在。
- *   旧版 Go tunasync 没有 /jobs/<name>/log/stream（404），新版 tunasync-rs 有。
- *   为避免依赖动态 mirrorId，这里探测一个固定占位路径——后端若支持该路由
- *   模式，会返回 2xx/405；若不支持则 404。
+ * - jobDetail：探测 /jobs/<name> 是否返回 2xx。
+ *   旧版 Go tunasync 对存在的 job 也会返回数据，因此 jobDetail 在新旧版都为 true；
+ *   详情按钮在新旧版下都不会崩溃，旧版只是不返回 error_msg（显示「暂无错误信息」）。
+ * - logStream：探测 /jobs/<name>/log/stream。
+ *   旧版 Go tunasync 没有该路由（404），新版 tunasync-rs 有（2xx/405）。
+ *   用真实 job 探测，job 存在时路由可达性才有意义。
  */
-async function detectCapabilities(): Promise<BackendCapabilities> {
-  // 探测根端点 /jobs：manager 在线即应可达
-  const jobsProbe = await probeEndpoint('/jobs');
-  // jobDetail 仅在明确 false 时判为不可用；unknown 保守视为可用（避免误降级）
-  const jobDetail = jobsProbe !== false;
-
-  // logStream 探测固定 SSE 路径模式。用一个稳定的占位 id 探测路由是否存在；
-  // 若后端支持该路由模式，会返回 2xx/405（HEAD）或 404（路径存在但无 job），
-  // 而旧版会返回 404（路由不存在）。
-  // 注意：仍需一个 id 用于路径匹配，但这里只是探测路由模式是否存在，
-  // 不依赖具体镜像数据——用固定字符串 probe。
-  const streamProbe = await probeEndpoint('/jobs/__capability_probe__/log/stream');
-  const logStream = streamProbe === true;
-
+async function detectCapabilities(probeMirrorId: string): Promise<BackendCapabilities> {
+  const encoded = encodeURIComponent(probeMirrorId);
+  const [jobDetailProbe, logStreamProbe] = await Promise.all([
+    probeEndpoint(`/jobs/${encoded}`),
+    probeEndpoint(`/jobs/${encoded}/log/stream`),
+  ]);
+  // jobDetail：明确 false 才判不可用；unknown（网络错误）保守视为可用，避免误降级
+  const jobDetail = jobDetailProbe !== false;
+  // logStream：仅明确 true 才判可用；unknown 保守视为不可用（避免对不支持的后端
+  // 误显示终端图标，点击后连接失败体验更差）
+  const logStream = logStreamProbe === true;
   return { jobDetail, logStream };
 }
 
 /**
- * useCapabilities — 在前端启动时探测一次，结果在整个会话内缓存。
+ * useCapabilities — 用一个真实存在的 mirrorId 探测后端能力，结果缓存到 React Query。
  *
- * 不再接收 probeMirrorId 参数：能力探测完全独立于镜像列表数据，
- * 在组件挂载时立即启动，与 mirrors 数据加载并行。
+ * @param probeMirrorId 用作探测的镜像 ID。通常传第一个 mirror.id；
+ *                       mirrors 列表为空时传 undefined，跳过探测（返回全 false），
+ *                       mirrors 加载后自动启动。
+ *
+ * 缓存键含 probeMirrorId：探测对象变化（如首个镜像被删）时缓存自动刷新，
+ * 不再有"缓存与探测对象脱节"的旧缺陷。
  */
-export function useCapabilities(): BackendCapabilities {
+export function useCapabilities(probeMirrorId: string | undefined): BackendCapabilities {
   const { data } = useQuery<BackendCapabilities>({
-    queryKey: ['backend-capabilities'],
-    queryFn: detectCapabilities,
+    queryKey: ['backend-capabilities', probeMirrorId ?? ''],
+    enabled: !!probeMirrorId,
+    queryFn: () => detectCapabilities(probeMirrorId as string),
     // 网络错误（unknown）时允许重试，避免瞬态抖动导致整会话误判
-    retry: (failureCount) => {
-      // detectCapabilities 内部已吞掉错误返回结果，不会走到这里；
-      // 保留兜底：最多重试 2 次
-      return failureCount < 2;
-    },
+    retry: (failureCount) => failureCount < 2,
     // 同一会话不重新探测；保守用 1 小时 stale，刷新页面会重新拿
     staleTime: 60 * 60 * 1000,
     gcTime: 60 * 60 * 1000,

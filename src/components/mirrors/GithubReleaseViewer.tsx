@@ -453,17 +453,24 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
         //  目录，造成 N 次重复请求）
         const orgReposMaps = await Promise.allSettled(
           orgDirs.map(async (org) => {
+            const orgName = org.name.replace(/\/$/, '');
             const repos = await fetchDir(org.href);
             const repoEntries = repos.filter((r) => r.isDir);
             const projects = repoEntries.map(
               (repo): Project => ({
-                org: org.name.replace(/\/$/, ''),
+                org: orgName,
                 repo: repo.name.replace(/\/$/, ''),
                 orgDate: org.date,
               })
             );
-            // 返回 projects 与对应 repo 的 href 映射，供 Step3 直接取版本目录
-            return { projects, repoHrefByName: new Map(repoEntries.map((r) => [r.name.replace(/\/$/, ''), r.href])) };
+            // 返回 org 名、projects 与 repo 的 href 映射，供 Step3 直接取版本目录
+            return {
+              orgName,
+              projects,
+              repoHrefByName: new Map(
+                repoEntries.map((r) => [r.name.replace(/\/$/, ''), r.href])
+              ),
+            };
           })
         );
         if (signal?.aborted) return;
@@ -474,7 +481,7 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
         orgReposMaps.forEach((r) => {
           if (r.status !== 'fulfilled') return;
           allProjects.push(...r.value.projects);
-          orgRepoHrefByName.set(r.value.projects[0]?.org ?? '', r.value.repoHrefByName);
+          orgRepoHrefByName.set(r.value.orgName, r.value.repoHrefByName);
         });
         setProjects(allProjects);
 
