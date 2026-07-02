@@ -47,24 +47,30 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
+import { fetchMirrorJobDetail } from '../api';
 import RefreshButton from '../components/common/RefreshButton';
 import LogStreamDialog from '../components/mirrors/LogStreamDialog';
-import { useCapabilities } from '../hooks/useCapabilities';
+import { useCapabilities, probeEndpoint } from '../hooks/useCapabilities';
 import { useMirrors } from '../hooks/useMirrors';
 import { useLocaleStore, useThemeStore } from '../stores/mirrorStore';
 import { canonicalUrl } from '../utils/seo';
 import { formatRelativeTime, formatAbsoluteTime, parseTimestamp } from '../utils/time';
 
 // ── Grafana 可用性探测 ────────────────────────────────────────────────────────
-// 发一次 HEAD 请求探测 /grafana/ 是否可达，避免未部署时展示无效区块
+// 复用 probeEndpoint（与能力探测同款 HEAD + 5s 超时 + 405 兼容），
+// 避免重复实现 AbortController + fetch HEAD 模式。
 function useGrafanaAvailable(): boolean | null {
   const [available, setAvailable] = React.useState<boolean | null>(null);
   React.useEffect(() => {
-    const controller = new AbortController();
-    fetch('/grafana/', { method: 'HEAD', signal: controller.signal })
-      .then((res) => setAvailable(res.ok))
-      .catch(() => setAvailable(false));
-    return () => controller.abort();
+    let cancelled = false;
+    probeEndpoint('/grafana/').then((result) => {
+      // probeEndpoint 返回 true | false | 'unknown'；
+      // 明确 false → 不可用；true → 可用；unknown（网络错误）→ 保守视为不可用
+      if (!cancelled) setAvailable(result === true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
   return available;
 }
@@ -212,11 +218,9 @@ const StatusPage: React.FC = () => {
       e.preventDefault();
       setErrorPopover({ anchorEl: e.currentTarget, loading: true, errorMsg: null, mirrorId });
       try {
-        const res = await fetch(`/jobs/${encodeURIComponent(mirrorId)}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        // tunasync /jobs/:name 返回数组，取第一条
-        const job = Array.isArray(data) ? data[0] : data;
+        // 走共享的 backend axios 实例（统一 baseURL/timeout/错误拦截），
+        // 不再用裸 fetch，避免反代前缀变更时此处孤立失效
+        const job = await fetchMirrorJobDetail(mirrorId);
         const msg = job?.error_msg || t('status.noErrorMsg');
         setErrorPopover((prev) => (prev ? { ...prev, loading: false, errorMsg: msg } : null));
       } catch {

@@ -100,6 +100,23 @@ export const fetchMirrorByName = async (name: string): Promise<Mirror> => {
 };
 
 /**
+ * 获取单个镜像的同步任务详情（含 error_msg）。
+ * 仅新版 tunasync-rs 支持 /jobs/<name>；旧版 Go tunasync 会 404。
+ * 走共享的 backend axios 实例，统一 baseURL/timeout/错误拦截。
+ *
+ * tunasync /jobs/:name 返回数组，取第一条。
+ */
+export interface MirrorJobDetail {
+  error_msg?: string;
+}
+
+export const fetchMirrorJobDetail = async (name: string): Promise<MirrorJobDetail> => {
+  const { data } = await backend.get(`/jobs/${encodeURIComponent(name)}`);
+  const job = Array.isArray(data) ? data[0] : data;
+  return (job ?? {}) as MirrorJobDetail;
+};
+
+/**
  * 判断客户端网络类型
  * GET /api/is_campus_network → "1"(校内) | "0"(校外) | "6"(IPv6)
  */
