@@ -37,10 +37,13 @@ type ProbeResult = true | false | 'unknown';
 
 /**
  * 用一个 HEAD 请求探测某个 endpoint 是否存在
- * - 2xx / 3xx → 存在（true）
- * - 4xx（除 405 外）→ 明确不存在（false）
+ * - 2xx → 存在（true）（res.ok 仅对 2xx 为 true）
  * - 405 Method Not Allowed → 老版不支持 HEAD，但 GET 可能可用 → 视为存在（true）
+ * - 其余 4xx（404/403 等）→ 明确不存在（false）
  * - 网络错误 / 超时 / CORS → 未知（'unknown'），由调用方决定是否重试
+ *
+ * 注：3xx 重定向会落到 false（res.ok 不含 3xx）。tunasync 的 /jobs 端点
+ * 正常返回 2xx，不存在 3xx 场景，故当前无需特殊处理。
  *
  * 用 AbortController 在 5 秒后强制结束探测，避免某些代理对 HEAD 长挂。
  */
