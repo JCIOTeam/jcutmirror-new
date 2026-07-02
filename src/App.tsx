@@ -7,6 +7,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './i18n';
 
+import ErrorBoundary from './components/common/ErrorBoundary';
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
 import ScrollToTop from './components/common/ScrollToTop';
@@ -93,21 +94,25 @@ const ThemedApp: React.FC = () => {
           <Header />
 
           <Box component="main" sx={{ flex: 1 }}>
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/mirrors" element={<Navigate to="/" replace />} />
-                <Route path="/mirrors/:name" element={<MirrorDetail />} />
-                <Route path="/news" element={<NewsListPage />} />
-                <Route path="/news/:slug" element={<NewsDetailPage />} />
-                <Route path="/status" element={<StatusPage />} />
-                <Route path="/403" element={<ErrorPage code={403} />} />
-                <Route path="/500" element={<ErrorPage code={500} />} />
-                <Route path="/502" element={<ErrorPage code={502} />} />
-                <Route path="/503" element={<ErrorPage code={503} />} />
-                <Route path="*" element={<ErrorPage code={404} />} />
-              </Routes>
-            </Suspense>
+            {/* ErrorBoundary 包在 Suspense 外层：捕获渲染期异常避免白屏，
+                跳转到 /500。Suspense 仍处理懒加载 loading 态。 */}
+            <ErrorBoundary>
+              <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/mirrors" element={<Navigate to="/" replace />} />
+                  <Route path="/mirrors/:name" element={<MirrorDetail />} />
+                  <Route path="/news" element={<NewsListPage />} />
+                  <Route path="/news/:slug" element={<NewsDetailPage />} />
+                  <Route path="/status" element={<StatusPage />} />
+                  <Route path="/403" element={<ErrorPage code={403} />} />
+                  <Route path="/500" element={<ErrorPage code={500} />} />
+                  <Route path="/502" element={<ErrorPage code={502} />} />
+                  <Route path="/503" element={<ErrorPage code={503} />} />
+                  <Route path="*" element={<ErrorPage code={404} />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
           </Box>
 
           <Footer />
