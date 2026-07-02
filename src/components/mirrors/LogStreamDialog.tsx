@@ -48,8 +48,17 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
   const esRef = useRef<EventSource | null>(null);
   const logBoxRef = useRef<HTMLDivElement>(null);
   const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 持有最新的 t（i18n 翻译函数），让 SSE effect 不依赖 t，
+  // 避免切换语言时重建 EventSource 并清空已累积的日志行。
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   // ── 建立/关闭 SSE 连接 ────────────────────────────────────────────────────
+  // 注意：依赖数组只含 [open, mirrorId]，不含 t。
+  // 切换语言只更新 tRef，不会断开 SSE 连接、不会丢失已接收的日志。
   useEffect(() => {
     if (!open || !mirrorId) return;
 
@@ -64,7 +73,11 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
     const es = new EventSource(url);
     esRef.current = es;
 
-    es.onopen = () => setConnState('open');
+    // onopen：连接（含自动重连）成功后，清除错误横幅，避免「已连接(绿)+错误横幅(红)」自相矛盾
+    es.onopen = () => {
+      setConnState('open');
+      setErrorMsg(null);
+    };
 
     es.onmessage = (e) => {
       setLines((prev) => {
@@ -76,8 +89,10 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
 
     es.addEventListener('lag', (e: MessageEvent) => {
       setLagWarning(e.data || 'subscriber too slow');
-      // 5 秒后自动清除提示
-      setTimeout(() => setLagWarning(null), 5000);
+      // 5 秒后自动清除提示：先清除上一个定时器，避免连续 lag 事件堆积多个定时器
+      // 导致最早定时器提前清掉最新告警
+      if (lagTimerRef.current) clearTimeout(lagTimerRef.current);
+      lagTimerRef.current = setTimeout(() => setLagWarning(null), 5000);
     });
 
     es.onerror = () => {
@@ -87,15 +102,20 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
         setConnState('closed');
       } else {
         setConnState('error');
-        setErrorMsg(t('logStream.connectionError'));
+        setErrorMsg(tRef.current('logStream.connectionError'));
       }
     };
 
     return () => {
       es.close();
       esRef.current = null;
+      // 清理 lag 定时器，避免卸载后 setState
+      if (lagTimerRef.current) {
+        clearTimeout(lagTimerRef.current);
+        lagTimerRef.current = null;
+      }
     };
-  }, [open, mirrorId, t]);
+  }, [open, mirrorId]);
 
   // ── 自动滚动到底部（仅在 autoFollow=true 时） ──────────────────────────
   useEffect(() => {
