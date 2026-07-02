@@ -26,6 +26,8 @@ import {
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+
 interface LogStreamDialogProps {
   open: boolean;
   mirrorId: string | null;
@@ -42,13 +44,18 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
   const [connState, setConnState] = useState<ConnectionState>('connecting');
   const [lagWarning, setLagWarning] = useState<string | null>(null);
   const [autoFollow, setAutoFollow] = useState(true);
-  const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const esRef = useRef<EventSource | null>(null);
   const logBoxRef = useRef<HTMLDivElement>(null);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lagTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { copied, copy: copyText } = useCopyToClipboard();
+  // 持有最新的 lines，让 handleCopy 不依赖 lines（回调引用稳定），
+  // 同时 copyText 来自 hook，引用稳定
+  const linesRef = useRef<string[]>([]);
+  useEffect(() => {
+    linesRef.current = lines;
+  }, [lines]);
   // 持有最新的 t（i18n 翻译函数），让 SSE effect 不依赖 t，
   // 避免切换语言时重建 EventSource 并清空已累积的日志行。
   const tRef = useRef(t);
@@ -136,23 +143,10 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
   }, []);
 
   // ── 复制全部日志 ──────────────────────────────────────────────────────────
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(lines.join('\n'));
-      setCopied(true);
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn('[copy log]', err);
-    }
-  }, [lines]);
-
-  useEffect(
-    () => () => {
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    },
-    []
-  );
+  // 通过 linesRef 读取最新行，handleCopy 引用稳定，不随 lines 变化重建
+  const handleCopy = useCallback(() => {
+    copyText(linesRef.current.join('\n'));
+  }, [copyText]);
 
   // ── 跳到底部按钮 ──────────────────────────────────────────────────────────
   const scrollToBottom = useCallback(() => {

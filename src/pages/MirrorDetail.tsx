@@ -41,6 +41,7 @@ import GithubReleaseViewer from '../components/mirrors/GithubReleaseViewer';
 import StatusChip from '../components/mirrors/StatusChip';
 import SyncTimeline from '../components/mirrors/SyncTimeline';
 import { hasMdxDoc } from '../docs';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { useMirrorDetail } from '../hooks/useMirrors';
 import { useLocaleStore } from '../stores/mirrorStore';
 import { SITE_ORIGIN, canonicalUrl, mirrorJsonLd, breadcrumbJsonLd } from '../utils/seo';
@@ -308,27 +309,12 @@ const MirrorDetail: React.FC = () => {
     setSearchParams({ tab: labels[v] ?? 'help' }, { replace: true });
   };
 
-  const [copiedUrl, setCopiedUrl] = useState(false);
-  const copyUrlTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (copyUrlTimerRef.current) clearTimeout(copyUrlTimerRef.current);
-    },
-    []
-  );
+  const { copied: copiedUrl, copy: copyUrl } = useCopyToClipboard();
 
   const fullMirrorUrl = mirror ? toFullUrl(mirror.url) : '';
 
-  const handleCopyUrl = async () => {
-    if (!mirror) return;
-    try {
-      await navigator.clipboard.writeText(fullMirrorUrl);
-      setCopiedUrl(true);
-      if (copyUrlTimerRef.current) clearTimeout(copyUrlTimerRef.current);
-      copyUrlTimerRef.current = setTimeout(() => setCopiedUrl(false), 2000);
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn('[copy]', err);
-    }
+  const handleCopyUrl = () => {
+    if (mirror) copyUrl(fullMirrorUrl);
   };
 
   // 右侧侧栏是否显示：只有 API 返回了 files 且不为空时才渲染

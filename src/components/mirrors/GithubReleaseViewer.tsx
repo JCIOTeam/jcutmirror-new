@@ -38,6 +38,8 @@ import {
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+
 // ─── 类型 ────────────────────────────────────────────────────────────────────
 
 interface DirEntry {
@@ -451,25 +453,9 @@ interface FileRowProps {
 
 const FileRow: React.FC<FileRowProps> = ({ file }) => {
   const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    },
-    []
-  );
+  const { copied, copy } = useCopyToClipboard();
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(file.href);
-      setCopied(true);
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn('[copy]', err);
-    }
-  };
+  const handleCopy = () => copy(file.href);
 
   return (
     <Box

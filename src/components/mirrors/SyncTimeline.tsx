@@ -10,9 +10,10 @@ import {
   Check as CheckIcon,
 } from '@mui/icons-material';
 import { Box, Typography, Paper, Grid, Tooltip, IconButton } from '@mui/material';
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { useLocaleStore } from '../../stores/mirrorStore';
 import type { Mirror } from '../../types';
 import { formatAbsoluteTime } from '../../utils/time';
@@ -71,26 +72,11 @@ const TimeCard: React.FC<{
 const UpstreamCard: React.FC<{ label: string; value: string }> = ({ label, value }) => {
   const display = value && value !== '-' ? value : '—';
   const hasValue = display !== '—';
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
   const { t } = useTranslation();
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    },
-    []
-  );
 
-  const handleCopy = async () => {
-    if (!hasValue) return;
-    try {
-      await navigator.clipboard.writeText(display);
-      setCopied(true);
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn('[copy]', err);
-    }
+  const handleCopy = () => {
+    if (hasValue) copy(display);
   };
 
   return (

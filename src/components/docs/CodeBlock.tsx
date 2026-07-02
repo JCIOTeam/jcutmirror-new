@@ -3,7 +3,7 @@
 
 import { ContentCopy as CopyIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';
@@ -11,6 +11,7 @@ import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import { atomOneDark, atomOneLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { useThemeStore } from '../../stores/mirrorStore';
 
 // 注册需要的语言（按需导入，减少 bundle 体积）
@@ -31,27 +32,11 @@ interface CodeBlockProps {
  * 带语法高亮和复制按钮的代码块
  */
 const CodeBlock: React.FC<CodeBlockProps> = ({ children, language = 'bash', inline = false }) => {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
   const { mode } = useThemeStore();
   const { t } = useTranslation();
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-    },
-    []
-  );
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(children);
-      setCopied(true);
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn('[copy]', err);
-    }
-  };
+  const handleCopy = () => copy(children);
 
   // 行内代码
   if (inline) {
