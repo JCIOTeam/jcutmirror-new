@@ -120,6 +120,9 @@ const DirectoryListing: React.FC<DirectoryListingProps> = ({ mirrorUrl, mirrorNa
         } else {
           setError(msg);
         }
+        // 清空上一目录的残留条目：否则非 network/非 empty 的错误（如 HTTP 403）
+        // 会因 entries 非空而落到渲染分支，在淡化遮罩下显示旧目录且无错误提示
+        setEntries([]);
         // 向上抛出，让 RefreshButton 感知失败状态
         throw err;
       } finally {
