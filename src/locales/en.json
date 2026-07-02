@@ -28,7 +28,15 @@
     "refreshFailed": "Error",
     "retry": "Retry",
     "clear": "Clear",
-    "close": "Close"
+    "close": "Close",
+    "aria": {
+      "close": "Close",
+      "clearSearch": "Clear search",
+      "backHome": "Back to home",
+      "closeSearch": "Close search",
+      "search": "Search",
+      "openMenu": "Open menu"
+    }
   },
   "search": {
     "placeholder": "Search mirrors...",
@@ -139,7 +147,13 @@
     "backToList": "Back",
     "notFound": "News article not found",
     "breadcrumb": "News",
-    "subtitle": "Mirror service updates, maintenance notices and announcements"
+    "subtitle": "Mirror service updates, maintenance notices and announcements",
+    "detailTitle": "News",
+    "aria": {
+      "prev": "Previous announcement",
+      "next": "Next announcement",
+      "close": "Close announcement"
+    }
   },
   "sync": {
     "failedWarning": "This mirror is currently failing. Please use the official source. Last success: {{time}}"
@@ -196,7 +210,9 @@
     "empty": "No favorites yet — click the star in the mirror list to save one"
   },
   "configGenerator": {
-    "noVersions": "No versions available"
+    "noVersions": "No versions available",
+    "generateFailed": "Config generation failed",
+    "generateFailedLog": "Config generation failed:"
   },
   "footer": {
     "description": "An open source software mirror maintained by the JCIOT team, providing fast software downloads for campus users.",
@@ -205,7 +221,12 @@
     "github": "GitHub",
     "copyright": "© {{year}} JCUT Mirror. All rights reserved.",
     "poweredBy": "Powered by tunasync",
-    "status": "System Status"
+    "status": "System Status",
+    "aria": {
+      "contactEmail": "Contact email",
+      "links": "Links",
+      "siteLinks": "Site links"
+    }
   },
   "theme": {
     "light": "Light Mode",
@@ -250,7 +271,11 @@
     "noFiles": "No files in this release",
     "latestRelease": "Latest Release",
     "fileCount": "{{count}} files",
-    "searchFiles": "Search files…"
+    "searchFiles": "Search files…",
+    "platform": {
+      "checksum": "Checksums",
+      "other": "Cross-platform / Other"
+    }
   },
   "logStream": {
     "title": "Live Sync Log",

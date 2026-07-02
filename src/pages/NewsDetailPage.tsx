@@ -137,9 +137,7 @@ const NewsDetailPage: React.FC = () => {
     ? locale === 'zh'
       ? meta.title
       : (meta.titleEn ?? meta.title)
-    : locale === 'zh'
-      ? '新闻详情'
-      : 'News';
+    : t('news.detailTitle');
 
   const pageTitle = `${displayTitle} - 荆楚理工学院开源软件镜像站 JCUT Mirror`;
 

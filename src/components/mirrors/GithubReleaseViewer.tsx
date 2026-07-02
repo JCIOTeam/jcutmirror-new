@@ -134,14 +134,21 @@ function detectArch(name: string): string {
 
 // ─── 常量 ────────────────────────────────────────────────────────────────────
 
-const PLATFORM_LABEL: Record<FileEntry['platform'], string> = {
-  windows: 'Windows',
-  linux: 'Linux',
-  macos: 'macOS',
-  android: 'Android',
-  checksum: '校验文件',
-  other: '跨平台 / 其他',
-};
+// 平台显示标签：windows/linux/macos/android 是品牌名不随语言变化；
+// checksum/other 走 i18n，故 platformLabel 设计为函数，由组件传入 t。
+function platformLabel(
+  platform: FileEntry['platform'],
+  t: (key: string) => string
+): string {
+  switch (platform) {
+    case 'checksum':
+      return t('githubRelease.platform.checksum');
+    case 'other':
+      return t('githubRelease.platform.other');
+    default:
+      return { windows: 'Windows', linux: 'Linux', macos: 'macOS', android: 'Android' }[platform];
+  }
+}
 
 // macOS 用内联 SVG（Apple logo 版权原因不能用 emoji，unicode 私有区在非 Apple 系统不渲染）
 const AppleIcon: React.FC<{ style?: React.CSSProperties }> = ({ style }) => (
@@ -1139,7 +1146,7 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
                             letterSpacing: '0.05em',
                           }}
                         >
-                          {PLATFORM_LABEL[platform]}
+                          {platformLabel(platform, t)}
                         </Typography>
                         <Chip
                           size="small"

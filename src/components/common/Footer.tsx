@@ -105,7 +105,7 @@ const Footer: React.FC = () => {
                   size="small"
                   component="a"
                   href="mailto:stucloud@jcut.edu.cn"
-                  aria-label="联系邮箱"
+                  aria-label={t('footer.aria.contactEmail')}
                 >
                   <EmailIcon fontSize="small" />
                 </IconButton>
@@ -126,7 +126,7 @@ const Footer: React.FC = () => {
             </Typography>
             <Box
               component="nav"
-              aria-label="友情链接"
+              aria-label={t('footer.aria.links')}
               sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}
             >
               {friendLinks.map((link) => (
@@ -162,7 +162,7 @@ const Footer: React.FC = () => {
             </Typography>
             <Box
               component="nav"
-              aria-label="站点链接"
+              aria-label={t('footer.aria.siteLinks')}
               sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}
             >
               <Link

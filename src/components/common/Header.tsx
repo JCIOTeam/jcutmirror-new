@@ -126,7 +126,7 @@ const Header: React.FC = () => {
                 flexShrink: 0,
               }}
               role="link"
-              aria-label="返回首页"
+              aria-label={t('common.aria.backHome')}
             >
               <img src="/favicon.svg" alt="JCUT Mirror" style={{ width: 26, height: 26 }} />
               <Typography
@@ -226,7 +226,7 @@ const Header: React.FC = () => {
                 color="inherit"
                 size="small"
                 onClick={() => (searchOpen ? handleCloseSearch() : setSearchOpen(true))}
-                aria-label={searchOpen ? '关闭搜索' : '搜索'}
+                aria-label={searchOpen ? t('common.aria.closeSearch') : t('common.aria.search')}
               >
                 {searchOpen ? <CloseIcon fontSize="small" /> : <SearchIcon fontSize="small" />}
               </IconButton>
@@ -234,7 +234,7 @@ const Header: React.FC = () => {
               <IconButton
                 color="inherit"
                 onClick={() => setDrawerOpen(true)}
-                aria-label="打开菜单"
+                aria-label={t('common.aria.openMenu')}
                 size="small"
               >
                 <MenuIcon />

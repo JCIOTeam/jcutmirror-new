@@ -60,7 +60,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ fullWidth = false, size = 'small'
           ),
           endAdornment: searchQuery ? (
             <InputAdornment position="end">
-              <IconButton size="small" onClick={handleClear} edge="end" aria-label="清除搜索">
+              <IconButton
+                size="small"
+                onClick={handleClear}
+                edge="end"
+                aria-label={t('common.aria.clearSearch')}
+              >
                 <CloseIcon fontSize="small" />
               </IconButton>
             </InputAdornment>

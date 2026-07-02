@@ -55,10 +55,10 @@ const ConfigGenerator: React.FC<ConfigGeneratorProps> = ({
     try {
       return configGen(selectedVersion);
     } catch (error) {
-      console.error('配置生成失败:', error);
-      return '# 配置生成失败';
+      console.error(t('configGenerator.generateFailedLog'), error);
+      return `# ${t('configGenerator.generateFailed')}`;
     }
-  }, [selectedVersion, configGen]);
+  }, [selectedVersion, configGen, t]);
 
   // 如果没有版本列表，显示提示
   if (safeVersionList.length === 0) {

@@ -167,7 +167,7 @@ const DownloadModal: React.FC<DownloadModalProps> = ({ open, onClose }) => {
             {t('download.distroCount', { count: distros.length })}
           </Typography>
         </Box>
-        <IconButton size="small" onClick={handleClose} aria-label="关闭">
+        <IconButton size="small" onClick={handleClose} aria-label={t('common.aria.close')}>
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
