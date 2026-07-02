@@ -3,7 +3,6 @@
 
 import {
   CheckCircle as OkIcon,
-  Warning as WarnIcon,
   Error as ErrorIcon,
   Sync as SyncIcon,
   Storage as StorageIcon,
@@ -11,9 +10,6 @@ import {
   Schedule as ScheduleIcon,
   ArrowBack as BackIcon,
   Circle as DotIcon,
-  BarChart as GrafanaIcon,
-  OpenInNew as OpenInNewIcon,
-  ExpandMore as ExpandMoreIcon,
   Terminal as TerminalIcon,
 } from '@mui/icons-material';
 import {
@@ -36,9 +32,6 @@ import {
   LinearProgress,
   Alert,
   Link,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Popover,
   CircularProgress,
   IconButton,
@@ -50,11 +43,14 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { fetchMirrorJobDetail } from '../api';
 import RefreshButton from '../components/common/RefreshButton';
 import LogStreamDialog from '../components/mirrors/LogStreamDialog';
+import GrafanaPanel from '../components/status/GrafanaPanel';
+import { HEALTH_CONFIG, StatCard } from '../components/status/StatusStatCard';
 import { useCapabilities, probeEndpoint } from '../hooks/useCapabilities';
 import { useMirrors } from '../hooks/useMirrors';
 import { useLocaleStore, useThemeStore } from '../stores/mirrorStore';
 import { canonicalUrl } from '../utils/seo';
 import { parseSize, formatBytes } from '../utils/size';
+import { calcHealth } from '../utils/statusHealth';
 import { formatRelativeTime, formatAbsoluteTime, parseTimestamp } from '../utils/time';
 
 // ── Grafana 可用性探测 ────────────────────────────────────────────────────────
@@ -75,101 +71,6 @@ function useGrafanaAvailable(): boolean | null {
   }, []);
   return available;
 }
-
-// ── 系统整体健康状态 ──────────────────────────────────────────────────────────
-type HealthLevel = 'operational' | 'degraded' | 'outage';
-
-/**
- * 仅 failed 视为不可用；syncing/cached/succeeded/paused 都对外可访问
- * - cached: 历史快照可正常下载
- * - syncing: 服务在跑，旧文件依然可访问
- * - paused: 维护中但内容仍在
- */
-function calcHealth(total: number, unavailable: number): HealthLevel {
-  if (total === 0) return 'operational';
-  const ratio = unavailable / total;
-  if (ratio === 0) return 'operational';
-  if (ratio < 0.2) return 'degraded';
-  return 'outage';
-}
-
-const HEALTH_CONFIG: Record<
-  HealthLevel,
-  { icon: React.ReactNode; color: 'success' | 'warning' | 'error'; bg: string }
-> = {
-  operational: {
-    icon: <OkIcon />,
-    color: 'success',
-    bg: 'rgba(16,185,129,0.08)',
-  },
-  degraded: {
-    icon: <WarnIcon />,
-    color: 'warning',
-    bg: 'rgba(245,158,11,0.08)',
-  },
-  outage: {
-    icon: <ErrorIcon />,
-    color: 'error',
-    bg: 'rgba(239,68,68,0.08)',
-  },
-};
-
-// ── 统计卡片 ─────────────────────────────────────────────────────────────────
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-  sub?: string;
-  color?: string;
-}
-const StatCard: React.FC<StatCardProps> = ({ icon, label, value, sub, color }) => (
-  <Paper
-    variant="outlined"
-    sx={{
-      p: 2.5,
-      borderRadius: 2,
-      height: '100%',
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: 2,
-    }}
-  >
-    <Box sx={{ color: color ?? 'primary.main', mt: 0.3, flexShrink: 0 }}>{icon}</Box>
-    <Box>
-      <Typography
-        variant="caption"
-        sx={{
-          color: 'text.secondary',
-          display: 'block',
-          mb: 0.4,
-        }}
-      >
-        {label}
-      </Typography>
-      <Typography
-        variant="h5"
-        sx={{
-          fontWeight: 800,
-          lineHeight: 1.2,
-        }}
-      >
-        {value}
-      </Typography>
-      {sub && (
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'text.secondary',
-            mt: 0.3,
-            display: 'block',
-          }}
-        >
-          {sub}
-        </Typography>
-      )}
-    </Box>
-  </Paper>
-);
 
 // ── 主页面 ────────────────────────────────────────────────────────────────────
 const StatusPage: React.FC = () => {
@@ -1036,193 +937,7 @@ const StatusPage: React.FC = () => {
           </Grid>
 
           {/* ── Grafana 系统指标面板 —— 仅在探测到 /grafana/ 可达时渲染 ── */}
-          {grafanaAvailable && (
-            <Box sx={{ mt: 4 }}>
-              <Accordion
-                defaultExpanded={false}
-                sx={{
-                  borderRadius: '12px !important',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  '&:before': { display: 'none' },
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <GrafanaIcon color="primary" fontSize="small" />
-                    <Box>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          fontWeight: 700,
-                        }}
-                      >
-                        {t('status.serverMetrics')}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: 'text.secondary',
-                        }}
-                      >
-                        {t('status.serverMetricsSub')}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ ml: 'auto', mr: 1 }}>
-                      <Tooltip title={t('status.openGrafana')}>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
-                          component="a"
-                          href="/grafana/d/jcut-mirror-system"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          sx={{ borderRadius: 6, fontSize: '0.75rem' }}
-                        >
-                          Grafana
-                        </Button>
-                      </Tooltip>
-                    </Box>
-                  </Box>
-                </AccordionSummary>
-
-                <AccordionDetails sx={{ p: 0 }}>
-                  <Divider />
-
-                  {/* 嵌入面板网格 */}
-                  <Grid container sx={{ p: 2 }} spacing={2}>
-                    {[
-                      {
-                        title: t('status.cpuUsage'),
-                        panelId: 1,
-                      },
-                      {
-                        title: t('status.memUsage'),
-                        panelId: 2,
-                      },
-                      {
-                        title: t('status.networkBandwidth'),
-                        panelId: 3,
-                      },
-                      {
-                        title: t('status.diskSpace'),
-                        panelId: 4,
-                      },
-                      {
-                        title: t('status.nginxRequests'),
-                        panelId: 5,
-                      },
-                      {
-                        title: t('status.activeConnections'),
-                        panelId: 6,
-                      },
-                    ].map(({ title, panelId }) => (
-                      <Grid key={panelId} size={{ xs: 12, md: 6 }}>
-                        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                          <Box
-                            sx={{
-                              px: 2,
-                              py: 1,
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              borderBottom: '1px solid',
-                              borderColor: 'divider',
-                              bgcolor: 'action.hover',
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                fontWeight: 700,
-                              }}
-                            >
-                              {title}
-                            </Typography>
-                            <Link
-                              href={`/grafana/d/jcut-mirror-system?viewPanel=${panelId}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              variant="caption"
-                              color="primary"
-                              underline="hover"
-                              sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
-                            >
-                              {t('common.fullscreen')}
-                              <OpenInNewIcon sx={{ fontSize: 11 }} />
-                            </Link>
-                          </Box>
-                          <Box
-                            component="iframe"
-                            src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=${panelId}&from=now-1h&to=now&theme=${themeMode}&kiosk`}
-                            sx={{
-                              display: 'block',
-                              width: '100%',
-                              height: 220,
-                              border: 'none',
-                            }}
-                            title={title}
-                            loading="lazy"
-                          />
-                        </Paper>
-                      </Grid>
-                    ))}
-                  </Grid>
-
-                  {/* 系统负载全宽面板 */}
-                  <Box sx={{ px: 2, pb: 2 }}>
-                    <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
-                      <Box
-                        sx={{
-                          px: 2,
-                          py: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          borderBottom: '1px solid',
-                          borderColor: 'divider',
-                          bgcolor: 'action.hover',
-                        }}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            fontWeight: 700,
-                          }}
-                        >
-                          {t('status.systemLoad')}
-                        </Typography>
-                        <Link
-                          href="/grafana/d/jcut-mirror-system?viewPanel=7"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          variant="caption"
-                          color="primary"
-                          underline="hover"
-                          sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}
-                        >
-                          {t('common.fullscreen')}
-                          <OpenInNewIcon sx={{ fontSize: 11 }} />
-                        </Link>
-                      </Box>
-                      <Box
-                        component="iframe"
-                        src={`/grafana/d-solo/jcut-mirror-system?orgId=1&panelId=7&from=now-1h&to=now&theme=${themeMode}&kiosk`}
-                        sx={{ display: 'block', width: '100%', height: 200, border: 'none' }}
-                        title={t('status.systemLoad')}
-                        loading="lazy"
-                      />
-                    </Paper>
-                  </Box>
-                </AccordionDetails>
-              </Accordion>
-            </Box>
-          )}
+          {grafanaAvailable && <GrafanaPanel themeMode={themeMode} />}
         </Box>
         {/* end opacity wrapper */}
       </Container>
