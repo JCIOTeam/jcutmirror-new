@@ -49,12 +49,12 @@ const STATUS_MAP: Record<string, MirrorStatus> = {
 // 仅允许 https?://（显式协议）或以单斜杠开头的相对路径
 // 明确排除 // 开头的协议相对 URL（如 //evil.com 可绕过校验跳转外站）
 const SAFE_URL_RE = /^(https?:\/\/[^/]|\/[^/]|\/\s*$)/i;
-function sanitizeFileUrl(url: unknown): string | null {
+export function sanitizeFileUrl(url: unknown): string | null {
   if (typeof url !== 'string' || !SAFE_URL_RE.test(url)) return null;
   return url;
 }
 
-function sanitizeFiles(files: unknown): MirrorFile[] {
+export function sanitizeFiles(files: unknown): MirrorFile[] {
   if (!Array.isArray(files)) return [];
   return files
     .map((f): MirrorFile | null => {

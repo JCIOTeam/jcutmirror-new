@@ -15,8 +15,13 @@ export const parseTimestamp = (value: string | number | null | undefined): Date 
   if (!value) return null;
 
   const num = typeof value === 'string' ? Number(value) : value;
+  // 能被 Number() 解析为有限数字的字符串（含 '0'、'-1'、'1.5' 等）一律按数字处理，
+  // 不走 ISO 字符串 fallback——否则 new Date('0') 会被 V8 当作 ISO 8601 偏移
+  // 解析成 1999 年、new Date('-1') 解析成 2000 年，导致非法时间戳误判为合法。
+  const isNumericString =
+    typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value));
 
-  // 判断是否是合法的 Unix 秒时间戳（10位数字，1970年之后的合理范围）
+  // 数字或数字字符串：按 Unix 时间戳处理（>0 才视为合法，0/负数排除）
   if (!isNaN(num) && num > 0) {
     // 10位数 = 秒级时间戳（< 1e12）；13位数 = 毫秒时间戳
     const ms = num < 1e12 ? num * 1000 : num;
@@ -24,8 +29,8 @@ export const parseTimestamp = (value: string | number | null | undefined): Date 
     if (isValid(date)) return date;
   }
 
-  // 尝试作为 ISO 字符串解析
-  if (typeof value === 'string') {
+  // 仅非数字字符串才尝试 ISO 解析（如 '2024-01-01T00:00:00Z'）
+  if (typeof value === 'string' && !isNumericString) {
     const date = new Date(value);
     if (isValid(date)) return date;
   }

@@ -54,6 +54,7 @@ import { useCapabilities, probeEndpoint } from '../hooks/useCapabilities';
 import { useMirrors } from '../hooks/useMirrors';
 import { useLocaleStore, useThemeStore } from '../stores/mirrorStore';
 import { canonicalUrl } from '../utils/seo';
+import { parseSize, formatBytes } from '../utils/size';
 import { formatRelativeTime, formatAbsoluteTime, parseTimestamp } from '../utils/time';
 
 // ── Grafana 可用性探测 ────────────────────────────────────────────────────────
@@ -112,24 +113,6 @@ const HEALTH_CONFIG: Record<
     bg: 'rgba(239,68,68,0.08)',
   },
 };
-
-// ── 存储大小解析（"1.2T" / "500G" → 字节数，用于排序和加总）───────────────
-function parseSize(s: string): number {
-  if (!s) return 0;
-  const m = s.trim().match(/^([\d.]+)\s*([KMGT]?B?|[KMGT])$/i);
-  if (!m) return 0;
-  const n = parseFloat(m[1]);
-  const u = m[2].toUpperCase().replace('B', '');
-  const map: Record<string, number> = { '': 1, K: 1e3, M: 1e6, G: 1e9, T: 1e12 };
-  return n * (map[u] ?? 1);
-}
-
-function formatBytes(bytes: number): string {
-  if (bytes >= 1e12) return `${(bytes / 1e12).toFixed(1)} T`;
-  if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} G`;
-  if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(1)} M`;
-  return `${bytes} B`;
-}
 
 // ── 统计卡片 ─────────────────────────────────────────────────────────────────
 interface StatCardProps {
