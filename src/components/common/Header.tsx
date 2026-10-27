@@ -29,7 +29,8 @@ import {
   useMediaQuery,
   useTheme as useMuiTheme,
 } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 

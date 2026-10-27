@@ -1,19 +1,19 @@
 # ===== 构建阶段 =====
-FROM node:20-alpine AS builder
+FROM oven/bun:1.4.2-alpine AS builder
 
 WORKDIR /app
 
 # 先复制依赖文件，利用 Docker 层缓存
-COPY package.json package-lock.json* ./
+COPY package.json bun.lock ./
 
-# 使用 ci 确保版本锁定；--ignore-scripts 阻断潜在依赖 postinstall 攻击
-RUN npm ci --prefer-offline --ignore-scripts
+# 使用锁文件确保依赖版本一致；--ignore-scripts 阻断依赖 postinstall 脚本
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # 复制源代码
 COPY . .
 
 # 构建生产版本
-RUN npm run build
+RUN bun run build
 
 # ===== 生产阶段 =====
 # 使用 Alpine 官方 nginx 包，确保主程序与 fancyindex 模块来自同一套构建

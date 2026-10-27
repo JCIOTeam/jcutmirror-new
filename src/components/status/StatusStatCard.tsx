@@ -3,9 +3,13 @@
 //
 // HEALTH_CONFIG 含图标 JSX，故放 .tsx；calcHealth 纯逻辑在 utils/statusHealth.ts
 
-import { CheckCircle as OkIcon, Warning as WarnIcon, Error as ErrorIcon } from '@mui/icons-material';
+import {
+  CheckCircle as OkIcon,
+  Warning as WarnIcon,
+  Error as ErrorIcon,
+} from '@mui/icons-material';
 import { Box, Paper, Typography } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 
 import type { HealthLevel } from '../../utils/statusHealth';
 

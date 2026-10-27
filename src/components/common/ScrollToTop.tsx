@@ -3,7 +3,8 @@
 
 import { KeyboardArrowUp as ArrowUpIcon } from '@mui/icons-material';
 import { Fab, Zoom, Tooltip } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const SCROLL_THRESHOLD = 400;

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { detectPlatform, detectArch, ensureTrailingSlash, platformLabel, parseDirEntries } from '../githubRelease';
+import {
+  detectPlatform,
+  detectArch,
+  ensureTrailingSlash,
+  platformLabel,
+  parseDirEntries,
+} from '../githubRelease';
 
 describe('detectPlatform', () => {
   it('识别 Windows 安装包', () => {
@@ -121,7 +127,9 @@ describe('parseDirEntries', () => {
   });
 
   it('decodeURIComponent 解码中文/空格文件名', () => {
-    const html = fancyIndexHtml(row('我的 文件.iso', '%E6%88%91%E7%9A%84%20%E6%96%87%E4%BB%B6.iso', '1G', '-'));
+    const html = fancyIndexHtml(
+      row('我的 文件.iso', '%E6%88%91%E7%9A%84%20%E6%96%87%E4%BB%B6.iso', '1G', '-')
+    );
     const entries = parseDirEntries(html, 'https://example.com/');
     expect(entries[0].name).toBe('我的 文件.iso');
   });

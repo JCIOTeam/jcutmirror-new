@@ -1,7 +1,7 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // scripts/generate-sitemap.mjs
 // 构建后自动生成 sitemap.xml
-// 在 package.json 的 build 脚本中追加调用：tsc && vite build && node scripts/generate-sitemap.mjs
+// 在 package.json 的 build 脚本中追加调用：tsc && vite build && bun scripts/generate-sitemap.mjs
 
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';

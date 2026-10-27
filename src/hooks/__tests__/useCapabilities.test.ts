@@ -54,22 +54,22 @@ describe('probeEndpoint', () => {
   });
 
   it('网络错误（fetch reject）返回 unknown，不降级为 false', async () => {
-    globalThis.fetch = vi.fn().mockRejectedValue(new TypeError('Failed to fetch')) as unknown as typeof globalThis.fetch;
+    globalThis.fetch = vi
+      .fn()
+      .mockRejectedValue(new TypeError('Failed to fetch')) as unknown as typeof globalThis.fetch;
     expect(await probeEndpoint('/jobs/ubuntu')).toBe('unknown');
   });
 
   it('AbortError 超时返回 unknown', async () => {
     const abortError = new DOMException('The operation was aborted', 'AbortError');
-    globalThis.fetch = vi
-      .fn()
-      .mockImplementation((_url, init?: RequestInit) => {
-        return new Promise((_resolve, reject) => {
-          // 模拟 5s 超时触发 abort
-          if (init?.signal) {
-            init.signal.addEventListener('abort', () => reject(abortError));
-          }
-        });
-      }) as unknown as typeof globalThis.fetch;
+    globalThis.fetch = vi.fn().mockImplementation((_url, init?: RequestInit) => {
+      return new Promise((_resolve, reject) => {
+        // 模拟 5s 超时触发 abort
+        if (init?.signal) {
+          init.signal.addEventListener('abort', () => reject(abortError));
+        }
+      });
+    }) as unknown as typeof globalThis.fetch;
 
     const promise = probeEndpoint('/jobs/ubuntu');
     // 推进 fake timer 触发 AbortController.abort()

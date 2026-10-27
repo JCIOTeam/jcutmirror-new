@@ -2,7 +2,8 @@
 // 配置生成器组件 - 用于在 MDX 文档中动态生成配置
 
 import { Box, FormControl, InputLabel, Select, MenuItem, Paper, Typography } from '@mui/material';
-import React, { useState, useMemo } from 'react';
+import type React from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CodeBlock from '../docs/CodeBlock';

@@ -20,19 +20,19 @@ const NewsListPage: React.FC = () => {
   // 空依赖数组是有意为之
   const news = useMemo(() => getNewsList(), []);
 
-  const title = t('news.title') + ' - 荆楚理工学院开源软件镜像站 JCUT Mirror';
+  const title = `${t('news.title')} - 荆楚理工学院开源软件镜像站 JCUT Mirror`;
 
   return (
     <>
       <title>{title}</title>
-      <meta name="description" content="荆楚理工学院开源软件镜像站最新动态与公告。" />
-      <link rel="canonical" href={canonicalUrl('/news')} />
-      <Container maxWidth="md" sx={{ py: { xs: 3, md: 5 } }}>
+      <meta name='description' content='荆楚理工学院开源软件镜像站最新动态与公告。' />
+      <link rel='canonical' href={canonicalUrl('/news')} />
+      <Container maxWidth='md' sx={{ py: { xs: 3, md: 5 } }}>
         <Breadcrumbs sx={{ mb: 3 }}>
           <Link
             component={RouterLink}
-            to="/"
-            underline="hover"
+            to='/'
+            underline='hover'
             sx={{
               color: 'text.secondary',
             }}
@@ -50,7 +50,7 @@ const NewsListPage: React.FC = () => {
         </Breadcrumbs>
 
         <Typography
-          variant="h4"
+          variant='h4'
           sx={{
             fontWeight: 800,
             mb: 0.5,
@@ -59,7 +59,7 @@ const NewsListPage: React.FC = () => {
           {t('news.latestNews')}
         </Typography>
         <Typography
-          variant="body2"
+          variant='body2'
           sx={{
             color: 'text.secondary',
             mb: 4,
@@ -96,7 +96,7 @@ const NewsListPage: React.FC = () => {
                     }}
                   >
                     <Typography
-                      variant="caption"
+                      variant='caption'
                       sx={{
                         color: 'text.disabled',
                         fontFamily: '"JetBrains Mono", monospace',
@@ -108,7 +108,7 @@ const NewsListPage: React.FC = () => {
                       <Chip
                         key={tag}
                         label={tag}
-                        size="small"
+                        size='small'
                         sx={{
                           height: 18,
                           fontSize: '0.65rem',
@@ -120,8 +120,8 @@ const NewsListPage: React.FC = () => {
 
                   {/* 标题 */}
                   <Typography
-                    className="news-title"
-                    variant="h6"
+                    className='news-title'
+                    variant='h6'
                     sx={{
                       fontWeight: 700,
                       fontSize: { xs: '1rem', md: '1.1rem' },
@@ -134,7 +134,7 @@ const NewsListPage: React.FC = () => {
 
                   {/* 摘要 */}
                   <Typography
-                    variant="body2"
+                    variant='body2'
                     sx={{
                       color: 'text.secondary',
                       lineHeight: 1.6,
@@ -147,7 +147,7 @@ const NewsListPage: React.FC = () => {
 
                 {/* 箭头 */}
                 <ArrowIcon
-                  className="news-arrow"
+                  className='news-arrow'
                   sx={{
                     color: 'primary.main',
                     mt: 0.5,

@@ -3,7 +3,7 @@
 
 import { DarkMode as DarkIcon, LightMode as LightIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '../../hooks/useTheme';

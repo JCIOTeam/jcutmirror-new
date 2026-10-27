@@ -3,7 +3,7 @@
 
 import { ContentCopy as CopyIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import bash from 'react-syntax-highlighter/dist/esm/languages/hljs/bash';

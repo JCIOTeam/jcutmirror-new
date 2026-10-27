@@ -3,7 +3,8 @@
 
 import { ThemeProvider, CssBaseline, Box, GlobalStyles, LinearProgress } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { Suspense, lazy } from 'react';
+import type React from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './i18n';
 

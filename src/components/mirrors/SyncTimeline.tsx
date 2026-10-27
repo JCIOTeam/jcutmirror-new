@@ -10,7 +10,7 @@ import {
   Check as CheckIcon,
 } from '@mui/icons-material';
 import { Box, Typography, Paper, Grid, Tooltip, IconButton } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';

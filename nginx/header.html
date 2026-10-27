@@ -1,439 +1,828 @@
 <!DOCTYPE html>
 <html lang="zh-CN" data-theme="light">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>文件目录 - JCUT Mirror</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    /* ===== CSS 变量系统 - 与主站共享 ===== */
-    :root {
-      --bg-primary: #FFFFFF;
-      --bg-secondary: #F8FAFC;
-      --text-primary: #1E293B;
-      --text-secondary: #64748B;
-      --accent: #3B82F6;
-      --accent-hover: #1D4ED8;
-      --accent-light: rgba(59,130,246,0.08);
-      --border: #E2E8F0;
-      --shadow: 0 1px 3px rgba(0,0,0,0.08);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-      --radius: 8px;
-      --header-bg: rgba(255,255,255,0.92);
-      --success: #10B981;
-      --code-bg: rgba(0,0,0,0.05);
-    }
 
-    [data-theme="dark"] {
-      --bg-primary: #0F172A;
-      --bg-secondary: #1E293B;
-      --text-primary: #F1F5F9;
-      --text-secondary: #94A3B8;
-      --accent: #60A5FA;
-      --accent-hover: #93C5FD;
-      --accent-light: rgba(96,165,250,0.1);
-      --border: #334155;
-      --shadow: 0 1px 3px rgba(0,0,0,0.3);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-      --header-bg: rgba(30,41,59,0.95);
-      --success: #34D399;
-      --code-bg: rgba(255,255,255,0.07);
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>文件目录 - JCUT Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      /* ===== CSS 变量系统 - 与主站共享 ===== */
+      :root {
+        --bg-primary: #FFFFFF;
+        --bg-secondary: #F8FAFC;
+        --text-primary: #1E293B;
+        --text-secondary: #64748B;
+        --accent: #3B82F6;
+        --accent-hover: #1D4ED8;
+        --accent-light: rgba(59, 130, 246, 0.08);
+        --border: #E2E8F0;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --radius: 8px;
+        --header-bg: rgba(255, 255, 255, 0.92);
+        --success: #10B981;
+        --code-bg: rgba(0, 0, 0, 0.05);
+      }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 15px; scroll-behavior: smooth; }
-    body {
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background-color: var(--bg-secondary);
-      color: var(--text-primary);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: background-color 0.2s ease, color 0.2s ease;
-    }
+      [data-theme="dark"] {
+        --bg-primary: #0F172A;
+        --bg-secondary: #1E293B;
+        --text-primary: #F1F5F9;
+        --text-secondary: #94A3B8;
+        --accent: #60A5FA;
+        --accent-hover: #93C5FD;
+        --accent-light: rgba(96, 165, 250, 0.1);
+        --border: #334155;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --header-bg: rgba(30, 41, 59, 0.95);
+        --success: #34D399;
+        --code-bg: rgba(255, 255, 255, 0.07);
+      }
 
-    /* ===== 顶部导航栏 ===== */
-    .site-header {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--header-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow);
-    }
-    .header-inner {
-      max-width: 1200px; margin: 0 auto; padding: 0 20px;
-      height: 60px; display: flex; align-items: center; gap: 16px;
-    }
-    .logo {
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none; color: inherit; flex-shrink: 0;
-    }
-    .logo-text {
-      font-family: "JetBrains Mono", monospace;
-      font-weight: 800; font-size: 1rem; color: var(--text-primary); letter-spacing: -0.02em;
-    }
-    .logo-text span { color: var(--accent); }
-    .nav-links { display: flex; align-items: center; gap: 4px; margin-left: 8px; }
-    .nav-link {
-      padding: 6px 12px; border-radius: 6px; font-size: 0.875rem; font-weight: 500;
-      color: var(--text-secondary); text-decoration: none;
-      transition: color 0.15s, background-color 0.15s;
-    }
-    .nav-link:hover { color: var(--text-primary); background-color: var(--accent-light); }
-    .spacer { flex: 1; }
-    .toolbar-actions { display: flex; align-items: center; gap: 6px; }
-    .btn-home {
-      display: flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border);
-      background: transparent; color: var(--text-secondary);
-      font-size: 0.82rem; font-weight: 600; font-family: "Inter", sans-serif;
-      cursor: pointer; text-decoration: none; transition: all 0.2s ease;
-    }
-    .btn-home:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-    .btn-locale {
-      display: flex; align-items: center; gap: 4px; padding: 5px 10px;
-      border-radius: 6px; border: none; background: transparent; color: var(--text-secondary);
-      font-size: 0.82rem; font-weight: 600; font-family: "Inter", sans-serif;
-      cursor: pointer; transition: all 0.15s ease;
-    }
-    .btn-locale:hover { background: var(--accent-light); color: var(--text-primary); }
-    .btn-theme {
-      width: 34px; height: 34px; border-radius: 50%; border: none;
-      background: transparent; color: var(--text-secondary);
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s ease;
-    }
-    .btn-theme:hover { background: var(--accent-light); color: var(--text-primary); transform: rotate(15deg); }
-    .btn-theme svg { width: 18px; height: 18px; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    /* ===== 面包屑 ===== */
-    .breadcrumb-bar { background: var(--bg-primary); border-bottom: 1px solid var(--border); }
-    .breadcrumb-inner {
-      max-width: 1200px; margin: 0 auto; padding: 10px 20px;
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-    }
-    .breadcrumb-item { font-size: 0.82rem; color: var(--text-secondary); }
-    .breadcrumb-item a { color: var(--accent); text-decoration: none; font-weight: 500; }
-    .breadcrumb-item a:hover { text-decoration: underline; }
-    .breadcrumb-sep { color: var(--border); font-size: 0.75rem; }
-    .breadcrumb-current {
-      font-size: 0.82rem; font-weight: 600; color: var(--text-primary);
-      font-family: "JetBrains Mono", monospace;
-    }
+      html {
+        font-size: 15px;
+        scroll-behavior: smooth;
+      }
 
-    /* ===== 主内容区 ===== */
-    .content-wrapper { max-width: 1200px; margin: 0 auto; padding: 24px 20px 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
 
-    .path-row {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 12px; padding: 2px 0;
-    }
-    .path-label { font-size: 0.82rem; color: var(--text-secondary); white-space: nowrap; }
-    .path-value {
-      font-family: "JetBrains Mono", monospace; font-size: 0.85rem;
-      font-weight: 600; color: var(--text-primary); word-break: break-all;
-    }
+      /* ===== 顶部导航栏 ===== */
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--header-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
 
-    /* ===== 搜索栏 ===== */
-    .search-bar {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 14px;
-    }
-    .search-wrap {
-      position: relative; flex: 1;
-    }
-    .search-icon {
-      position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-      color: var(--text-secondary); pointer-events: none;
-      display: flex; align-items: center;
-    }
-    #file-search {
-      width: 100%; height: 36px;
-      padding: 0 36px 0 34px;
-      border: 1.5px solid var(--border); border-radius: 8px;
-      background: var(--bg-primary); color: var(--text-primary);
-      font-family: "JetBrains Mono", monospace; font-size: 0.85rem;
-      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    #file-search::placeholder { color: var(--text-secondary); font-family: "Inter", sans-serif; }
-    #file-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
-    .search-clear {
-      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--text-secondary); display: none; padding: 2px;
-      border-radius: 4px; line-height: 1;
-    }
-    .search-clear:hover { color: var(--text-primary); background: var(--accent-light); }
-    #file-search:not(:placeholder-shown) + .search-clear { display: flex; align-items: center; }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
 
-    /* 文件计数 */
-    #file-count {
-      font-size: 0.78rem; color: var(--text-secondary);
-      white-space: nowrap; flex-shrink: 0;
-      font-family: "JetBrains Mono", monospace;
-    }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: inherit;
+        flex-shrink: 0;
+      }
 
-    /* ===== FancyIndex 表格 ===== */
-    #list {
-      width: 100%; border-collapse: collapse;
-      table-layout: fixed; /* 固定列宽，避免 Name 被 Size/Date 挤压 */
-      background: var(--bg-primary); border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-    /* 列宽分配：Name 60% / Size 15% / Date 25% */
-    #list thead tr th:nth-child(1),
-    #list tbody tr td:nth-child(1) { width: 60%; }
-    #list thead tr th:nth-child(2),
-    #list tbody tr td:nth-child(2) { width: 15%; }
-    #list thead tr th:nth-child(3),
-    #list tbody tr td:nth-child(3) { width: 25%; }
-    #list thead tr th {
-      padding: 10px 16px; text-align: left; font-size: 0.8rem;
-      font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
-      color: var(--text-secondary); background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border); white-space: nowrap;
-      position: sticky; top: 60px; z-index: 10;
-    }
-    #list thead tr th a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
-    #list thead tr th a:hover { color: var(--accent); }
-    /* Name 列左对齐（默认）；Size 右对齐；Date 左对齐 */
-    #list thead tr th:nth-child(2) { text-align: right; }
-    #list tbody tr { border-bottom: 1px solid var(--border); transition: background-color 0.12s; }
-    #list tbody tr:last-child { border-bottom: none; }
-    #list tbody tr:hover { background: var(--accent-light); }
-    #list tbody tr td {
-      padding: 9px 16px; font-size: 0.875rem; color: var(--text-primary);
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    /* Name 列允许换行（长文件名） */
-    #list tbody tr td:nth-child(1) { white-space: normal; word-break: break-all; }
-    #list tbody tr td a {
-      color: var(--accent); text-decoration: none;
-      font-family: "JetBrains Mono", "Courier New", Courier, monospace;
-      font-size: 0.84rem; font-weight: 500;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    #list tbody tr td a:hover { text-decoration: underline; text-underline-offset: 2px; }
-    #list tbody tr.parent td a { color: var(--text-secondary); font-style: italic; }
-    #list tbody tr td.size,
-    #list tbody tr td:nth-child(2) {
-      color: var(--text-secondary); font-family: "JetBrains Mono", monospace;
-      font-size: 0.82rem; text-align: right; white-space: nowrap;
-    }
-    #list tbody tr td.date,
-    #list tbody tr td:nth-child(3) {
-      color: var(--text-secondary); font-family: "JetBrains Mono", monospace;
-      font-size: 0.82rem; white-space: nowrap;
-    }
+      .logo-text {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 800;
+        font-size: 1rem;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+      }
 
-    /* 搜索无结果 & 加载更多状态 */
-    #no-results {
-      display: none; text-align: center; padding: 40px 20px;
-      color: var(--text-secondary); font-size: 0.9rem;
-      background: var(--bg-primary); border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    #no-results svg { display: block; margin: 0 auto 12px; opacity: 0.4; }
+      .logo-text span {
+        color: var(--accent);
+      }
 
-    /* 无限滚动哨兵 */
-    #scroll-sentinel {
-      height: 1px; margin: 0;
-    }
-    #load-more-indicator {
-      display: none; text-align: center; padding: 16px;
-      color: var(--text-secondary); font-size: 0.82rem;
-    }
-    #load-more-indicator.visible { display: block; }
-    .spinner {
-      display: inline-block; width: 14px; height: 14px;
-      border: 2px solid var(--border); border-top-color: var(--accent);
-      border-radius: 50%; animation: spin 0.7s linear infinite;
-      vertical-align: -2px; margin-right: 6px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: 8px;
+      }
 
-    /* ===== 响应式 ===== */
-    @media (max-width: 768px) {
-      #list thead tr th:nth-child(3), #list tbody tr td:nth-child(3) { display: none; }
-      #list thead tr th { top: 60px; }
-      #list tbody tr td { padding: 8px 12px; }
-      /* 两列：Name 75% / Size 25% */
+      .nav-link {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.15s, background-color 0.15s;
+      }
+
+      .nav-link:hover {
+        color: var(--text-primary);
+        background-color: var(--accent-light);
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-home {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .btn-home:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-light);
+      }
+
+      .btn-locale {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        font-weight: 600;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .btn-locale:hover {
+        background: var(--accent-light);
+        color: var(--text-primary);
+      }
+
+      .btn-theme {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .btn-theme:hover {
+        background: var(--accent-light);
+        color: var(--text-primary);
+        transform: rotate(15deg);
+      }
+
+      .btn-theme svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* ===== 面包屑 ===== */
+      .breadcrumb-bar {
+        background: var(--bg-primary);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .breadcrumb-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .breadcrumb-item {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+      }
+
+      .breadcrumb-item a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .breadcrumb-item a:hover {
+        text-decoration: underline;
+      }
+
+      .breadcrumb-sep {
+        color: var(--border);
+        font-size: 0.75rem;
+      }
+
+      .breadcrumb-current {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* ===== 主内容区 ===== */
+      .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 20px 0;
+      }
+
+      .path-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 2px 0;
+      }
+
+      .path-label {
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+
+      .path-value {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        word-break: break-all;
+      }
+
+      /* ===== 搜索栏 ===== */
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .search-wrap {
+        position: relative;
+        flex: 1;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+      }
+
+      #file-search {
+        width: 100%;
+        height: 36px;
+        padding: 0 36px 0 34px;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+
+      #file-search::placeholder {
+        color: var(--text-secondary);
+        font-family: "Inter", sans-serif;
+      }
+
+      #file-search:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-light);
+      }
+
+      .search-clear {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-secondary);
+        display: none;
+        padding: 2px;
+        border-radius: 4px;
+        line-height: 1;
+      }
+
+      .search-clear:hover {
+        color: var(--text-primary);
+        background: var(--accent-light);
+      }
+
+      #file-search:not(:placeholder-shown)+.search-clear {
+        display: flex;
+        align-items: center;
+      }
+
+      /* 文件计数 */
+      #file-count {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* ===== FancyIndex 表格 ===== */
+      #list {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        /* 固定列宽，避免 Name 被 Size/Date 挤压 */
+        background: var(--bg-primary);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      /* 列宽分配：Name 60% / Size 15% / Date 25% */
       #list thead tr th:nth-child(1),
-      #list tbody tr td:nth-child(1) { width: 75%; }
+      #list tbody tr td:nth-child(1) {
+        width: 60%;
+      }
+
       #list thead tr th:nth-child(2),
-      #list tbody tr td:nth-child(2) { width: 25%; }
-      .nav-links { display: none; }
-      .logo-text { font-size: 0.9rem; }
-      .breadcrumb-inner { padding: 8px 16px; }
-      .content-wrapper { padding: 16px 12px 0; }
-    }
-    @media (max-width: 480px) {
-      #list thead tr th:nth-child(2), #list tbody tr td:nth-child(2) { display: none; }
-      /* 一列：Name 占满 */
-      #list thead tr th:nth-child(1),
-      #list tbody tr td:nth-child(1) { width: 100%; }
-      .btn-home span { display: none; }
-      .header-inner { padding: 0 12px; gap: 8px; }
-    }
-    @media print {
-      .site-header, .breadcrumb-bar, .site-footer { display: none; }
-      #list { box-shadow: none; border: 1px solid #ccc; }
-    }
-  </style>
-</head>
-<body>
+      #list tbody tr td:nth-child(2) {
+        width: 15%;
+      }
 
-<!-- ===== 顶部导航栏 ===== -->
-<header class="site-header" role="banner">
-  <div class="header-inner">
-    <a href="/" class="logo" aria-label="JCUT Mirror 首页">
-      <img src="/favicon.svg" alt="JCUT Mirror Logo" style="width:26px;height:26px;" />
-      <span class="logo-text">JCUT<span>Mirror</span></span>
-    </a>
-    <nav class="nav-links" aria-label="主导航">
-      <a href="/" class="nav-link" data-i18n="nav.home">首页</a>
-      <a href="/#mirrors" class="nav-link" data-i18n="nav.mirrors">镜像列表</a>
+      #list thead tr th:nth-child(3),
+      #list tbody tr td:nth-child(3) {
+        width: 25%;
+      }
+
+      #list thead tr th {
+        padding: 10px 16px;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+        position: sticky;
+        top: 60px;
+        z-index: 10;
+      }
+
+      #list thead tr th a {
+        color: inherit;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      #list thead tr th a:hover {
+        color: var(--accent);
+      }
+
+      /* Name 列左对齐（默认）；Size 右对齐；Date 左对齐 */
+      #list thead tr th:nth-child(2) {
+        text-align: right;
+      }
+
+      #list tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background-color 0.12s;
+      }
+
+      #list tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      #list tbody tr:hover {
+        background: var(--accent-light);
+      }
+
+      #list tbody tr td {
+        padding: 9px 16px;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Name 列允许换行（长文件名） */
+      #list tbody tr td:nth-child(1) {
+        white-space: normal;
+        word-break: break-all;
+      }
+
+      #list tbody tr td a {
+        color: var(--accent);
+        text-decoration: none;
+        font-family: "JetBrains Mono", "Courier New", Courier, monospace;
+        font-size: 0.84rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      #list tbody tr td a:hover {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+
+      #list tbody tr.parent td a {
+        color: var(--text-secondary);
+        font-style: italic;
+      }
+
+      #list tbody tr td.size,
+      #list tbody tr td:nth-child(2) {
+        color: var(--text-secondary);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      #list tbody tr td.date,
+      #list tbody tr td:nth-child(3) {
+        color: var(--text-secondary);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+
+      /* 搜索无结果 & 加载更多状态 */
+      #no-results {
+        display: none;
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        background: var(--bg-primary);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+
+      #no-results svg {
+        display: block;
+        margin: 0 auto 12px;
+        opacity: 0.4;
+      }
+
+      /* 无限滚动哨兵 */
+      #scroll-sentinel {
+        height: 1px;
+        margin: 0;
+      }
+
+      #load-more-indicator {
+        display: none;
+        text-align: center;
+        padding: 16px;
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+      }
+
+      #load-more-indicator.visible {
+        display: block;
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: -2px;
+        margin-right: 6px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ===== 响应式 ===== */
+      @media (max-width: 768px) {
+
+        #list thead tr th:nth-child(3),
+        #list tbody tr td:nth-child(3) {
+          display: none;
+        }
+
+        #list thead tr th {
+          top: 60px;
+        }
+
+        #list tbody tr td {
+          padding: 8px 12px;
+        }
+
+        /* 两列：Name 75% / Size 25% */
+        #list thead tr th:nth-child(1),
+        #list tbody tr td:nth-child(1) {
+          width: 75%;
+        }
+
+        #list thead tr th:nth-child(2),
+        #list tbody tr td:nth-child(2) {
+          width: 25%;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .logo-text {
+          font-size: 0.9rem;
+        }
+
+        .breadcrumb-inner {
+          padding: 8px 16px;
+        }
+
+        .content-wrapper {
+          padding: 16px 12px 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+
+        #list thead tr th:nth-child(2),
+        #list tbody tr td:nth-child(2) {
+          display: none;
+        }
+
+        /* 一列：Name 占满 */
+        #list thead tr th:nth-child(1),
+        #list tbody tr td:nth-child(1) {
+          width: 100%;
+        }
+
+        .btn-home span {
+          display: none;
+        }
+
+        .header-inner {
+          padding: 0 12px;
+          gap: 8px;
+        }
+      }
+
+      @media print {
+
+        .site-header,
+        .breadcrumb-bar,
+        .site-footer {
+          display: none;
+        }
+
+        #list {
+          box-shadow: none;
+          border: 1px solid #ccc;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ===== 顶部导航栏 ===== -->
+    <header class="site-header" role="banner">
+      <div class="header-inner">
+        <a href="/" class="logo" aria-label="JCUT Mirror 首页">
+          <img src="/favicon.svg" alt="JCUT Mirror Logo" style="width:26px;height:26px;" />
+          <span class="logo-text">JCUT<span>Mirror</span></span>
+        </a>
+        <nav class="nav-links" aria-label="主导航">
+          <a href="/" class="nav-link" data-i18n="nav.home">首页</a>
+          <a href="/#mirrors" class="nav-link" data-i18n="nav.mirrors">镜像列表</a>
+        </nav>
+        <div class="spacer"></div>
+        <div class="toolbar-actions">
+          <a href="/" class="btn-home" aria-label="返回主站首页">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              <polyline points="9,22 9,12 15,12 15,22" />
+            </svg>
+            <span data-i18n="nav.home">首页</span>
+          </a>
+          <button class="btn-locale" id="locale-btn" onclick="toggleLocale()" aria-label="切换语言">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+            </svg>
+            <span id="locale-label">EN</span>
+          </button>
+          <button class="btn-theme" id="theme-btn" onclick="toggleTheme()" aria-label="切换深色/浅色模式">
+            <svg id="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+            </svg>
+            <svg id="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              style="display:none" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== 面包屑 ===== -->
+    <nav class="breadcrumb-bar" aria-label="面包屑">
+      <div class="breadcrumb-inner">
+        <span class="breadcrumb-item"><a href="/" data-i18n="nav.home">首页</a></span>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="breadcrumb-item"><a href="/mirrors" data-i18n="nav.mirrors">镜像</a></span>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="breadcrumb-current" id="breadcrumb-current">...</span>
+      </div>
     </nav>
-    <div class="spacer"></div>
-    <div class="toolbar-actions">
-      <a href="/" class="btn-home" aria-label="返回主站首页">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
-        <span data-i18n="nav.home">首页</span>
-      </a>
-      <button class="btn-locale" id="locale-btn" onclick="toggleLocale()" aria-label="切换语言">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-        <span id="locale-label">EN</span>
-      </button>
-      <button class="btn-theme" id="theme-btn" onclick="toggleTheme()" aria-label="切换深色/浅色模式">
-        <svg id="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        <svg id="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </button>
-    </div>
-  </div>
-</header>
 
-<!-- ===== 面包屑 ===== -->
-<nav class="breadcrumb-bar" aria-label="面包屑">
-  <div class="breadcrumb-inner">
-    <span class="breadcrumb-item"><a href="/" data-i18n="nav.home">首页</a></span>
-    <span class="breadcrumb-sep" aria-hidden="true">/</span>
-    <span class="breadcrumb-item"><a href="/mirrors" data-i18n="nav.mirrors">镜像</a></span>
-    <span class="breadcrumb-sep" aria-hidden="true">/</span>
-    <span class="breadcrumb-current" id="breadcrumb-current">...</span>
-  </div>
-</nav>
+    <!-- ===== 主内容区 ===== -->
+    <div class="content-wrapper">
+      <!-- 路径行 -->
+      <div class="path-row" role="status" aria-live="polite">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          style="color:var(--accent);flex-shrink:0;" aria-hidden="true">
+          <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+        </svg>
+        <span class="path-label">当前目录：</span>
+        <span id="current-path-display" class="path-value">加载中…</span>
+      </div>
 
-<!-- ===== 主内容区 ===== -->
-<div class="content-wrapper">
-  <!-- 路径行 -->
-  <div class="path-row" role="status" aria-live="polite">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent);flex-shrink:0;" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-    <span class="path-label">当前目录：</span>
-    <span id="current-path-display" class="path-value">加载中…</span>
-  </div>
+      <!-- 搜索栏 -->
+      <div class="search-bar">
+        <div class="search-wrap">
+          <span class="search-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              aria-hidden="true">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <input type="search" id="file-search" placeholder="搜索文件名…" autocomplete="off" spellcheck="false"
+            aria-label="搜索文件" />
+          <button class="search-clear" id="search-clear" onclick="clearSearch()" aria-label="清除搜索">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <span id="file-count"></span>
+      </div>
 
-  <!-- 搜索栏 -->
-  <div class="search-bar">
-    <div class="search-wrap">
-      <span class="search-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      </span>
-      <input type="search" id="file-search" placeholder="搜索文件名…" autocomplete="off" spellcheck="false" aria-label="搜索文件" />
-      <button class="search-clear" id="search-clear" onclick="clearSearch()" aria-label="清除搜索">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <span id="file-count"></span>
-  </div>
+      <!-- 无结果提示（初始隐藏） -->
+      <div id="no-results" role="status" aria-live="polite">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+          aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <line x1="8" y1="11" x2="14" y2="11" />
+        </svg>
+        <span id="no-results-text">未找到匹配的文件</span>
+      </div>
 
-  <!-- 无结果提示（初始隐藏） -->
-  <div id="no-results" role="status" aria-live="polite">
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-    <span id="no-results-text">未找到匹配的文件</span>
-  </div>
+      <!-- .content-wrapper stays OPEN — fancyindex injects #list here, footer.html closes it -->
 
-<!-- .content-wrapper stays OPEN — fancyindex injects #list here, footer.html closes it -->
+      <script>
+        // ===== 翻译 =====
+        const i18nDict = {
+          zh: {
+            'nav.home': '首页', 'nav.mirrors': '镜像列表', 'locale-label': 'EN',
+            'search.placeholder': '搜索文件名…', 'no-results': '未找到匹配的文件',
+            'count.showing': '显示 {shown} / {total} 个文件', 'count.filtered': '找到 {n} 个文件',
+            'count.all': '{n} 个文件', 'loading-more': '加载更多…'
+          },
+          en: {
+            'nav.home': 'Home', 'nav.mirrors': 'Mirrors', 'locale-label': '中文',
+            'search.placeholder': 'Search files…', 'no-results': 'No matching files found',
+            'count.showing': 'Showing {shown} of {total} files', 'count.filtered': '{n} file(s) found',
+            'count.all': '{n} files', 'loading-more': 'Loading more…'
+          }
+        };
+        let currentLocale = 'zh';
 
-<script>
-  // ===== 翻译 =====
-  const i18nDict = {
-    zh: { 'nav.home':'首页','nav.mirrors':'镜像列表','locale-label':'EN',
-          'search.placeholder':'搜索文件名…','no-results':'未找到匹配的文件',
-          'count.showing':'显示 {shown} / {total} 个文件','count.filtered':'找到 {n} 个文件',
-          'count.all':'{n} 个文件','loading-more':'加载更多…' },
-    en: { 'nav.home':'Home','nav.mirrors':'Mirrors','locale-label':'中文',
-          'search.placeholder':'Search files…','no-results':'No matching files found',
-          'count.showing':'Showing {shown} of {total} files','count.filtered':'{n} file(s) found',
-          'count.all':'{n} files','loading-more':'Loading more…' }
-  };
-  let currentLocale = 'zh';
+        function t(key, vars) {
+          let s = (i18nDict[currentLocale] || i18nDict.zh)[key] || key;
+          if (vars) Object.keys(vars).forEach(k => { s = s.replace('{' + k + '}', vars[k]); });
+          return s;
+        }
 
-  function t(key, vars) {
-    let s = (i18nDict[currentLocale] || i18nDict.zh)[key] || key;
-    if (vars) Object.keys(vars).forEach(k => { s = s.replace('{'+k+'}', vars[k]); });
-    return s;
-  }
+        // ===== 主题 =====
+        function initTheme() { applyTheme(localStorage.getItem('theme') || 'light'); }
+        function applyTheme(mode) {
+          document.documentElement.setAttribute('data-theme', mode);
+          document.getElementById('icon-dark').style.display = mode === 'light' ? 'block' : 'none';
+          document.getElementById('icon-light').style.display = mode === 'dark' ? 'block' : 'none';
+        }
+        function toggleTheme() {
+          const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          localStorage.setItem('theme', next); applyTheme(next);
+        }
 
-  // ===== 主题 =====
-  function initTheme() { applyTheme(localStorage.getItem('theme') || 'light'); }
-  function applyTheme(mode) {
-    document.documentElement.setAttribute('data-theme', mode);
-    document.getElementById('icon-dark').style.display = mode === 'light' ? 'block' : 'none';
-    document.getElementById('icon-light').style.display = mode === 'dark' ? 'block' : 'none';
-  }
-  function toggleTheme() {
-    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    localStorage.setItem('theme', next); applyTheme(next);
-  }
+        // ===== 语言 =====
+        function initLocale() { applyLocale(localStorage.getItem('locale') || 'zh'); }
+        function applyLocale(locale) {
+          currentLocale = locale;
+          const dict = i18nDict[locale] || i18nDict.zh;
+          document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) el.textContent = dict[key];
+          });
+          const ll = document.getElementById('locale-label');
+          if (ll) ll.textContent = dict['locale-label'];
+          const si = document.getElementById('file-search');
+          if (si) si.placeholder = dict['search.placeholder'];
+          const nr = document.getElementById('no-results-text');
+          if (nr) nr.textContent = dict['no-results'];
+        }
+        function toggleLocale() {
+          const next = (localStorage.getItem('locale') || 'zh') === 'zh' ? 'en' : 'zh';
+          localStorage.setItem('locale', next); applyLocale(next);
+        }
 
-  // ===== 语言 =====
-  function initLocale() { applyLocale(localStorage.getItem('locale') || 'zh'); }
-  function applyLocale(locale) {
-    currentLocale = locale;
-    const dict = i18nDict[locale] || i18nDict.zh;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (dict[key]) el.textContent = dict[key];
-    });
-    const ll = document.getElementById('locale-label');
-    if (ll) ll.textContent = dict['locale-label'];
-    const si = document.getElementById('file-search');
-    if (si) si.placeholder = dict['search.placeholder'];
-    const nr = document.getElementById('no-results-text');
-    if (nr) nr.textContent = dict['no-results'];
-  }
-  function toggleLocale() {
-    const next = (localStorage.getItem('locale') || 'zh') === 'zh' ? 'en' : 'zh';
-    localStorage.setItem('locale', next); applyLocale(next);
-  }
+        // ===== 面包屑 =====
+        function initBreadcrumb() {
+          const path = window.location.pathname;
+          const parts = path.split('/').filter(Boolean);
+          const crumbEl = document.getElementById('breadcrumb-current');
+          if (crumbEl) crumbEl.textContent = parts[parts.length - 1] || 'root';
+          const pathEl = document.getElementById('current-path-display');
+          if (pathEl) pathEl.textContent = path;
+        }
 
-  // ===== 面包屑 =====
-  function initBreadcrumb() {
-    const path = window.location.pathname;
-    const parts = path.split('/').filter(Boolean);
-    const crumbEl = document.getElementById('breadcrumb-current');
-    if (crumbEl) crumbEl.textContent = parts[parts.length - 1] || 'root';
-    const pathEl = document.getElementById('current-path-display');
-    if (pathEl) pathEl.textContent = path;
-  }
+        // ===== 搜索（footer.js 初始化后绑定） =====
+        function clearSearch() {
+          const input = document.getElementById('file-search');
+          if (input) { input.value = ''; input.dispatchEvent(new Event('input')); input.focus(); }
+        }
 
-  // ===== 搜索（footer.js 初始化后绑定） =====
-  function clearSearch() {
-    const input = document.getElementById('file-search');
-    if (input) { input.value = ''; input.dispatchEvent(new Event('input')); input.focus(); }
-  }
-
-  // ===== 初始化 =====
-  (function init() {
-    initTheme(); initLocale(); initBreadcrumb();
-  })();
-  window.addEventListener('storage', function(e) {
-    if (e.key === 'theme') applyTheme(e.newValue || 'light');
-    if (e.key === 'locale') applyLocale(e.newValue || 'zh');
-  });
-</script>
+        // ===== 初始化 =====
+        (function init() {
+          initTheme(); initLocale(); initBreadcrumb();
+        })();
+        window.addEventListener('storage', (e) => {
+          if (e.key === 'theme') applyTheme(e.newValue || 'light');
+          if (e.key === 'locale') applyLocale(e.newValue || 'zh');
+        });
+      </script>

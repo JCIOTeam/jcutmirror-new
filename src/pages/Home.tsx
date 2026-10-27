@@ -27,7 +27,8 @@ import {
   LinearProgress,
   IconButton,
 } from '@mui/material';
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import type React from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RefreshButton from '../components/common/RefreshButton';
@@ -61,10 +62,8 @@ const LetterIndexNav: React.FC<LetterIndexNavProps> = ({ letters, ariaLabel }) =
   const navRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const buttons = Array.from(
-      navRef.current?.querySelectorAll<HTMLAnchorElement>('[data-letter-btn]') ?? []
-    );
-    const idx = buttons.findIndex((b) => b === document.activeElement);
+    const buttons = Array.from(navRef.current?.querySelectorAll<HTMLAnchorElement>('[data-letter-btn]') ?? []);
+    const idx = buttons.indexOf(document.activeElement as HTMLAnchorElement);
     if (idx === -1) return;
     let next = idx;
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
@@ -101,13 +100,13 @@ const LetterIndexNav: React.FC<LetterIndexNavProps> = ({ letters, ariaLabel }) =
         border: '1px solid',
         borderColor: 'divider',
       }}
-      role="navigation"
+      role='navigation'
       aria-label={ariaLabel}
     >
       {letters.map((letter, i) => (
         <Button
           key={letter}
-          size="small"
+          size='small'
           href={`#group-${letter}`}
           data-letter-btn
           tabIndex={i === 0 ? 0 : -1}
@@ -172,7 +171,7 @@ const Home: React.FC = () => {
     const synced = mirrors.filter((m) => {
       if (!m.lastUpdated) return false;
       const ts = Number(m.lastUpdated);
-      if (isNaN(ts) || ts <= 0) return false;
+      if (Number.isNaN(ts) || ts <= 0) return false;
       const ms = ts < 1e12 ? ts * 1000 : ts;
       return ms >= todayStart.getTime();
     }).length;
@@ -251,17 +250,17 @@ const Home: React.FC = () => {
   return (
     <>
       <title>{SITE_TITLE_ZH} - JCUT Mirror</title>
-      <meta name="description" content={DESC_ZH} />
-      <meta name="keywords" content={KEYWORDS_ZH} />
-      <link rel="canonical" href={canonicalUrl('/')} />
-      <meta property="og:type" content="website" />
-      <meta property="og:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
-      <meta property="og:description" content={DESC_ZH} />
-      <meta property="og:url" content={canonicalUrl('/')} />
-      <meta property="og:image" content={`${SITE_ORIGIN}/favicon.svg`} />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:title" content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
-      <meta name="twitter:description" content={DESC_ZH} />
+      <meta name='description' content={DESC_ZH} />
+      <meta name='keywords' content={KEYWORDS_ZH} />
+      <link rel='canonical' href={canonicalUrl('/')} />
+      <meta property='og:type' content='website' />
+      <meta property='og:title' content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
+      <meta property='og:description' content={DESC_ZH} />
+      <meta property='og:url' content={canonicalUrl('/')} />
+      <meta property='og:image' content={`${SITE_ORIGIN}/favicon.svg`} />
+      <meta name='twitter:card' content='summary' />
+      <meta name='twitter:title' content={`${SITE_TITLE_ZH} - JCUT Mirror`} />
+      <meta name='twitter:description' content={DESC_ZH} />
       {/* Hero 区域 */}
       <Box
         sx={{
@@ -284,7 +283,7 @@ const Home: React.FC = () => {
           overflow: 'hidden',
         }}
       >
-        <Container maxWidth="lg" sx={{ position: 'relative' }}>
+        <Container maxWidth='lg' sx={{ position: 'relative' }}>
           {/* 公告/通知横幅 —— 从 public/announcements.json 读取，无需重新构建即可更新 */}
           <Box sx={{ mb: 3 }}>
             <AnnouncementBanner />
@@ -293,14 +292,7 @@ const Home: React.FC = () => {
             {/* 网络状态胶囊 — 从 API 实时获取用户网络类型 */}
             {(() => {
               if (campusStatus === undefined) {
-                return (
-                  <Skeleton
-                    variant="rounded"
-                    width={110}
-                    height={24}
-                    sx={{ mb: 2, borderRadius: 6 }}
-                  />
-                );
+                return <Skeleton variant='rounded' width={110} height={24} sx={{ mb: 2, borderRadius: 6 }} />;
               }
               const netConfig =
                 campusStatus === '1'
@@ -333,14 +325,14 @@ const Home: React.FC = () => {
                         ? t('network.ipv6')
                         : t('network.external')
                   }
-                  placement="right"
+                  placement='right'
                 >
                   <Chip
                     icon={netConfig.icon}
                     label={netConfig.label}
                     color={netConfig.color}
-                    size="small"
-                    variant="outlined"
+                    size='small'
+                    variant='outlined'
                     sx={{
                       mb: 2,
                       fontWeight: 700,
@@ -353,8 +345,7 @@ const Home: React.FC = () => {
                         borderRadius: '50%',
                         bgcolor: netConfig.dot,
                         ml: 0.5,
-                        animation:
-                          campusStatus !== '0' ? 'net-pulse 2.4s ease-in-out infinite' : 'none',
+                        animation: campusStatus !== '0' ? 'net-pulse 2.4s ease-in-out infinite' : 'none',
                       },
                       '@keyframes net-pulse': {
                         '0%, 100%': { opacity: 1, transform: 'scale(1)' },
@@ -368,7 +359,7 @@ const Home: React.FC = () => {
 
             {/* 标题 */}
             <Typography
-              variant="h2"
+              variant='h2'
               sx={{
                 fontWeight: 800,
                 fontSize: { xs: '2rem', md: '3rem' },
@@ -381,7 +372,7 @@ const Home: React.FC = () => {
             </Typography>
 
             <Typography
-              variant="h5"
+              variant='h5'
               sx={{
                 color: 'text.secondary',
                 mb: 2,
@@ -393,7 +384,7 @@ const Home: React.FC = () => {
             </Typography>
 
             <Typography
-              variant="body1"
+              variant='body1'
               sx={{
                 color: 'text.secondary',
                 mb: 3,
@@ -404,7 +395,7 @@ const Home: React.FC = () => {
               {t('home.hero.description')}
             </Typography>
 
-            {/* 统计数据 —— 桌面显示图标+文字，移动端折叠成图标徽章 */}
+            {/* 统计数据 —— 桌面显示图标 + 文字，移动端折叠成图标徽章 */}
             {(() => {
               const iconSx = { fontSize: { xs: 16, sm: 18 } };
               const stats = [
@@ -445,7 +436,7 @@ const Home: React.FC = () => {
                   }}
                 >
                   {stats.map((item, i) => (
-                    <Tooltip key={i} title={item.label} placement="top">
+                    <Tooltip key={i} title={item.label} placement='top'>
                       <Box
                         sx={{
                           display: 'flex',
@@ -461,7 +452,7 @@ const Home: React.FC = () => {
                       >
                         {item.icon}
                         <Typography
-                          variant="body2"
+                          variant='body2'
                           sx={{
                             color: 'text.secondary',
                             fontWeight: 500,
@@ -506,9 +497,7 @@ const Home: React.FC = () => {
             background: (theme) =>
               theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)',
             border: (theme) =>
-              theme.palette.mode === 'dark'
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.05)',
+              theme.palette.mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
             // 左侧色条
             borderLeft: '3px solid #3B82F6',
@@ -518,11 +507,11 @@ const Home: React.FC = () => {
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
             <InfoIcon sx={{ color: '#3B82F6', fontSize: 20 }} />
-            <Typography variant="body2" sx={{ flex: 1, fontSize: '0.875rem' }}>
+            <Typography variant='body2' sx={{ flex: 1, fontSize: '0.875rem' }}>
               {t('network.ipv6')}
             </Typography>
             <IconButton
-              size="small"
+              size='small'
               onClick={() => {
                 setShowIpv6Snackbar(false);
                 setIpv6Dismissed(true);
@@ -536,8 +525,7 @@ const Home: React.FC = () => {
           <Box
             sx={{
               height: 3,
-              bgcolor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'),
               position: 'relative',
               overflow: 'hidden',
               '&::after': {
@@ -584,9 +572,7 @@ const Home: React.FC = () => {
             background: (theme) =>
               theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.7)' : 'rgba(255, 255, 255, 0.7)',
             border: (theme) =>
-              theme.palette.mode === 'dark'
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.05)',
+              theme.palette.mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
             // 左侧色条
             borderLeft: '3px solid #F59E0B',
@@ -594,19 +580,17 @@ const Home: React.FC = () => {
             position: 'relative',
             '&:hover': {
               background: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? 'rgba(15, 23, 42, 0.8)'
-                  : 'rgba(255, 255, 255, 0.8)',
+                theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.8)',
             },
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5 }}>
             <WarningIcon sx={{ color: '#F59E0B', fontSize: 20 }} />
-            <Typography variant="body2" sx={{ flex: 1, fontSize: '0.875rem' }}>
+            <Typography variant='body2' sx={{ flex: 1, fontSize: '0.875rem' }}>
               {t('home.failedSnackbar', { count: failedCount })}
             </Typography>
             <IconButton
-              size="small"
+              size='small'
               onClick={(e) => {
                 e.stopPropagation();
                 setShowFailedSnackbar(false);
@@ -620,8 +604,7 @@ const Home: React.FC = () => {
           <Box
             sx={{
               height: 3,
-              bgcolor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+              bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'),
               position: 'relative',
               overflow: 'hidden',
               '&::after': {
@@ -642,7 +625,7 @@ const Home: React.FC = () => {
           />
         </Box>
       </Snackbar>
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+      <Container maxWidth='lg' sx={{ py: { xs: 4, md: 6 } }}>
         {/* 常用镜像 + 最新动态（无搜索时显示） */}
         {!searchQuery && (
           <Box sx={{ mb: 6 }}>
@@ -657,7 +640,7 @@ const Home: React.FC = () => {
               {hasNews && (
                 <Grid size={{ xs: 12, lg: 3 }} sx={{ order: { xs: -1, lg: 1 } }}>
                   <Typography
-                    variant="h5"
+                    variant='h5'
                     sx={{
                       fontWeight: 700,
                       mb: 3,
@@ -672,7 +655,7 @@ const Home: React.FC = () => {
               {/* 常用镜像列 —— 有新闻时桌面 9 列，无新闻时全宽 */}
               <Grid size={{ xs: 12, lg: hasNews ? 9 : 12 }} sx={{ order: { xs: 1, lg: 0 } }}>
                 <Typography
-                  variant="h5"
+                  variant='h5'
                   sx={{
                     fontWeight: 700,
                     mb: 3,
@@ -684,7 +667,7 @@ const Home: React.FC = () => {
                   <Grid container spacing={2}>
                     {[...Array(mirrorCount)].map((_, i) => (
                       <Grid key={i} size={{ xs: 12, sm: 6, md: hasNews ? 4 : 3 }}>
-                        <Skeleton variant="rectangular" height={160} sx={{ borderRadius: 2 }} />
+                        <Skeleton variant='rectangular' height={160} sx={{ borderRadius: 2 }} />
                       </Grid>
                     ))}
                   </Grid>
@@ -708,7 +691,7 @@ const Home: React.FC = () => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
               <StarIcon sx={{ color: 'warning.main', fontSize: '1.3rem' }} />
               <Typography
-                variant="h5"
+                variant='h5'
                 sx={{
                   fontWeight: 700,
                 }}
@@ -717,9 +700,9 @@ const Home: React.FC = () => {
               </Typography>
               <Chip
                 label={favoriteMirrors.length}
-                size="small"
-                color="warning"
-                variant="outlined"
+                size='small'
+                color='warning'
+                variant='outlined'
                 sx={{ fontWeight: 700, height: 20, fontSize: '0.72rem' }}
               />
             </Box>
@@ -734,7 +717,7 @@ const Home: React.FC = () => {
         )}
 
         {/* 所有镜像列表 */}
-        <Box id="mirrors">
+        <Box id='mirrors'>
           <Box
             sx={{
               display: 'flex',
@@ -746,14 +729,12 @@ const Home: React.FC = () => {
             }}
           >
             <Typography
-              variant="h5"
+              variant='h5'
               sx={{
                 fontWeight: 700,
               }}
             >
-              {searchQuery
-                ? t('search.results', { count: filteredMirrors.length })
-                : t('home.allMirrors')}
+              {searchQuery ? t('search.results', { count: filteredMirrors.length }) : t('home.allMirrors')}
             </Typography>
 
             {/* 刷新按钮 */}
@@ -773,11 +754,11 @@ const Home: React.FC = () => {
 
           {/* 加载失败 */}
           {error && (
-            <Paper variant="outlined" sx={{ p: 3, textAlign: 'center', borderRadius: 2, mb: 3 }}>
-              <Typography color="error" gutterBottom>
+            <Paper variant='outlined' sx={{ p: 3, textAlign: 'center', borderRadius: 2, mb: 3 }}>
+              <Typography color='error' gutterBottom>
                 {t('error.loadFailed')}
               </Typography>
-              <Button variant="contained" size="small" onClick={() => refetch()}>
+              <Button variant='contained' size='small' onClick={() => refetch()}>
                 {t('error.retry')}
               </Button>
             </Paper>
@@ -785,10 +766,7 @@ const Home: React.FC = () => {
 
           {/* 字母分组索引导航 — roving tabindex：整体一个 Tab 停，方向键在字母间移动 */}
           {!isLoading && Object.keys(groupedMirrors).length > 0 && (
-            <LetterIndexNav
-              letters={sortedGroupKeys(groupedMirrors)}
-              ariaLabel={t('home.letterIndex')}
-            />
+            <LetterIndexNav letters={sortedGroupKeys(groupedMirrors)} ariaLabel={t('home.letterIndex')} />
           )}
 
           {/* 镜像列表 */}
@@ -799,11 +777,7 @@ const Home: React.FC = () => {
               transition: 'opacity 0.25s',
             }}
           >
-            <MirrorList
-              grouped={groupedMirrors}
-              loading={isLoading}
-              error={error ? String(error) : undefined}
-            />
+            <MirrorList grouped={groupedMirrors} loading={isLoading} error={error ? String(error) : undefined} />
           </Box>
         </Box>
       </Container>

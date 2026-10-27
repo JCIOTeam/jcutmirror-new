@@ -12,7 +12,8 @@ import {
   CampaignOutlined as MegaphoneIcon,
 } from '@mui/icons-material';
 import { Box, Typography, IconButton, Link, Chip } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 

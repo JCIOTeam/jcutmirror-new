@@ -56,7 +56,7 @@ function extractVersion(name: string): number[] {
   return m[0]
     .split(/[.-]/)
     .map(Number)
-    .filter((n) => !isNaN(n));
+    .filter((n) => !Number.isNaN(n));
 }
 
 function compareVersionDesc(a: string, b: string): number {

@@ -3,7 +3,7 @@
 
 import { Translate as TranslateIcon } from '@mui/icons-material';
 import { Button, Tooltip } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLocale } from '../../hooks/useLocale';

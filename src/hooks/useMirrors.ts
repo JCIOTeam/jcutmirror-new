@@ -53,7 +53,7 @@ export const useFilteredMirrors = (mirrors: Mirror[]): Mirror[] => {
         m.name.zh.toLowerCase().includes(q) ||
         m.name.en.toLowerCase().includes(q) ||
         m.desc.zh.toLowerCase().includes(q) ||
-        m.desc.en.toLowerCase().includes(q)
+        m.desc.en.toLowerCase().includes(q),
     );
   }, [mirrors, searchQuery]);
 };
@@ -77,7 +77,9 @@ export const useGroupedMirrors = (mirrors: Mirror[]): GroupedMirrors =>
       groups[key].push(m);
     });
     // 组内按 id 字母升序排列，避免因后端返回顺序不定导致每次刷新乱序
-    Object.values(groups).forEach((group) => group.sort((a, b) => a.id.localeCompare(b.id)));
+    Object.values(groups).forEach((group) => {
+      group.sort((a, b) => a.id.localeCompare(b.id));
+    });
     return groups;
   }, [mirrors]);
 
@@ -96,16 +98,7 @@ export function sortedGroupKeys(grouped: GroupedMirrors): string[] {
 // ── 常用镜像 —— 从 public/popular-mirrors.json 读取，运行时可热更新 ─────────
 
 /** 内置兜底列表，当 JSON 文件不存在或加载失败时使用 */
-const FALLBACK_POPULAR = [
-  'ubuntu',
-  'debian',
-  'archlinux',
-  'archlinuxcn',
-  'kali',
-  'rocky',
-  'alpine',
-  'openeuler',
-];
+const FALLBACK_POPULAR = ['ubuntu', 'debian', 'archlinux', 'archlinuxcn', 'kali', 'rocky', 'alpine', 'openeuler'];
 
 export const usePopularMirrors = (mirrors: Mirror[], count = 8): Mirror[] => {
   const [popularIds, setPopularIds] = useState<string[]>([]);
@@ -138,7 +131,9 @@ export const usePopularMirrors = (mirrors: Mirror[], count = 8): Mirror[] => {
       mirrors
         .filter((m) => m.status === 'succeeded' && !result.find((r) => r.id === m.id))
         .slice(0, count - result.length)
-        .forEach((m) => result.push(m));
+        .forEach((m) => {
+          result.push(m);
+        });
     }
     return result.slice(0, count);
   }, [mirrors, popularIds, count]);

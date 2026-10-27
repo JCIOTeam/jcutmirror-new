@@ -36,21 +36,9 @@ export interface FileEntry {
 
 export function detectPlatform(name: string): FileEntry['platform'] {
   const f = name.toLowerCase();
-  if (
-    f.includes('windows') ||
-    f.includes('_win') ||
-    f.endsWith('.exe') ||
-    f.endsWith('.msi') ||
-    f.endsWith('.msix')
-  )
+  if (f.includes('windows') || f.includes('_win') || f.endsWith('.exe') || f.endsWith('.msi') || f.endsWith('.msix'))
     return 'windows';
-  if (
-    f.includes('darwin') ||
-    f.includes('macos') ||
-    f.includes('osx') ||
-    f.endsWith('.dmg') ||
-    f.endsWith('.pkg')
-  )
+  if (f.includes('darwin') || f.includes('macos') || f.includes('osx') || f.endsWith('.dmg') || f.endsWith('.pkg'))
     return 'macos';
   if (
     f.includes('linux') ||
@@ -131,23 +119,13 @@ export async function fetchDir(path: string): Promise<DirEntry[]> {
 
 // ─── 平台展示顺序与标签 ───────────────────────────────────────────────────────
 
-export const PLATFORM_ORDER: FileEntry['platform'][] = [
-  'windows',
-  'linux',
-  'macos',
-  'android',
-  'other',
-  'checksum',
-];
+export const PLATFORM_ORDER: FileEntry['platform'][] = ['windows', 'linux', 'macos', 'android', 'other', 'checksum'];
 
 /**
  * 平台显示标签：windows/linux/macos/android 是品牌名不随语言变化；
  * checksum/other 走 i18n，由组件传入 t。
  */
-export function platformLabel(
-  platform: FileEntry['platform'],
-  t: (key: string) => string
-): string {
+export function platformLabel(platform: FileEntry['platform'], t: (key: string) => string): string {
   switch (platform) {
     case 'checksum':
       return t('githubRelease.platform.checksum');
@@ -160,5 +138,5 @@ export function platformLabel(
 
 /** 尾部斜杠标准化：确保路径以 / 结尾 */
 export function ensureTrailingSlash(p: string): string {
-  return p.endsWith('/') ? p : p + '/';
+  return p.endsWith('/') ? p : `${p}/`;
 }

@@ -22,8 +22,8 @@ export const parseTimestamp = (value: string | number | null | undefined): Date 
     typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value));
 
   // 数字或数字字符串：按 Unix 时间戳处理（>0 才视为合法，0/负数排除）
-  if (!isNaN(num) && num > 0) {
-    // 10位数 = 秒级时间戳（< 1e12）；13位数 = 毫秒时间戳
+  if (!Number.isNaN(num) && num > 0) {
+    // 10 位数 = 秒级时间戳（< 1e12）；13 位数 = 毫秒时间戳
     const ms = num < 1e12 ? num * 1000 : num;
     const date = new Date(ms);
     if (isValid(date)) return date;

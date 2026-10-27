@@ -2,7 +2,11 @@
 // Grafana 系统指标面板 —— 从 StatusPage 抽出
 // 仅在 /grafana/ 可达时由父组件渲染；依赖 i18n 的 t 和当前主题模式
 
-import { BarChart as GrafanaIcon, OpenInNew as OpenInNewIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import {
+  BarChart as GrafanaIcon,
+  OpenInNew as OpenInNewIcon,
+  ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 import {
   Box,
   Grid,
@@ -16,7 +20,7 @@ import {
   Divider,
   Tooltip,
 } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ThemeMode } from '../../types';
@@ -48,7 +52,10 @@ const GrafanaPanel: React.FC<GrafanaPanelProps> = ({ themeMode }) => {
           '&:before': { display: 'none' },
         }}
       >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{ px: 3, py: 1.5, borderRadius: 'inherit' }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <GrafanaIcon color="primary" fontSize="small" />
             <Box>

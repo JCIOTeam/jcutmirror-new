@@ -3,7 +3,7 @@
 
 import { Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
 import { TextField, InputAdornment, IconButton } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 

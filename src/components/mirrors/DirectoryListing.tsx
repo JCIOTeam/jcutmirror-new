@@ -28,7 +28,8 @@ import {
   InputBase,
   IconButton,
 } from '@mui/material';
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import type React from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RefreshButton from '../common/RefreshButton';

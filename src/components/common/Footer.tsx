@@ -12,7 +12,7 @@ import {
   IconButton,
   Tooltip,
 } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 

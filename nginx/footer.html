@@ -10,257 +10,258 @@
 
 <!-- 页脚 -->
 <footer style="border-top:1px solid var(--border);background:var(--bg-primary);padding:20px;margin-top:auto;">
-  <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+  <div
+    style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
     <span style="font-size:.82rem;color:var(--text-secondary);">© 2026 JCUT Mirror · 荆楚理工学院开源镜像站</span>
-    <span style="font-size:.78rem;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;">Powered by tunasync &amp; Nginx FancyIndex</span>
+    <span style="font-size:.78rem;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;">Powered by
+      tunasync &amp; Nginx FancyIndex</span>
   </div>
 </footer>
 
 <script>
-(function () {
-  'use strict';
+  (() => {
+    'use strict';
 
-  // ─── 配置 ────────────────────────────────────────────────────────────────
-  var BATCH_SIZE   = 200;   // 每次渲染的行数（初始 + 每次追加）
-  var SEARCH_DELAY = 150;   // 搜索防抖延迟（ms）
+    // ─── 配置 ────────────────────────────────────────────────────────────────
+    const BATCH_SIZE = 200;   // 每次渲染的行数（初始 + 每次追加）
+    const SEARCH_DELAY = 150;   // 搜索防抖延迟（ms）
 
-  // ─── 文件类型图标 ─────────────────────────────────────────────────────────
-  var ICONS = {
-    parent: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
-    folder: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
-    image:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
-    archive:'<svg width="15" height="15" viewBox="0 0 24 24" fill="#FDE68A" stroke="#B45309" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
-    iso:    '<svg width="15" height="15" viewBox="0 0 24 24" fill="#BFDBFE" stroke="#1D4ED8" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>',
-    code:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
-    text:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
-    video:  '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FECACA" stroke="#DC2626" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
-    rpm:    '<svg width="15" height="15" viewBox="0 0 24 24" fill="#E0E7FF" stroke="#4338CA" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
-    deb:    '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FCE7F3" stroke="#BE185D" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
-    file:   '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-  };
+    // ─── 文件类型图标 ─────────────────────────────────────────────────────────
+    const ICONS = {
+      parent: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+      folder: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FCD34D" stroke="#D97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>',
+      image: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#BBF7D0" stroke="#16A34A" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+      archive: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FDE68A" stroke="#B45309" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>',
+      iso: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#BFDBFE" stroke="#1D4ED8" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>',
+      code: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+      text: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+      video: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FECACA" stroke="#DC2626" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
+      rpm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#E0E7FF" stroke="#4338CA" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+      deb: '<svg width="15" height="15" viewBox="0 0 24 24" fill="#FCE7F3" stroke="#BE185D" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
+      file: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" style="flex-shrink:0;vertical-align:-2px" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    };
 
-  function getIcon(name, isParent) {
-    if (isParent) return ICONS.parent;
-    if (name.endsWith('/')) return ICONS.folder;
-    var ext = name.toLowerCase().replace(/\/$/, '').split('.').pop();
-    if (['jpg','jpeg','png','gif','webp','svg','bmp','ico','avif'].indexOf(ext) !== -1) return ICONS.image;
-    if (['iso','img'].indexOf(ext) !== -1) return ICONS.iso;
-    if (['tar','gz','bz2','xz','zst','zip','7z','rar','tgz','txz'].indexOf(ext) !== -1) return ICONS.archive;
-    if (ext === 'deb') return ICONS.deb;
-    if (ext === 'rpm') return ICONS.rpm;
-    if (['mp4','mkv','avi','mov','wmv','flv','webm'].indexOf(ext) !== -1) return ICONS.video;
-    if (['sh','py','js','ts','c','cpp','h','go','rs','java','php','rb','pl','lua',
-         'yaml','yml','json','toml','conf','cfg','ini','xml','html','css'].indexOf(ext) !== -1) return ICONS.code;
-    if (['txt','md','rst','log','csv'].indexOf(ext) !== -1 ||
+    function getIcon(name, isParent) {
+      if (isParent) return ICONS.parent;
+      if (name.endsWith('/')) return ICONS.folder;
+      const ext = name.toLowerCase().replace(/\/$/, '').split('.').pop();
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'avif'].indexOf(ext) !== -1) return ICONS.image;
+      if (['iso', 'img'].indexOf(ext) !== -1) return ICONS.iso;
+      if (['tar', 'gz', 'bz2', 'xz', 'zst', 'zip', '7z', 'rar', 'tgz', 'txz'].indexOf(ext) !== -1) return ICONS.archive;
+      if (ext === 'deb') return ICONS.deb;
+      if (ext === 'rpm') return ICONS.rpm;
+      if (['mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm'].indexOf(ext) !== -1) return ICONS.video;
+      if (['sh', 'py', 'js', 'ts', 'c', 'cpp', 'h', 'go', 'rs', 'java', 'php', 'rb', 'pl', 'lua',
+        'yaml', 'yml', 'json', 'toml', 'conf', 'cfg', 'ini', 'xml', 'html', 'css'].indexOf(ext) !== -1) return ICONS.code;
+      if (['txt', 'md', 'rst', 'log', 'csv'].indexOf(ext) !== -1 ||
         /^(README|LICENSE|CHANGELOG|AUTHORS|NOTICE)$/i.test(name)) return ICONS.text;
-    return ICONS.file;
-  }
-
-  // ─── 状态 ─────────────────────────────────────────────────────────────────
-  var parentRow    = null;   // 「上级目录」行，始终固定
-  var allRows      = [];     // 除 parent 外的所有行（原始顺序）
-  var filteredRows = [];     // 当前搜索结果（或全部）
-  var renderedEnd  = 0;      // 已渲染到 filteredRows 的第几条
-  var observer     = null;
-
-  // ─── DOM 节点 ─────────────────────────────────────────────────────────────
-  var tbody, sentinel, countEl, noResults, indicator;
-
-  // ─── 搜索高亮 ─────────────────────────────────────────────────────────────
-  function highlight(text, keyword) {
-    if (!keyword) return document.createTextNode(text);
-    var idx = text.toLowerCase().indexOf(keyword.toLowerCase());
-    if (idx === -1) return document.createTextNode(text);
-    var frag = document.createDocumentFragment();
-    frag.appendChild(document.createTextNode(text.slice(0, idx)));
-    var mark = document.createElement('mark');
-    mark.style.cssText = 'background:rgba(59,130,246,0.25);color:inherit;border-radius:2px;padding:0 1px;';
-    mark.textContent = text.slice(idx, idx + keyword.length);
-    frag.appendChild(mark);
-    frag.appendChild(document.createTextNode(text.slice(idx + keyword.length)));
-    return frag;
-  }
-
-  // ─── 行的文字名称（去除已注入的图标） ────────────────────────────────────
-  function getRowName(row) {
-    var link = row.querySelector('td:first-child a');
-    if (!link) return '';
-    // 取出纯文本（排除 SVG 子节点）
-    var text = '';
-    link.childNodes.forEach(function(n) {
-      if (n.nodeType === 3) text += n.textContent;  // TEXT_NODE
-    });
-    return text.trim();
-  }
-
-  // ─── 刷新搜索高亮 ─────────────────────────────────────────────────────────
-  function applyHighlight(row, keyword) {
-    var link = row.querySelector('td:first-child a');
-    if (!link) return;
-    var name = row._rawName || '';
-    // 清除旧内容（保留 SVG 图标节点）
-    var icon = link.querySelector('svg');
-    while (link.firstChild) link.removeChild(link.firstChild);
-    if (icon) link.appendChild(icon);
-    link.appendChild(document.createTextNode(' '));
-    link.appendChild(highlight(name, keyword));
-  }
-
-  // ─── 渲染一批行到 tbody ───────────────────────────────────────────────────
-  function renderBatch(keyword) {
-    var end = Math.min(renderedEnd + BATCH_SIZE, filteredRows.length);
-    var frag = document.createDocumentFragment();
-    for (var i = renderedEnd; i < end; i++) {
-      applyHighlight(filteredRows[i], keyword);
-      frag.appendChild(filteredRows[i]);
+      return ICONS.file;
     }
-    tbody.appendChild(frag);
-    renderedEnd = end;
-    updateIndicator();
-    updateCount(keyword);
-  }
 
-  // ─── 重置并重新渲染 ───────────────────────────────────────────────────────
-  function resetRender(keyword) {
-    // 清空 tbody（除 parent 行）
-    while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
-    if (parentRow) tbody.appendChild(parentRow);
-    renderedEnd = 0;
-    if (filteredRows.length === 0) {
-      noResults.style.display = 'block';
-      indicator.classList.remove('visible');
+    // ─── 状态 ─────────────────────────────────────────────────────────────────
+    let parentRow = null;   // 「上级目录」行，始终固定
+    const allRows = [];     // 除 parent 外的所有行（原始顺序）
+    let filteredRows = [];     // 当前搜索结果（或全部）
+    let renderedEnd = 0;      // 已渲染到 filteredRows 的第几条
+    let observer = null;
+
+    // ─── DOM 节点 ─────────────────────────────────────────────────────────────
+    let tbody, sentinel, countEl, noResults, indicator;
+
+    // ─── 搜索高亮 ─────────────────────────────────────────────────────────────
+    function highlight(text, keyword) {
+      if (!keyword) return document.createTextNode(text);
+      const idx = text.toLowerCase().indexOf(keyword.toLowerCase());
+      if (idx === -1) return document.createTextNode(text);
+      const frag = document.createDocumentFragment();
+      frag.appendChild(document.createTextNode(text.slice(0, idx)));
+      const mark = document.createElement('mark');
+      mark.style.cssText = 'background:rgba(59,130,246,0.25);color:inherit;border-radius:2px;padding:0 1px;';
+      mark.textContent = text.slice(idx, idx + keyword.length);
+      frag.appendChild(mark);
+      frag.appendChild(document.createTextNode(text.slice(idx + keyword.length)));
+      return frag;
+    }
+
+    // ─── 行的文字名称（去除已注入的图标） ────────────────────────────────────
+    function getRowName(row) {
+      const link = row.querySelector('td:first-child a');
+      if (!link) return '';
+      // 取出纯文本（排除 SVG 子节点）
+      let text = '';
+      link.childNodes.forEach((n) => {
+        if (n.nodeType === 3) text += n.textContent;  // TEXT_NODE
+      });
+      return text.trim();
+    }
+
+    // ─── 刷新搜索高亮 ─────────────────────────────────────────────────────────
+    function applyHighlight(row, keyword) {
+      const link = row.querySelector('td:first-child a');
+      if (!link) return;
+      const name = row._rawName || '';
+      // 清除旧内容（保留 SVG 图标节点）
+      const icon = link.querySelector('svg');
+      while (link.firstChild) link.removeChild(link.firstChild);
+      if (icon) link.appendChild(icon);
+      link.appendChild(document.createTextNode(' '));
+      link.appendChild(highlight(name, keyword));
+    }
+
+    // ─── 渲染一批行到 tbody ───────────────────────────────────────────────────
+    function renderBatch(keyword) {
+      const end = Math.min(renderedEnd + BATCH_SIZE, filteredRows.length);
+      const frag = document.createDocumentFragment();
+      for (let i = renderedEnd; i < end; i++) {
+        applyHighlight(filteredRows[i], keyword);
+        frag.appendChild(filteredRows[i]);
+      }
+      tbody.appendChild(frag);
+      renderedEnd = end;
+      updateIndicator();
       updateCount(keyword);
-      return;
     }
-    noResults.style.display = 'none';
-    renderBatch(keyword);
-  }
 
-  // ─── 更新文件计数 ─────────────────────────────────────────────────────────
-  function updateCount(keyword) {
-    if (!countEl) return;
-    var total = allRows.length;
-    var filtered = filteredRows.length;
-    var shown = renderedEnd;
-    if (keyword) {
-      countEl.textContent = filtered === 0
-        ? ''
-        : (shown < filtered
+    // ─── 重置并重新渲染 ───────────────────────────────────────────────────────
+    function resetRender(keyword) {
+      // 清空 tbody（除 parent 行）
+      while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
+      if (parentRow) tbody.appendChild(parentRow);
+      renderedEnd = 0;
+      if (filteredRows.length === 0) {
+        noResults.style.display = 'block';
+        indicator.classList.remove('visible');
+        updateCount(keyword);
+        return;
+      }
+      noResults.style.display = 'none';
+      renderBatch(keyword);
+    }
+
+    // ─── 更新文件计数 ─────────────────────────────────────────────────────────
+    function updateCount(keyword) {
+      if (!countEl) return;
+      const total = allRows.length;
+      const filtered = filteredRows.length;
+      const shown = renderedEnd;
+      if (keyword) {
+        countEl.textContent = filtered === 0
+          ? ''
+          : (shown < filtered
             ? t('count.showing', { shown: shown, total: filtered })
             : t('count.filtered', { n: filtered }));
-    } else {
-      countEl.textContent = shown < total
-        ? t('count.showing', { shown: shown, total: total })
-        : t('count.all', { n: total });
+      } else {
+        countEl.textContent = shown < total
+          ? t('count.showing', { shown: shown, total: total })
+          : t('count.all', { n: total });
+      }
     }
-  }
 
-  // ─── 加载更多指示器 ───────────────────────────────────────────────────────
-  function updateIndicator() {
-    var hasMore = renderedEnd < filteredRows.length;
-    indicator.classList.toggle('visible', hasMore);
-  }
+    // ─── 加载更多指示器 ───────────────────────────────────────────────────────
+    function updateIndicator() {
+      const hasMore = renderedEnd < filteredRows.length;
+      indicator.classList.toggle('visible', hasMore);
+    }
 
-  // ─── IntersectionObserver：滚动到底追加行 ────────────────────────────────
-  function setupObserver() {
-    if (observer) observer.disconnect();
-    var keyword = (document.getElementById('file-search') || {}).value || '';
-    observer = new IntersectionObserver(function(entries) {
-      if (entries[0].isIntersecting && renderedEnd < filteredRows.length) {
-        renderBatch(keyword);
-      }
-    }, { rootMargin: '200px' });  // 距离底部 200px 时触发
-    observer.observe(sentinel);
-  }
+    // ─── IntersectionObserver：滚动到底追加行 ────────────────────────────────
+    function setupObserver() {
+      if (observer) observer.disconnect();
+      const keyword = document.getElementById('file-search').value || '';
+      observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && renderedEnd < filteredRows.length) {
+          renderBatch(keyword);
+        }
+      }, { rootMargin: '200px' });  // 距离底部 200px 时触发
+      observer.observe(sentinel);
+    }
 
-  // ─── 搜索逻辑 ─────────────────────────────────────────────────────────────
-  var searchTimer = null;
-  function onSearch(e) {
-    clearTimeout(searchTimer);
-    var keyword = e.target.value.trim();
-    searchTimer = setTimeout(function() {
-      if (keyword === '') {
-        filteredRows = allRows.slice();
-      } else {
-        var kw = keyword.toLowerCase();
-        filteredRows = allRows.filter(function(row) {
-          return (row._rawName || '').toLowerCase().indexOf(kw) !== -1;
-        });
-      }
-      resetRender(keyword);
-      setupObserver();
-    }, keyword ? SEARCH_DELAY : 0);
-  }
+    // ─── 搜索逻辑 ─────────────────────────────────────────────────────────────
+    let searchTimer = null;
+    function onSearch(e) {
+      clearTimeout(searchTimer);
+      const keyword = e.target.value.trim();
+      searchTimer = setTimeout(() => {
+        if (keyword === '') {
+          filteredRows = allRows.slice();
+        } else {
+          const kw = keyword.toLowerCase();
+          filteredRows = allRows.filter((row) => (row._rawName || '').toLowerCase().indexOf(kw) !== -1);
+        }
+        resetRender(keyword);
+        setupObserver();
+      }, keyword ? SEARCH_DELAY : 0);
+    }
 
-  // ─── 初始化图标并收集行 ───────────────────────────────────────────────────
-  function init() {
-    var table = document.getElementById('list');
-    if (!table) return;
-    tbody = table.querySelector('tbody');
-    if (!tbody) return;
+    // ─── 初始化图标并收集行 ───────────────────────────────────────────────────
+    function init() {
+      const table = document.getElementById('list');
+      if (!table) return;
+      tbody = table.querySelector('tbody');
+      if (!tbody) return;
 
-    sentinel  = document.getElementById('scroll-sentinel');
-    countEl   = document.getElementById('file-count');
-    noResults = document.getElementById('no-results');
-    indicator = document.getElementById('load-more-indicator');
+      sentinel = document.getElementById('scroll-sentinel');
+      countEl = document.getElementById('file-count');
+      noResults = document.getElementById('no-results');
+      indicator = document.getElementById('load-more-indicator');
 
-    // 收集所有行，注入图标，缓存名称
-    var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
-    rows.forEach(function(row) {
-      var link = row.querySelector('td:first-child a');
-      if (!link) return;
-      var rawName = link.textContent.trim();
-      var isParent = row.classList.contains('parent') || rawName === 'Parent directory/';
+      // 收集所有行，注入图标，缓存名称
+      const rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+      rows.forEach((row) => {
+        const link = row.querySelector('td:first-child a');
+        if (!link) return;
+        const rawName = link.textContent.trim();
+        const isParent = row.classList.contains('parent') || rawName === 'Parent directory/';
 
-      // 注入图标
-      var icon = getIcon(rawName, isParent);
-      link.insertAdjacentHTML('afterbegin', icon + ' ');
+        // 注入图标
+        const icon = getIcon(rawName, isParent);
+        link.insertAdjacentHTML('afterbegin', `${icon} `);
 
-      if (isParent) {
-        parentRow = row;
-      } else {
-        // 缓存纯文本名称（注入图标后 textContent 含 SVG 文字，需从文本节点取）
-        var name = '';
-        link.childNodes.forEach(function(n) {
-          if (n.nodeType === 3) name += n.textContent;
-        });
-        row._rawName = name.trim();
-        allRows.push(row);
-      }
-    });
-
-    // 从 DOM 里摘下所有行（后续按需插回）
-    rows.forEach(function(row) { row.parentNode && row.parentNode.removeChild(row); });
-
-    // 初始渲染
-    filteredRows = allRows.slice();
-    resetRender('');
-    setupObserver();
-
-    // 绑定搜索框
-    var input = document.getElementById('file-search');
-    if (input) {
-      input.addEventListener('input', onSearch);
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          clearSearch();
+        if (isParent) {
+          parentRow = row;
+        } else {
+          // 缓存纯文本名称（注入图标后 textContent 含 SVG 文字，需从文本节点取）
+          let name = '';
+          link.childNodes.forEach((n) => {
+            if (n.nodeType === 3) name += n.textContent;
+          });
+          row._rawName = name.trim();
+          allRows.push(row);
         }
       });
+
+      // 从 DOM 里摘下所有行（后续按需插回）
+      rows.forEach((row) => { row.parentNode?.removeChild(row); });
+
+      // 初始渲染
+      filteredRows = allRows.slice();
+      resetRender('');
+      setupObserver();
+
+      // 绑定搜索框
+      const input = document.getElementById('file-search');
+      if (input) {
+        input.addEventListener('input', onSearch);
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            clearSearch();
+          }
+        });
+      }
+
+      // 更新「加载更多」文字（locale 初始化时可能还没有 indicator）
+      const lmt = document.getElementById('load-more-text');
+      if (lmt) lmt.textContent = t('loading-more');
     }
 
-    // 更新「加载更多」文字（locale 初始化时可能还没有 indicator）
-    var lmt = document.getElementById('load-more-text');
-    if (lmt) lmt.textContent = t('loading-more');
-  }
+    // fancyindex 的 footer 在 </body> 前注入，此时 DOM 已就绪
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
 
-  // fancyindex 的 footer 在 </body> 前注入，此时 DOM 已就绪
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-})();
+  })();
 </script>
 </body>
+
 </html>

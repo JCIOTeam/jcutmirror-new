@@ -77,7 +77,7 @@ The tunasync manager needs to be **deployed separately** (it can run on the host
 
 ### Prerequisites
 
-- Node.js >= 20.0.0, npm >= 10.0.0 (for development)
+- Bun >= 1.4.2 (for development)
 - Docker + Docker Compose (Compose v2 recommended)
 - tunasync manager running (recommended: [tunasync-rs](https://github.com/JCIOTeam/tunasync-rs), default port `:12345`)
 - Mirror data directory (e.g. `/data/mirrors/`)
@@ -253,14 +253,14 @@ python3 scripts/mirror_config_updater.py \
 
 ### Rebuild Frontend After Updating
 
-The script modifies `public/local_data.json`, which is bundled into the frontend during `npm run build`. Rebuild after changes:
+The script modifies `public/local_data.json`, which is bundled into the frontend during `bun run build`. Rebuild after changes:
 
 ```bash
 # If deploying via Docker
 docker compose up -d --build frontend
 
 # If building manually
-npm run build
+bun run build
 ```
 
 ### Setting Up Automatic Scheduled Updates (crontab)
@@ -369,17 +369,17 @@ The default password is set in `.env` under `GRAFANA_PASSWORD`. Change it prompt
 ## Development
 
 ```bash
-npm install           # Install dependencies
-npm run dev           # Dev server on :3000, auto-proxies /jobs to production
-npm run build         # Type check + build + sitemap generation
-npm run preview       # Preview production build on :4173
-npm run typecheck     # TypeScript type checking
-npm run lint          # ESLint check
-npm run lint:fix      # ESLint auto-fix
-npm run format        # Prettier formatting
-npm run test          # Run tests (Vitest)
-npm run test:watch    # Watch mode tests
-npm run test:coverage # Test coverage report
+bun install           # Install dependencies
+bun run dev           # Dev server on :3000, auto-proxies /jobs to production
+bun run build         # Type check + build + sitemap generation
+bun run preview       # Preview production build on :4173
+bun run typecheck     # TypeScript type checking
+bun run lint          # Biome check
+bun run lint:fix      # Biome lint auto-fix
+bun run format        # Biome formatting
+bun run test          # Run tests (Vitest)
+bun run test:watch    # Watch mode tests
+bun run test:coverage # Test coverage report
 ```
 
 ---
@@ -388,11 +388,11 @@ npm run test:coverage # Test coverage report
 
 The project uses GitHub Actions for continuous integration (`.github/workflows/ci.yml`), running automatically on every push and PR:
 
-1. **Lint** — ESLint code style check
+1. **Lint** — Biome code style check
 2. **TypeCheck** — TypeScript type checking
 3. **Test** — Vitest unit tests
 4. **Build** — Production build
-5. **Audit** — npm security audit
+5. **Audit** — Bun dependency security audit
 6. **Docker Smoke Test** — Docker build smoke test
 
 ---

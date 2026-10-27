@@ -2,7 +2,7 @@
 // 镜像同步状态标识组件
 
 import { Box, Chip, Tooltip } from '@mui/material';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MirrorStatus } from '../../types';

@@ -35,7 +35,8 @@ import {
   CardActionArea,
   InputBase,
 } from '@mui/material';
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import type React from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
@@ -467,9 +468,7 @@ const GithubReleaseViewer: React.FC<GithubReleaseViewerProps> = ({ rootPath }) =
             return {
               orgName,
               projects,
-              repoHrefByName: new Map(
-                repoEntries.map((r) => [r.name.replace(/\/$/, ''), r.href])
-              ),
+              repoHrefByName: new Map(repoEntries.map((r) => [r.name.replace(/\/$/, ''), r.href])),
             };
           })
         );

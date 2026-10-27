@@ -7,8 +7,8 @@
 //      把生产环境推白屏。
 //
 // 一次性运行（不需要长期持有 puppeteer-core 依赖）：
-//      npm i --no-save puppeteer-core
-//      node scripts/probe-pages-real.mjs
+//      bun add --no-save puppeteer-core
+//      bun scripts/probe-pages-real.mjs
 //
 // 退出码：所有路由 ok 退 0，任何路由有 page error / console error / missing text 退 1。
 // 适合放到 CI 里 vite build 之后跑。
@@ -22,7 +22,7 @@ const CHROME = '/home/claude/.cache/puppeteer/chrome/linux-131.0.6778.204/chrome
 
 const ROUTES = [
   { path: '/', expect: ['JCUT'] },
-  { path: '/mirrors', expect: ['JCUT'] },                       // redirect to home
+  { path: '/mirrors', expect: ['JCUT'] }, // redirect to home
   { path: '/mirrors/ubuntu', expect: ['Ubuntu'] },
   { path: '/mirrors/ubuntu?tab=files', expect: ['Ubuntu'] },
   { path: '/status', expect: ['JCUT'] },
@@ -33,7 +33,7 @@ const ROUTES = [
 
 async function startPreview() {
   console.log('Starting vite preview...');
-  const proc = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--host', '127.0.0.1'], {
+  const proc = spawn('bunx', ['vite', 'preview', '--port', String(PORT), '--host', '127.0.0.1'], {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   proc.stdout.on('data', () => {});
@@ -145,14 +145,9 @@ const results = [];
 for (const route of ROUTES) {
   const r = await probe(browser, route);
   results.push(r);
-  const verdict =
-    r.pageErrors.length || r.errors.length
-      ? '❌ ERR'
-      : r.missing.length
-        ? '⚠ MISS'
-        : '✅ OK';
+  const verdict = r.pageErrors.length || r.errors.length ? '❌ ERR' : r.missing.length ? '⚠ MISS' : '✅ OK';
   console.log(
-    `${verdict}  ${route.path.padEnd(34)} root=${String(r.rootBytes).padStart(5)}b  errs=${r.errors.length}  pageErrs=${r.pageErrors.length}  missing=[${r.missing.join(',')}]`
+    `${verdict}  ${route.path.padEnd(34)} root=${String(r.rootBytes).padStart(5)}b  errs=${r.errors.length}  pageErrs=${r.pageErrors.length}  missing=[${r.missing.join(',')}]`,
   );
 }
 

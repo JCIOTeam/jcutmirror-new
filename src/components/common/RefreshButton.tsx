@@ -9,7 +9,8 @@ import {
 } from '@mui/icons-material';
 import { Button, CircularProgress } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material';
-import React, { useState, useCallback, useRef } from 'react';
+import type React from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type RefreshState = 'idle' | 'loading' | 'success' | 'error';

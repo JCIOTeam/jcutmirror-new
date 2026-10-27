@@ -77,7 +77,7 @@ tunasync manager 需要**单独部署**（可直接跑在宿主机上），本�
 
 ### 前置条件
 
-- Node.js >= 20.0.0、npm >= 10.0.0（开发时需要）
+- Bun >= 1.4.2（开发时需要）
 - Docker + Docker Compose（推荐 Compose v2）
 - tunasync manager 已在运行（推荐使用 [tunasync-rs](https://github.com/JCIOTeam/tunasync-rs)，默认监听 `:12345`）
 - 镜像数据目录（如 `/data/mirrors/`）
@@ -253,14 +253,14 @@ python3 scripts/mirror_config_updater.py \
 
 ### 更新后重新构建前端
 
-脚本修改的是 `public/local_data.json`，该文件在 `npm run build` 时会被打包进前端。修改后需要重新构建才能生效：
+脚本修改的是 `public/local_data.json`，该文件在 `bun run build` 时会被打包进前端。修改后需要重新构建才能生效：
 
 ```bash
 # 如果通过 Docker 部署
 docker compose up -d --build frontend
 
 # 如果手动构建
-npm run build
+bun run build
 ```
 
 ### 配置定时自动运行（crontab）
@@ -369,17 +369,17 @@ load_module modules/ngx_http_fancyindex_module.so;
 ## 开发调试
 
 ```bash
-npm install           # 安装依赖
-npm run dev           # 本地开发服务器 :3000，自动代理 /jobs 到线上
-npm run build         # 类型检查 + 构建 + sitemap 生成
-npm run preview       # 预览生产构建 :4173
-npm run typecheck     # TypeScript 类型检查
-npm run lint          # ESLint 检查
-npm run lint:fix      # ESLint 自动修复
-npm run format        # Prettier 格式化
-npm run test          # 运行测试（Vitest）
-npm run test:watch    # 监听模式运行测试
-npm run test:coverage # 测试覆盖率报告
+bun install           # 安装依赖
+bun run dev           # 本地开发服务器 :3000，自动代理 /jobs 到线上
+bun run build         # 类型检查 + 构建 + sitemap 生成
+bun run preview       # 预览生产构建 :4173
+bun run typecheck     # TypeScript 类型检查
+bun run lint          # Biome 检查
+bun run lint:fix      # Biome 自动修复 lint 问题
+bun run format        # Biome 格式化
+bun run test          # 运行测试（Vitest）
+bun run test:watch    # 监听模式运行测试
+bun run test:coverage # 测试覆盖率报告
 ```
 
 ---
@@ -388,11 +388,11 @@ npm run test:coverage # 测试覆盖率报告
 
 项目使用 GitHub Actions 进行持续集成（`.github/workflows/ci.yml`），每次推送和 PR 自动运行：
 
-1. **Lint** — ESLint 代码规范检查
+1. **Lint** — Biome 代码规范检查
 2. **TypeCheck** — TypeScript 类型检查
 3. **Test** — Vitest 单元测试
 4. **Build** — 生产构建
-5. **Audit** — npm 安全审计
+5. **Audit** — Bun 依赖安全审计
 6. **Docker Smoke Test** — Docker 构建冒烟测试
 
 ---

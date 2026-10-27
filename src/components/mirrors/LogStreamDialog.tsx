@@ -12,18 +12,9 @@ import {
   Circle as DotFilledIcon,
   ErrorOutlined as ErrorIcon,
 } from '@mui/icons-material';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Box,
-  Typography,
-  IconButton,
-  Chip,
-  Tooltip,
-  Button,
-} from '@mui/material';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Dialog, DialogContent, DialogTitle, Box, Typography, IconButton, Chip, Tooltip, Button } from '@mui/material';
+import type React from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
@@ -80,7 +71,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
     const es = new EventSource(url);
     esRef.current = es;
 
-    // onopen：连接（含自动重连）成功后，清除错误横幅，避免「已连接(绿)+错误横幅(红)」自相矛盾
+    // onopen：连接（含自动重连）成功后，清除错误横幅，避免「已连接 (绿)+错误横幅 (红)」自相矛盾
     es.onopen = () => {
       setConnState('open');
       setErrorMsg(null);
@@ -172,7 +163,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth='md'
       fullWidth
       slotProps={{
         paper: {
@@ -201,7 +192,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
         <TerminalIcon sx={{ color: 'primary.main', fontSize: 22 }} />
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
-            variant="subtitle1"
+            variant='subtitle1'
             sx={{
               fontWeight: 700,
               fontFamily: '"JetBrains Mono", monospace',
@@ -213,7 +204,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
           >
             {mirrorId}
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+          <Typography variant='caption' sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
             {t('logStream.title')}
           </Typography>
         </Box>
@@ -242,9 +233,9 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
               )
             }
             label={curState.label}
-            size="small"
+            size='small'
             color={curState.color}
-            variant="outlined"
+            variant='outlined'
             sx={{ height: 24, fontSize: '0.72rem', fontWeight: 600 }}
           />
         </Tooltip>
@@ -253,7 +244,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
         <Tooltip title={copied ? t('common.copied') : t('logStream.copyAll')}>
           <span>
             <IconButton
-              size="small"
+              size='small'
               onClick={handleCopy}
               disabled={lines.length === 0}
               color={copied ? 'success' : 'default'}
@@ -264,7 +255,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
         </Tooltip>
 
         {/* 关闭按钮 */}
-        <IconButton size="small" onClick={onClose} aria-label={t('common.close')}>
+        <IconButton size='small' onClick={onClose} aria-label={t('common.close')}>
           <CloseIcon sx={{ fontSize: 20 }} />
         </IconButton>
       </DialogTitle>
@@ -294,10 +285,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
             }}
           >
             <DotFilledIcon sx={{ fontSize: 10, color: '#F59E0B' }} />
-            <Typography
-              variant="caption"
-              sx={{ color: '#FCD34D', fontFamily: '"JetBrains Mono", monospace' }}
-            >
+            <Typography variant='caption' sx={{ color: '#FCD34D', fontFamily: '"JetBrains Mono", monospace' }}>
               {t('logStream.lag', { msg: lagWarning })}
             </Typography>
           </Box>
@@ -317,10 +305,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
             }}
           >
             <ErrorIcon sx={{ fontSize: 16, color: '#F87171' }} />
-            <Typography
-              variant="caption"
-              sx={{ color: '#FCA5A5', fontFamily: '"JetBrains Mono", monospace' }}
-            >
+            <Typography variant='caption' sx={{ color: '#FCA5A5', fontFamily: '"JetBrains Mono", monospace' }}>
               {errorMsg}
             </Typography>
           </Box>
@@ -376,22 +361,19 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
                       '@keyframes spin': { to: { transform: 'rotate(360deg)' } },
                     }}
                   />
-                  <Typography variant="body2" sx={{ fontFamily: 'inherit', fontSize: '0.82rem' }}>
+                  <Typography variant='body2' sx={{ fontFamily: 'inherit', fontSize: '0.82rem' }}>
                     {t('logStream.waitingForOutput')}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: 'rgba(226,232,240,0.35)', fontFamily: 'inherit' }}
-                  >
+                  <Typography variant='caption' sx={{ color: 'rgba(226,232,240,0.35)', fontFamily: 'inherit' }}>
                     {t('logStream.waitingHint')}
                   </Typography>
                 </>
               ) : connState === 'connecting' ? (
-                <Typography variant="body2" sx={{ fontFamily: 'inherit' }}>
+                <Typography variant='body2' sx={{ fontFamily: 'inherit' }}>
                   {t('logStream.connecting')}…
                 </Typography>
               ) : (
-                <Typography variant="body2" sx={{ fontFamily: 'inherit' }}>
+                <Typography variant='body2' sx={{ fontFamily: 'inherit' }}>
                   {errorMsg || t('logStream.noData')}
                 </Typography>
               )}
@@ -430,7 +412,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
           }}
         >
           <Typography
-            variant="caption"
+            variant='caption'
             sx={{
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: '0.7rem',
@@ -438,12 +420,12 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
             }}
           >
             {t('logStream.lineCount', { count: lines.length })}
-            {lines.length >= MAX_LINES && ' · ' + t('logStream.truncated')}
+            {lines.length >= MAX_LINES && ` · ${t('logStream.truncated')}`}
           </Typography>
           {!autoFollow && lines.length > 0 && (
             <Button
-              size="small"
-              variant="text"
+              size='small'
+              variant='text'
               onClick={scrollToBottom}
               sx={{
                 color: '#60A5FA',
@@ -459,7 +441,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
           )}
           {autoFollow && lines.length > 0 && (
             <Typography
-              variant="caption"
+              variant='caption'
               sx={{
                 fontFamily: '"JetBrains Mono", monospace',
                 fontSize: '0.7rem',
@@ -488,8 +470,7 @@ const LogStreamDialog: React.FC<LogStreamDialogProps> = ({ open, mirrorId, onClo
  */
 function colorForLine(line: string): string {
   const lower = line.toLowerCase();
-  if (lower.includes('error') || lower.includes('failed') || lower.includes('rsync error'))
-    return '#F87171';
+  if (lower.includes('error') || lower.includes('failed') || lower.includes('rsync error')) return '#F87171';
   if (lower.includes('warning') || lower.includes('skipping')) return '#FCD34D';
   if (/^(sent|total size is|received)/i.test(line.trim())) return '#86EFAC';
   if (/\d+%\s+[\d.]+[KMGT]B\/s/.test(line)) return '#93C5FD';
