@@ -28,12 +28,12 @@ import {
   IconButton,
 } from '@mui/material';
 import type React from 'react';
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Suspense, lazy, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RefreshButton from '../components/common/RefreshButton';
-import AnnouncementBanner from '../components/home/AnnouncementBanner';
-import NewsWidget from '../components/home/NewsWidget';
+const AnnouncementBanner = lazy(() => import('../components/home/AnnouncementBanner'));
+const NewsWidget = lazy(() => import('../components/home/NewsWidget'));
 import LetterIndexNav from "../components/home/LetterIndexNav";
 import MirrorCard from '../components/mirrors/MirrorCard';
 import MirrorList from '../components/mirrors/MirrorList';
@@ -207,7 +207,7 @@ const Home: React.FC = () => {
         <Container maxWidth='lg' sx={{ position: 'relative' }}>
           {/* 公告/通知横幅 —— 从 public/announcements.json 读取，无需重新构建即可更新 */}
           <Box sx={{ mb: 3 }}>
-            <AnnouncementBanner />
+            <Suspense fallback={<Skeleton variant="rounded" height={48} sx={{ borderRadius: 2 }} />}><AnnouncementBanner /></Suspense>
           </Box>
           <Box sx={{ maxWidth: 640 }}>
             {/* 网络状态胶囊 — 从 API 实时获取用户网络类型 */}
@@ -569,7 +569,7 @@ const Home: React.FC = () => {
                   >
                     {t('home.news')}
                   </Typography>
-                  <NewsWidget />
+                  <Suspense fallback={<Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />}><NewsWidget /></Suspense>
                 </Grid>
               )}
 

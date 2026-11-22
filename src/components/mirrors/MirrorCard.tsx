@@ -25,10 +25,29 @@ const MirrorCard: React.FC<MirrorCardProps> = ({ mirror }) => {
   const lastUpdatedText = formatRelativeTime(mirror.lastUpdated, locale);
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} role="article">
+    <Card 
+      sx={{ 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column',
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+        '&:hover': {
+          transform: 'translateY(-4px)',
+          boxShadow: (theme) => theme.shadows[8],
+        },
+      }} 
+      role="article"
+    >
       <CardActionArea
         onClick={() => navigate(`/mirrors/${mirror.id}`)}
-        sx={{ flexGrow: 1, alignItems: 'flex-start', display: 'flex', flexDirection: 'column' }}
+        sx={{ 
+          flexGrow: 1, 
+          alignItems: 'flex-start', 
+          display: 'flex', 
+          flexDirection: 'column',
+          transition: 'background-color 0.2s',
+          '&:hover': { bgcolor: 'action.hover' },
+        }}
       >
         <CardContent sx={{ width: '100%', p: 2.5 }}>
           {/* Logo + 名称 + 状态 */}

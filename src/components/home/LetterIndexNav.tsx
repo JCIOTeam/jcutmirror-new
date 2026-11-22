@@ -62,7 +62,8 @@ const LetterIndexNav: React.FC<LetterIndexNavProps> = ({ letters, ariaLabel }) =
             color: 'text.secondary',
             fontSize: '0.8rem',
             fontWeight: 600,
-            '&:hover, &:focus': { bgcolor: 'action.hover', color: 'primary.main' },
+            '&:hover, &:focus': { bgcolor: 'action.hover', color: 'primary.main', transform: 'scale(1.1)' },
+            transition: 'all 0.15s',
           }}
         >
           {letter}
