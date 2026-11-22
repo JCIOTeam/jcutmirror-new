@@ -15,7 +15,7 @@
 import AlbumIcon from '@mui/icons-material/Album';
 import { useTheme } from '@mui/material/styles';
 import type React from 'react';
-// 按需导入 simple-icons，Vite 会自动 tree-shake
+// 按需导入 simple-icons，Rsbuild 会自动 tree-shake
 import {
   siUbuntu,
   siDebian,

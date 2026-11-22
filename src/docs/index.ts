@@ -1,10 +1,10 @@
 // src/docs/index.ts
-// 帮助文档 - 使用 Vite import.meta.glob 自动发现 MDX 文件
+// 帮助文档 - 使用 import.meta.glob 自动发现 MDX 文件
 
 import type React from 'react';
 
 /**
- * 使用 Vite 的 import.meta.glob 自动发现 MDX 文档
+ * 使用 import.meta.glob 自动发现 MDX 文档
  * 只需将 .mdx 文件放入对应目录，无需手动注册
  */
 const zhDocsRaw = import.meta.glob<{ default: React.FC }>('./mdx/zh/*.mdx', {

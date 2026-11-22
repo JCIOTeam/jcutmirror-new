@@ -1,5 +1,5 @@
 // src/news/index.ts
-// 新闻系统 —— 用 Vite import.meta.glob 自动发现 src/news/mdx/*.mdx
+// 新闻系统 —— 用 import.meta.glob 自动发现 src/news/mdx/*.mdx
 // 每篇 MDX 文件需要 export const meta = { title, date, summary, tags? }
 // 文件名即 slug，建议格式：YYYY-MM-DD-short-title.mdx
 
