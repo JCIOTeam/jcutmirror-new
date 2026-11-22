@@ -12,7 +12,6 @@ const MIRROR_ORIGIN = 'https://mirrors.jcut.edu.cn';
 const proxyConfig = {
   '/jobs': { target: MIRROR_ORIGIN, changeOrigin: true },
   '/api/is_campus_network': { target: MIRROR_ORIGIN, changeOrigin: true },
-  // 正则匹配其他可能的镜像路径，但排除 Vite/Rsbuild 内部路径
   '^/(?!@|__vite|__rsbuild|node_modules|src|assets|jobs)[a-zA-Z0-9_-]+/': {
     target: MIRROR_ORIGIN,
     changeOrigin: true,
@@ -65,40 +64,20 @@ export default defineConfig({
       root: 'dist',
     },
     sourceMap: false,
-    // filename 配置可按需调整
     filename: {
       js: 'assets/[name]-[contenthash:8].js',
       css: 'assets/[name]-[contenthash:8].css',
     },
   },
 
-  // 分包策略（简化版，避免循环依赖问题）
-  tools: {
-    rspack: {
-      optimization: {
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            reactCore: {
-              test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
-              name: 'react-core',
-              priority: 40,
-              reuseExistingChunk: true,
-            },
-            syntaxHighlighter: {
-              test: /[\\/]node_modules[\\/](react-syntax-highlighter|refractor)[\\/]/,
-              name: 'syntax-highlighter',
-              priority: 30,
-              reuseExistingChunk: true,
-            },
-            muiIcons: {
-              test: /[\\/]node_modules[\\/]@mui[\\/]icons-material[\\/]/,
-              name: 'mui-icons',
-              priority: 20,
-              reuseExistingChunk: true,
-            },
-          },
-        },
+  performance: {
+    chunkSplit: {
+      strategy: 'split-by-experience',
+      forceSplitting: {
+        'mui-core': /[\\/]node_modules[\\/]@mui[\\/]material[\\/]/,
+        'mui-icons': /[\\/]node_modules[\\/]@mui[\\/]icons-material[\\/]/,
+        'emotion': /[\\/]node_modules[\\/]@emotion[\\/]/,
+        'react-core': /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
       },
     },
   },

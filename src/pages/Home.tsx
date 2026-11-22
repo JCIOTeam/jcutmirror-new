@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 import RefreshButton from '../components/common/RefreshButton';
 import AnnouncementBanner from '../components/home/AnnouncementBanner';
 import NewsWidget from '../components/home/NewsWidget';
+import LetterIndexNav from "../components/home/LetterIndexNav";
 import MirrorCard from '../components/mirrors/MirrorCard';
 import MirrorList from '../components/mirrors/MirrorList';
 import {
@@ -58,86 +59,6 @@ interface LetterIndexNavProps {
   ariaLabel: string;
 }
 
-const LetterIndexNav: React.FC<LetterIndexNavProps> = ({ letters, ariaLabel }) => {
-  const navRef = useRef<HTMLDivElement>(null);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const buttons = Array.from(navRef.current?.querySelectorAll<HTMLAnchorElement>('[data-letter-btn]') ?? []);
-    const idx = buttons.indexOf(document.activeElement as HTMLAnchorElement);
-    if (idx === -1) return;
-    let next = idx;
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      next = (idx + 1) % buttons.length;
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      next = (idx - 1 + buttons.length) % buttons.length;
-    } else if (e.key === 'Home') {
-      e.preventDefault();
-      next = 0;
-    } else if (e.key === 'End') {
-      e.preventDefault();
-      next = buttons.length - 1;
-    } else return;
-    buttons.forEach((b, i) => {
-      b.tabIndex = i === next ? 0 : -1;
-    });
-    buttons[next].focus();
-  }, []);
-
-  return (
-    <Box
-      ref={navRef}
-      onKeyDown={handleKeyDown}
-      sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 0.5,
-        mb: 3,
-        p: 1.5,
-        bgcolor: 'background.paper',
-        borderRadius: 2,
-        border: '1px solid',
-        borderColor: 'divider',
-      }}
-      role='navigation'
-      aria-label={ariaLabel}
-    >
-      {letters.map((letter, i) => (
-        <Button
-          key={letter}
-          size='small'
-          href={`#group-${letter}`}
-          data-letter-btn
-          tabIndex={i === 0 ? 0 : -1}
-          sx={{
-            minWidth: 32,
-            width: 32,
-            height: 28,
-            p: 0,
-            fontFamily: '"JetBrains Mono", monospace',
-            fontWeight: 700,
-            fontSize: '0.8rem',
-            borderRadius: 1,
-            color: 'primary.main',
-            '&:hover': { bgcolor: 'primary.main', color: 'white' },
-            '&:focus-visible': {
-              outline: '2px solid',
-              outlineColor: 'primary.main',
-              outlineOffset: '2px',
-            },
-          }}
-        >
-          {letter}
-        </Button>
-      ))}
-    </Box>
-  );
-};
-
-/**
- * 首页 - 展示镜像站概览
- */
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const { searchQuery } = useMirrorSearchStore();
