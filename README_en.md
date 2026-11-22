@@ -32,7 +32,7 @@ A modern mirror site frontend built with React + TypeScript + Material UI, desig
 | ------ | ---------- |
 | Frontend Framework | React 19 + TypeScript |
 | UI Components | Material UI v9 |
-| Build Tool | Vite 7 |
+| Build Tool | Rsbuild |
 | Data Fetching | TanStack Query + Axios |
 | State Management | Zustand |
 | Internationalization | react-i18next + i18next |

@@ -32,7 +32,7 @@
 | -------- | --------------------------- |
 | 前端框架 | React 19 + TypeScript       |
 | UI 组件  | Material UI v9              |
-| 构建工具 | Vite 7                      |
+| 构建工具 | Rsbuild                      |
 | 数据获取 | TanStack Query + Axios      |
 | 状态管理 | Zustand                     |
 | 国际化   | react-i18next + i18next     |
