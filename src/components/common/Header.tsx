@@ -224,6 +224,10 @@ const Header: React.FC = () => {
           {isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
               <IconButton
+                  sx={{
+                    transition: "transform 0.15s ease",
+                    "&:hover": { transform: "scale(1.12)" },
+                  }}
                 color="inherit"
                 size="small"
                 onClick={() => (searchOpen ? handleCloseSearch() : setSearchOpen(true))}
@@ -233,6 +237,10 @@ const Header: React.FC = () => {
               </IconButton>
               <ThemeToggle />
               <IconButton
+                  sx={{
+                    transition: "transform 0.15s ease",
+                    "&:hover": { transform: "scale(1.12)" },
+                  }}
                 color="inherit"
                 onClick={() => setDrawerOpen(true)}
                 aria-label={t('common.aria.openMenu')}

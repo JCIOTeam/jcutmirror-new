@@ -137,6 +137,8 @@ const StatusChip: React.FC<StatusChipProps> = ({ status, size = 'small', iconOnl
               '50%': { opacity: 1 },
             },
             '& .MuiChip-label': { px: 1 },
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            '&:hover': { transform: 'scale(1.06)', boxShadow: 1 },
           }}
         />
       </Box>
@@ -154,6 +156,8 @@ const StatusChip: React.FC<StatusChipProps> = ({ status, size = 'small', iconOnl
         fontSize: size === 'small' ? '0.7rem' : '0.8rem',
         height: chipH,
         letterSpacing: '0.02em',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        '&:hover': { transform: 'scale(1.06)', boxShadow: 1 },
       }}
       aria-label={`状态: ${label}`}
     />

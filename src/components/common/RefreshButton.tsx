@@ -59,7 +59,10 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({
   const iconSize = size === 'small' ? 16 : 18;
 
   const startIcon = isLoading ? (
-    <CircularProgress size={iconSize} thickness={4} sx={{ color: 'inherit' }} />
+    <CircularProgress size={iconSize} thickness={4} sx={{
+        transition: "all 0.2s",
+        "&:hover:not(:disabled)": { transform: "scale(1.04)" },
+         color: 'inherit' }} />
   ) : isSuccess ? (
     <CheckIcon sx={{ fontSize: iconSize }} />
   ) : isError ? (

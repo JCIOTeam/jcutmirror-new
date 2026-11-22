@@ -204,7 +204,8 @@ const MirrorList: React.FC<MirrorListProps> = ({ grouped, loading, error }) => {
                       sx={{
                         cursor: 'pointer',
                         '&:last-child td': { border: 0 },
-                        transition: 'background-color 0.15s',
+                        transition: 'background-color 0.18s, transform 0.15s',
+                        '&:hover': { bgcolor: 'action.hover', transform: 'translateX(2px)' },
                       }}
                       aria-label={`查看 ${mirror.name[locale]} 详情`}
                     >
