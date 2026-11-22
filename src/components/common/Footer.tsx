@@ -171,6 +171,8 @@ const Footer: React.FC = () => {
                 underline="hover"
                 sx={{
                   color: 'text.secondary',
+                  transition: 'color 0.2s, transform 0.15s',
+                  '&:hover': { color: 'primary.main', transform: 'translateX(2px)' },
                 }}
               >
                 stucloud@jcut.edu.cn
@@ -182,6 +184,8 @@ const Footer: React.FC = () => {
                 underline="hover"
                 sx={{
                   color: 'text.secondary',
+                  transition: 'color 0.2s, transform 0.15s',
+                  '&:hover': { color: 'primary.main', transform: 'translateX(2px)' },
                 }}
               >
                 {t('footer.status')}

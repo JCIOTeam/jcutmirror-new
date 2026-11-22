@@ -81,6 +81,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ fullWidth = false, size = 'small'
         minWidth: { sm: 280 },
         '& .MuiOutlinedInput-root': {
           bgcolor: 'background.paper',
+          transition: 'box-shadow 0.25s ease',
+          '&:hover': { boxShadow: '0 0 0 3px rgba(59,130,246,0.12)' },
+          '&.Mui-focused': { boxShadow: '0 0 0 3px rgba(59,130,246,0.22)' },
         },
       }}
     />

@@ -39,6 +39,8 @@ const ScrollToTop: React.FC = () => {
             right: 24,
             zIndex: 1200,
             boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            transition: 'transform 0.2s, box-shadow 0.2s',
+            '&:hover': { transform: 'scale(1.1)', boxShadow: '0 4px 14px rgba(0,0,0,0.28)' },
           }}
         >
           <ArrowUpIcon fontSize="small" />
