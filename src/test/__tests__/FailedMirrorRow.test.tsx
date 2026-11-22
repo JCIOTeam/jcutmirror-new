@@ -5,7 +5,7 @@
  * We test the core data-handling logic here; the typecheck + build verify rendering.
  */
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 
 // ── Test /jobs/:name response handling ────────────────────────────────────────
 

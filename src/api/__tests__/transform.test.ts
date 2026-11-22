@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@rstest/core';
 
 import { transformJobs, type LocalMeta, type RawJob } from '../transform';
 

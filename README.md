@@ -38,7 +38,7 @@
 | 国际化   | react-i18next + i18next     |
 | 图标     | simple-icons（发行版 Logo） |
 | 文档渲染 | MDX（帮助文档编译到前端）   |
-| 单元测试 | Vitest + Testing Library    |
+| 单元测试 | Rstest + Testing Library    |
 | Web 服务 | Nginx（含 FancyIndex 模块） |
 | 部署方式 | Docker + Docker Compose     |
 | 监控     | Prometheus + Grafana        |
@@ -377,7 +377,7 @@ bun run typecheck     # TypeScript 类型检查
 bun run lint          # Biome 检查
 bun run lint:fix      # Biome 自动修复 lint 问题
 bun run format        # Biome 格式化
-bun run test          # 运行测试（Vitest）
+bun run test          # 运行测试（Rstest）
 bun run test:watch    # 监听模式运行测试
 bun run test:coverage # 测试覆盖率报告
 ```
@@ -390,7 +390,7 @@ bun run test:coverage # 测试覆盖率报告
 
 1. **Lint** — Biome 代码规范检查
 2. **TypeCheck** — TypeScript 类型检查
-3. **Test** — Vitest 单元测试
+3. **Test** — Rstest 单元测试
 4. **Build** — 生产构建
 5. **Audit** — Bun 依赖安全审计
 6. **Docker Smoke Test** — Docker 构建冒烟测试

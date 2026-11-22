@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, rs, beforeEach, afterEach } from '@rstest/core';
 
 import { probeEndpoint } from '../useCapabilities';
 
@@ -10,16 +10,16 @@ describe('probeEndpoint', () => {
   const realFetch = globalThis.fetch;
 
   beforeEach(() => {
-    vi.useFakeTimers();
+    rs.useFakeTimers();
   });
 
   afterEach(() => {
     globalThis.fetch = realFetch;
-    vi.useRealTimers();
+    rs.useRealTimers();
   });
 
   const mockFetch = (status: number, ok?: boolean) => {
-    globalThis.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = rs.fn().mockResolvedValue({
       ok: ok ?? (status >= 200 && status < 300),
       status,
     }) as unknown as typeof globalThis.fetch;
@@ -54,7 +54,7 @@ describe('probeEndpoint', () => {
   });
 
   it('网络错误（fetch reject）返回 unknown，不降级为 false', async () => {
-    globalThis.fetch = vi
+    globalThis.fetch = rs
       .fn()
       .mockRejectedValue(new TypeError('Failed to fetch')) as unknown as typeof globalThis.fetch;
     expect(await probeEndpoint('/jobs/ubuntu')).toBe('unknown');
@@ -62,7 +62,7 @@ describe('probeEndpoint', () => {
 
   it('AbortError 超时返回 unknown', async () => {
     const abortError = new DOMException('The operation was aborted', 'AbortError');
-    globalThis.fetch = vi.fn().mockImplementation((_url, init?: RequestInit) => {
+    globalThis.fetch = rs.fn().mockImplementation((_url, init?: RequestInit) => {
       return new Promise((_resolve, reject) => {
         // 模拟 5s 超时触发 abort
         if (init?.signal) {
@@ -73,13 +73,13 @@ describe('probeEndpoint', () => {
 
     const promise = probeEndpoint('/jobs/ubuntu');
     // 推进 fake timer 触发 AbortController.abort()
-    await vi.advanceTimersByTimeAsync(5000);
+    await rs.advanceTimersByTimeAsync(5000);
     expect(await promise).toBe('unknown');
   });
 
   it('对路径调用 fetch 且用 HEAD 方法', async () => {
     mockFetch(200);
-    const fetchSpy = globalThis.fetch as unknown as ReturnType<typeof vi.fn>;
+    const fetchSpy = globalThis.fetch as unknown as ReturnType<typeof rs.fn>;
     await probeEndpoint('/jobs/ubuntu/log/stream');
     expect(fetchSpy).toHaveBeenCalledWith('/jobs/ubuntu/log/stream', {
       method: 'HEAD',

@@ -38,7 +38,7 @@ A modern mirror site frontend built with React + TypeScript + Material UI, desig
 | Internationalization | react-i18next + i18next |
 | Icons | simple-icons (distro logos) |
 | Doc Rendering | MDX (help docs compiled into frontend) |
-| Unit Testing | Vitest + Testing Library |
+| Unit Testing | Rstest + Testing Library |
 | Web Server | Nginx (with FancyIndex module) |
 | Deployment | Docker + Docker Compose |
 | Monitoring | Prometheus + Grafana |
@@ -377,7 +377,7 @@ bun run typecheck     # TypeScript type checking
 bun run lint          # Biome check
 bun run lint:fix      # Biome lint auto-fix
 bun run format        # Biome formatting
-bun run test          # Run tests (Vitest)
+bun run test          # Run tests (Rstest)
 bun run test:watch    # Watch mode tests
 bun run test:coverage # Test coverage report
 ```
@@ -390,7 +390,7 @@ The project uses GitHub Actions for continuous integration (`.github/workflows/c
 
 1. **Lint** — Biome code style check
 2. **TypeCheck** — TypeScript type checking
-3. **Test** — Vitest unit tests
+3. **Test** — Rstest unit tests
 4. **Build** — Production build
 5. **Audit** — Bun dependency security audit
 6. **Docker Smoke Test** — Docker build smoke test
